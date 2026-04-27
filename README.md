@@ -64,19 +64,24 @@ This project consists of developing a collaborative web application focused on t
 **Target:** 15–16 points | **Minimum:** 14 points
 
 Category -> Module -> Points
-**Core: Web** -> Frontend + Backend frameworks          -> 2
-Real-time features                                      -> 2
-User interaction (chat, profiles)                       -> 2
-File upload system                                      -> 1
-ORM                                                     -> 1
-Notification system                                     -> 1
-**Core: Users** -> Authentication system                -> 2
-Organization system                                     -> 2
-                                                        13P
-**Additional** -> Advanced search (filter/sort tasks)   ->+1
-Implement 2FA for users                                 ->+1
-Permissions system (roles)                              ->+2
-                                                        17P
+
+**Core: Web**  
+Frontend + Backend frameworks -> 2  
+Real-time features -> 2  
+User interaction (chat, profiles) -> 2  
+File upload system -> 1  
+ORM -> 1  
+Notification system -> 1  
+
+**Core: Users**  
+Authentication system -> 2  
+Organization system -> 2  
+
+**Additional**  
+Advanced search (filter/sort tasks) -> +1  
+Implement 2FA for users -> +1  
+Permissions system (roles) -> +2
+Translations -> +1
 
 ### Mandatory Requirements Compliance
 * Web application (frontend + backend + database)
