@@ -1,7 +1,5 @@
-/**
- * Database schema definition for Team Task Manager
- * Defines all models and their relationships using Prisma ORM
- */
+// Database schema definition for Team Task Manager
+// Defines all models and their relationships using Prisma ORM
 
 // Prisma client generator configuration
 generator client {
