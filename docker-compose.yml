@@ -1,0 +1,77 @@
+# Docker Compose configuration for Team Task Manager
+# Defines services for MariaDB, backend, and frontend
+# Run with: make all
+
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    container_name: ttm-mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=ttm_db
+      - MYSQL_USER=ttm_user
+      - MYSQL_PASSWORD=ttm_password
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - ttm-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ttm-backend
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=development
+      - PORT=5000
+      - DATABASE_URL=mysql://ttm_user:ttm_password@mariadb:3306/ttm_db
+      - JWT_EXPIRE=1h
+      - JWT_REFRESH_EXPIRE=7d
+      - CORS_ORIGIN=http://localhost:3000
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    networks:
+      - ttm-network
+    restart: unless-stopped
+    volumes:
+      - ./backend/src:/app/src
+      - /app/node_modules
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ttm-frontend
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+      - VITE_WS_URL=ws://localhost:5000
+    depends_on:
+      - backend
+    networks:
+      - ttm-network
+    restart: unless-stopped
+
+networks:
+  ttm-network:
+    driver: bridge
+
+volumes:
+  mariadb_data:

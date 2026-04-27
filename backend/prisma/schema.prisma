@@ -1,0 +1,128 @@
+/**
+ * Database schema definition for Team Task Manager
+ * Defines all models and their relationships using Prisma ORM
+ */
+
+// Prisma client generator configuration
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Database connection configuration
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// User model - Represents application users
+model User {
+  id        Int         @id @default(autoincrement())
+  email     String      @unique
+  password  String
+  username  String      @unique
+  avatar    String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  teams        TeamMember[]
+  tasks        Task[]       @relation("AssignedTasks")
+  createdTasks Task[]       @relation("CreatedTasks")
+  files        File[]
+  messages     Message[]
+  notifications Notification[]
+}
+
+// Team model - Represents collaborative workspaces
+model Team {
+  id        Int         @id @default(autoincrement())
+  name      String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  members   TeamMember[]
+  tasks     Task[]
+  messages  Message[]
+  files     File[]
+}
+
+// TeamMember model - Join table for user-team relationships with roles
+model TeamMember {
+  id     Int      @id @default(autoincrement())
+  role   String   @default("member") // admin, member
+  joinedAt DateTime @default(now())
+
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+
+  team   Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId Int
+
+  @@unique([userId, teamId])
+}
+
+// Task model - Represents tasks within teams
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  status      String   @default("todo") // todo, in_progress, done
+  priority    String   @default("medium") // low, medium, high
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  dueDate     DateTime?
+
+  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id])
+  assignedToId Int?
+
+  createdBy   User     @relation("CreatedTasks", fields: [createdById], references: [id])
+  createdById Int
+
+  team        Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId      Int
+
+  files       File[]
+}
+
+// File model - Represents files attached to tasks
+model File {
+  id        Int      @id @default(autoincrement())
+  filename  String
+  path      String
+  mimetype  String?
+  size      Int?
+  createdAt DateTime @default(now())
+
+  task       Task    @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  taskId     Int
+
+  uploadedBy User    @relation(fields: [uploadedById], references: [id])
+  uploadedById Int
+
+  team       Team    @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId     Int
+}
+
+// Message model - Represents chat messages within teams
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId    Int
+}
+
+// Notification model - Represents user notifications
+model Notification {
+  id        Int      @id @default(autoincrement())
+  type      String   // task_assigned, task_updated, new_message, etc.
+  content   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+}
