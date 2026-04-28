@@ -89,9 +89,6 @@ Total 16
 
 ---
 
-## Project Idea:
-
-
 ## Team & Workflow
 
 ### Roles
@@ -129,7 +126,6 @@ Total 16
 
 3. **Access the application:**
    - Frontend: http://localhost:3000
-   - Backend API: http://localhost:5000/api
 
 ### Development Commands
 
@@ -138,5 +134,4 @@ Total 16
 - `make clean` - Stop services (keeps database)
 - `make clean-all` - Remove all containers and data
 - `make frontRebuild` - Rebuild only frontend
-- `make backRebuild` - Rebuild only backend
 - `make down` - Stop all services
