@@ -8,6 +8,7 @@ import { createContext, useState, useEffect } from 'react';
 // Create the authentication context
 export const AuthContext = createContext();
 
+// TODO: Remove after backend - Delete entire defaultTestUser, fetch user from GET /api/auth/me
 // Default test user data with expanded teams
 const defaultTestUser = {
   id: 1,
@@ -101,6 +102,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // TODO: Send GET /api/auth/me with token, receive {user data}
   // Check for existing test user on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('testUser');
@@ -110,6 +112,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  // TODO: Remove - Replace with real API: POST /api/auth/login, set token, fetch user data
   // Handle test user login (for development/testing)
   const loginTestUser = () => {
     const testUserData = { ...defaultTestUser };
@@ -117,12 +120,15 @@ export const AuthProvider = ({ children }) => {
     setUser(testUserData);
   };
 
+  // TODO: Send POST /api/auth/logout, clear token from storage
   // Handle user logout
   const logout = () => {
     localStorage.removeItem('testUser');
     setUser(null);
   };
 
+  // TODO: Send PUT /api/users/me with {username, email, description, avatar}, receive updated user
+  // - Validate email is unique, username is available on backend
   // Update user profile
   const updateUser = (updates) => {
     const updatedUser = { ...user, ...updates };
@@ -130,6 +136,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send POST /api/users/me/2fa/toggle, receive {twoFactorEnabled}
   // Toggle 2FA
   const toggle2FA = () => {
     const updatedUser = { ...user, twoFactorEnabled: !user.twoFactorEnabled };
@@ -137,6 +144,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send DELETE /api/friends/{friendId}
   // Remove a friend
   const removeFriend = (friendId) => {
     const updatedFriends = user.friends.filter((f) => f.id !== friendId);
@@ -145,6 +153,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send DELETE /api/teams/{teamId}/members/me
   // Leave a team
   const leaveTeam = (teamId) => {
     const updatedTeams = user.teams.filter((t) => t.id !== teamId);
@@ -153,6 +162,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send POST /api/teams/{teamId}/messages with {text}, receive {message}
   // Add chat message to a team
   const addChatMessage = (teamId, message) => {
     const updatedTeams = user.teams.map((team) => {
@@ -169,6 +179,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send PUT /api/tasks/{taskId} with {status}
   // Update task status
   const updateTaskStatus = (teamId, taskId, status) => {
     const updatedTeams = user.teams.map((team) => {
@@ -190,6 +201,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send POST /api/teams/{teamId}/tasks with {title, description, status, assignedTo}, receive {task}
   // Add new task to team
   const addTask = (teamId, newTask) => {
     const updatedTeams = user.teams.map((team) => {
@@ -206,6 +218,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send POST /api/tasks/{taskId}/files with FormData, receive {file}
   // Upload file to task
   const uploadFile = (teamId, taskId, file) => {
     const updatedTeams = user.teams.map((team) => {
@@ -230,6 +243,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send PUT /api/tasks/{taskId} with {assignedTo: memberId}
   // Update task assignee
   const updateTaskAssignee = (teamId, taskId, member) => {
     const updatedTeams = user.teams.map((team) => {
@@ -251,6 +265,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send POST /api/teams/{teamId}/members with {userId/username, role}
   // Add member to team
   const addTeamMember = (teamId, member, role) => {
     const updatedTeams = user.teams.map((team) => {
@@ -269,6 +284,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send POST /api/friends with {userId/username}
   // Add friend
   const addFriend = (friend) => {
     const friendExists = user.friends.some((f) => f.id === friend.id);
@@ -281,6 +297,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+// TODO: Send GET /api/users/search?q={username}, receive [{user}]
 // Find user by username
   const findUserByUsername = (username) => {
     const allUsers = [
@@ -290,6 +307,7 @@ export const AuthProvider = ({ children }) => {
     return allUsers.find((u) => u.username.toLowerCase() === username.toLowerCase());
   };
 
+  // TODO: Send DELETE /api/teams/{teamId}/members/{memberId}
   // Remove member from team
   const removeTeamMember = (teamId, memberId) => {
     const updatedTeams = user.teams.map((team) => {
@@ -312,6 +330,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send POST /api/teams with {name, objective, lookingFor, details}, receive {team}
   // Create new team
   const createTeam = (teamData) => {
     const newTeam = {
@@ -336,6 +355,7 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
+  // TODO: Send PUT /api/teams/{teamId} with {status}
   // Update team status
   const updateTeamStatus = (teamId, status) => {
     const updatedTeams = user.teams.map((team) => {

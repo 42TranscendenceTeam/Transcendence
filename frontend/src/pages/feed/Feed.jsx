@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import FeedLayout from '../../components/layouts/FeedLayout';
 
@@ -28,6 +29,7 @@ function RotatingText() {
 function Feed() {
   const { user } = useContext(AuthContext);
   
+  // TODO: Remove dummy data - Send GET /api/feed or GET /api/teams?filter=discover, receive [{team with tasks}]
   const taskItems = [
     {
       id: 1,
@@ -62,10 +64,18 @@ function Feed() {
     <FeedLayout>
       <div className="feed-header">
         {user && (
-          <div className="welcome-user">
+          <Link to="/profile" className="welcome-user">
             <img src={user.avatar} alt={user.username} className="welcome-avatar" />
-            <span className="welcome-text">Welcome back, {user.username}</span>
-          </div>
+            <span className="welcome-text">Back to work {user.username}?</span>
+          </Link>
+        )}
+        {!user && (
+          <Link to="/login" className="welcome-user">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="welcome-avatar">
+              <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.895A15.309 15.309 0 0112 21c-2.17 0-4.207-.316-6.061-1.777a.75.75 0 01-.437-.895z" clipRule="evenodd" />
+            </svg>
+            <span className="welcome-text">Login</span>
+          </Link>
         )}
         <h1 className="feed-title">
           <span className="title-transcendence">Transcendence</span>
@@ -75,6 +85,7 @@ function Feed() {
         </p>
       </div>
       <div className="feed-list">
+        {/* TODO: Fetch from /api/teams/{id}/tasks for each team, receive task data with real author/avatar */}
         {taskItems.map((task) => (
           <div key={task.id} className="task-card">
             <div className="task-header">

@@ -31,7 +31,7 @@ function Profile() {
       </div>
 
       <div className="profile-section">
-        <h2 className="profile-section-title">Stats</h2>
+        <h2 className="profile-section-title">Colaboration</h2>
         <div className="profile-stats">
           <div className="profile-stat">
             <span className="stat-value">{user.friends.length}</span>

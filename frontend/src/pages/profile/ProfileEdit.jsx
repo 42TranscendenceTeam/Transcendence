@@ -5,18 +5,22 @@ function ProfileEdit() {
   const { user, updateUser } = useContext(AuthContext);
 
   const [username, setUsername] = useState(user?.username || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [description, setDescription] = useState(user?.description || '');
   const [avatarUrl, setAvatarUrl] = useState(user?.avatar || '');
 
+  // TODO: Remove - After backend: send POST /api/users/me/avatar with file, receive {avatarUrl}
   const avatarSeeds = ['Felix', 'Luna', 'Alex', 'Max', 'Nina', 'Sam', 'Kate', 'John'];
   const avatarOptions = avatarSeeds.map((seed) => ({
     seed,
     url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`,
   }));
 
+  // TODO: Send PUT /api/users/me with {username, email, description, avatar}, receive updated user
+  // - Validate email is unique on backend
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateUser({ username, description, avatar: avatarUrl });
+    updateUser({ username, email, description, avatar: avatarUrl });
     alert('Profile updated successfully!');
   };
 
@@ -45,6 +49,17 @@ function ProfileEdit() {
         </div>
 
         <div className="form-group">
+          <label className="label">Email</label>
+          <input
+            type="email"
+            className="input"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div className="form-group">
           <label className="label">Description</label>
           <textarea
             className="input textarea"
@@ -60,7 +75,7 @@ function ProfileEdit() {
           <div className="avatar-preview">
             <img src={avatarUrl || user.avatar} alt="Avatar preview" />
           </div>
-          <p className="label-small">Select a preset avatar:</p>
+          <p className="label-small">Select an avatar:</p>
           <div className="avatar-options">
             {avatarOptions.map((option) => (
               <button

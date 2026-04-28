@@ -22,6 +22,7 @@ function TeamDetail() {
   const [newStatus, setNewStatus] = useState('');
   const fileInputRefs = useRef({});
 
+  // TODO: Send GET /api/teams/{id}, receive {team with all relations (members, tasks, chat)}
   const team = user?.teams.find((t) => t.id === parseInt(id));
   const isLeader = team?.role === 'Leader';
   const isActive = team?.status === 'active';
@@ -106,6 +107,7 @@ function TeamDetail() {
     updateTaskAssignee(team.id, taskId, member || null);
   };
 
+  // TODO: Send actual file - POST /api/tasks/{taskId}/files with FormData
   const handleFileUpload = (taskId) => {
     if (!canEdit) return;
     const input = fileInputRefs.current[taskId];

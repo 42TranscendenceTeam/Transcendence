@@ -13,6 +13,7 @@ function Friends() {
     return null;
   }
 
+  // TODO: Remove dummy data - Send GET /api/users/search?q= or GET /api/users/recommended
   const availableUsers = user.friends.length > 0
     ? [
         { id: 1, username: 'Felix', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' },
@@ -45,6 +46,7 @@ function Friends() {
     }
   };
 
+  // TODO: Send GET /api/users/search?q={username}, verify user exists before adding
   const handleAddManual = () => {
     if (!manualUsername.trim()) return;
     const foundUser = findUserByUsername(manualUsername.trim());

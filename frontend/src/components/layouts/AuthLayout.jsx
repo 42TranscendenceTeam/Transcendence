@@ -5,7 +5,7 @@ function AuthLayout({ children }) {
   return (
     <div className="auth-layout">
       <BackButton />
-      <div className="auth-card">
+      <div className="auth-card" style={{ marginTop: '3rem' }}>
         {children}
       </div>
       <BottomNav />

@@ -230,7 +230,7 @@ input, button, textarea, select {
 .welcome-user {
   position: fixed;
   top: 0.75rem;
-  right: 0.75rem;
+  left: 0.75rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -245,6 +245,7 @@ input, button, textarea, select {
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  color: var(--text-secondary);
 }
 
 .welcome-text {
@@ -416,8 +417,8 @@ input, button, textarea, select {
   gap: 0.25rem;
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: 0.75rem;
-  padding: 0.5rem;
+  font-size: 0.625rem;
+  padding: 0.25rem;
   transition: color 0.2s ease;
 }
 
@@ -428,8 +429,8 @@ input, button, textarea, select {
 }
 
 .bottom-nav-item .nav-icon {
-  width: 20px;
-  height: 20px;
+  width: 10px;
+  height: 10px;
 }
 
 /* Profile Layout */
@@ -439,15 +440,15 @@ input, button, textarea, select {
 }
 
 .profile-sidebar {
-  width: 160px;
+  width: 80px;
   background: var(--bg-card);
-  border-left: 1px solid var(--border);
-  border-right: none;
+  border-right: 1px solid var(--border);
+  border-left: none;
   padding: 1.5rem 1rem;
   padding-bottom: 3rem;
   position: fixed;
   top: 0;
-  right: 0;
+  left: 0;
   bottom: 0;
   display: flex;
   flex-direction: column;
@@ -1672,14 +1673,15 @@ input, button, textarea, select {
   left: 0.75rem;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
-  background: transparent;
-  border: none;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
   color: var(--text-secondary);
   font-size: 0.875rem;
   cursor: pointer;
   z-index: 101;
-  padding: 0.5rem;
 }
 
 .back-button:hover {
@@ -1687,6 +1689,6 @@ input, button, textarea, select {
 }
 
 .back-icon {
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
 }

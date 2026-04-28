@@ -15,6 +15,7 @@ const TEAM_DETAILS = [
   'Docs',
 ];
 
+// TODO: Remove dummy data - Send GET /api/teams?filter=discover or GET /api/teams/discover
 const MOCK_TEAMS = [
   {
     id: 101,
@@ -87,6 +88,7 @@ function Teams() {
     }));
   };
 
+  // TODO: Send POST /api/teams/{teamId}/join
   const handleJoinTeam = (team) => {
     alert(`Join request for "${team.name}" - This feature is coming soon!`);
   };
