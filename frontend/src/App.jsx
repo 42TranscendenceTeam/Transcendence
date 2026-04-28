@@ -10,6 +10,7 @@ import ProfileLayout from './components/layouts/ProfileLayout';
 import Profile from './pages/profile/Profile';
 import ProfileEdit from './pages/profile/ProfileEdit';
 import Friends from './pages/profile/Friends';
+import FriendChat from './pages/profile/FriendChat';
 import Teams from './pages/profile/Teams';
 import Security from './pages/profile/Security';
 import TeamDetail from './pages/profile/TeamDetail';
@@ -80,6 +81,16 @@ function App() {
               <ProtectedRoute>
                 <ProfileLayout>
                   <Friends />
+                </ProfileLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/friends/:id"
+            element={
+              <ProtectedRoute>
+                <ProfileLayout>
+                  <FriendChat />
                 </ProfileLayout>
               </ProtectedRoute>
             }

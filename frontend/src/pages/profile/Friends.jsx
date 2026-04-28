@@ -1,4 +1,5 @@
 import { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 
 function Friends() {
@@ -74,6 +75,12 @@ function Friends() {
             <div className="friend-info">
               <span className="friend-name">{friend.username}</span>
             </div>
+            <Link
+              to={`/profile/friends/${friend.id}`}
+              className="btn btn-secondary btn-small"
+            >
+              Chat
+            </Link>
             <button
               className="btn btn-secondary btn-small"
               onClick={() => handleRemoveClick(friend)}

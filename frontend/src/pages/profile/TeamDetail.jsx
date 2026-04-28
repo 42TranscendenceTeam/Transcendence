@@ -26,7 +26,7 @@ function TeamDetail() {
   const team = user?.teams.find((t) => t.id === parseInt(id));
   const isLeader = team?.role === 'Leader';
   const isActive = team?.status === 'active';
-  const canEdit = isLeader && isActive;
+  const canEdit = team && isActive;
   const canChangeStatus = isLeader;
 
   const taskCounts = {

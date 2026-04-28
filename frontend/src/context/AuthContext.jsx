@@ -18,9 +18,9 @@ const defaultTestUser = {
   description: 'Hello! I am a test user.',
   twoFactorEnabled: false,
   friends: [
-    { id: 1, username: 'Felix', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' },
-    { id: 2, username: 'Luna', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna' },
-    { id: 3, username: 'Alex', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex' },
+    { id: 1, username: 'Felix', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix', chat: [] },
+    { id: 2, username: 'Luna', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna', chat: [] },
+    { id: 3, username: 'Alex', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex', chat: [] },
   ],
   teams: [
     {
@@ -175,6 +175,23 @@ export const AuthProvider = ({ children }) => {
       return team;
     });
     const updatedUser = { ...user, teams: updatedTeams };
+    localStorage.setItem('testUser', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
+  // TODO: Send POST /api/friends/{friendId}/messages with {text}, receive {message}
+  // Add chat message to a friend conversation
+  const sendFriendMessage = (friendId, message) => {
+    const updatedFriends = user.friends.map((friend) => {
+      if (friend.id === friendId) {
+        return {
+          ...friend,
+          chat: [...(friend.chat || []), message],
+        };
+      }
+      return friend;
+    });
+    const updatedUser = { ...user, friends: updatedFriends };
     localStorage.setItem('testUser', JSON.stringify(updatedUser));
     setUser(updatedUser);
   };
@@ -371,7 +388,7 @@ export const AuthProvider = ({ children }) => {
 
   // Provide auth state and methods to child components
   return (
-    <AuthContext.Provider value={{ user, loginTestUser, logout, updateUser, toggle2FA, removeFriend, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, addFriend, findUserByUsername, removeTeamMember, createTeam, updateTeamStatus, loading }}>
+    <AuthContext.Provider value={{ user, loginTestUser, logout, updateUser, toggle2FA, removeFriend, leaveTeam, addChatMessage, sendFriendMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, addFriend, findUserByUsername, removeTeamMember, createTeam, updateTeamStatus, loading }}>
       {children}
     </AuthContext.Provider>
   );
