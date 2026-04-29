@@ -1,35 +1,37 @@
-const jwt = require('jsonwebtoken');
+import { JWT_SECRET } from '../config.js';
+import type { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
 
-const SECRET = process.env.JWT_SECRET;
+type JwtUser = {
+  id: string;
+};
 
-function authMiddleware(req, res, next) {
+export interface AuthRequest extends Request {
+  user?: JwtUser | string | jwt.JwtPayload;
+}
+
+export function authMiddleware(
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) {
   try {
-    // 1. ir buscar token ao header
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    // 2. formato: "Bearer token"
     const token = authHeader.split(' ')[1];
 
     if (!token) {
       return res.status(401).json({ error: 'Invalid token format' });
     }
 
-    // 3. validar token
-    const decoded = jwt.verify(token, SECRET);
-
-    // 4. guardar info do user no request
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
-
-    // 5. continuar para a rota
     next();
-
   } catch (err) {
     return res.status(401).json({ error: 'Invalid token' });
   }
 }
-
-module.exports = authMiddleware;
