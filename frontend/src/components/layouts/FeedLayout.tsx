@@ -1,6 +1,11 @@
+import type { ReactNode } from 'react';
 import BottomNav from './BottomNav';
 
-function FeedLayout({ children }) {
+interface FeedLayoutProps {
+  children: ReactNode;
+}
+
+function FeedLayout({ children }: FeedLayoutProps) {
   return (
     <div className="feed-layout">
       <main className="feed-main">

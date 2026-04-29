@@ -1,11 +1,12 @@
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import type { Friend } from '../../types';
 
 function Friends() {
   const { user, removeFriend, addFriend, findUserByUsername } = useContext(AuthContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
-  const [friendToRemove, setFriendToRemove] = useState(null);
+  const [friendToRemove, setFriendToRemove] = useState<Friend | null>(null);
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const [manualUsername, setManualUsername] = useState('');
@@ -14,17 +15,16 @@ function Friends() {
     return null;
   }
 
-  // TODO: Remove dummy data - Send GET /api/users/search?q= or GET /api/users/recommended
   const availableUsers = user.friends.length > 0
     ? [
-        { id: 1, username: 'Felix', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' },
-        { id: 2, username: 'Luna', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna' },
-        { id: 3, username: 'Alex', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex' },
-        { id: 4, username: 'Max', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Max' },
+        { id: 1, username: 'Felix', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix', chat: [] },
+        { id: 2, username: 'Luna', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna', chat: [] },
+        { id: 3, username: 'Alex', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex', chat: [] },
+        { id: 4, username: 'Max', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Max', chat: [] },
       ].filter((u) => !user.friends.some((f) => f.id === u.id))
     : [];
 
-  const handleRemoveClick = (friend) => {
+  const handleRemoveClick = (friend: Friend) => {
     setFriendToRemove(friend);
     setShowRemoveModal(true);
   };
@@ -41,18 +41,17 @@ function Friends() {
     if (!selectedUser) return;
     const userToAdd = availableUsers.find((u) => u.username === selectedUser);
     if (userToAdd) {
-      addFriend(userToAdd);
+      addFriend(userToAdd as Friend);
       setSelectedUser('');
       setShowAddFriendModal(false);
     }
   };
 
-  // TODO: Send GET /api/users/search?q={username}, verify user exists before adding
   const handleAddManual = () => {
     if (!manualUsername.trim()) return;
     const foundUser = findUserByUsername(manualUsername.trim());
     if (foundUser && !user.friends.some((f) => f.id === foundUser.id)) {
-      addFriend(foundUser);
+      addFriend({ id: foundUser.id, username: foundUser.username, avatar: foundUser.avatar, chat: [] });
       setManualUsername('');
       setShowAddFriendModal(false);
     }
@@ -98,7 +97,6 @@ function Friends() {
         </div>
       )}
 
-      {/* Remove Friend Modal */}
       {showRemoveModal && (
         <div className="modal-overlay" onClick={() => setShowRemoveModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -119,7 +117,6 @@ function Friends() {
         </div>
       )}
 
-      {/* Add Friend Modal */}
       {showAddFriendModal && (
         <div className="modal-overlay" onClick={() => setShowAddFriendModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>

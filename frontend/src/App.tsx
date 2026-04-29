@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useContext, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useContext, useEffect, ReactNode } from 'react';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import Feed from './pages/feed/Feed';
 import Login from './pages/auth/Login';
@@ -15,7 +15,11 @@ import Teams from './pages/profile/Teams';
 import Security from './pages/profile/Security';
 import TeamDetail from './pages/profile/TeamDetail';
 
-function ProtectedRoute({ children }) {
+interface ProtectedRouteProps {
+  children: ReactNode;
+}
+
+function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useContext(AuthContext);
 
   useEffect(() => {

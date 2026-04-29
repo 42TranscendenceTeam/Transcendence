@@ -8,9 +8,7 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // TODO: Send POST /api/auth/register with {username, email, password}, receive {token, user}
-  // TODO: Remove dummy fields - validate with backend (email unique, username available)
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     alert('Registration is not yet implemented. Please use the 42 login option.');
   };

@@ -19,7 +19,6 @@ function Security() {
           Add an extra layer of security to your account by enabling two-factor authentication.
         </p>
         <label className="security-toggle">
-          {/* TODO: Fetch from /api/users/me, receive {twoFactorEnabled, twoFactorSecret} for setup flow */}
           <input
             type="checkbox"
             checked={user.twoFactorEnabled}

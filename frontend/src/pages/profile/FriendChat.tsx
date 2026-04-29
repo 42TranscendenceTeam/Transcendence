@@ -1,17 +1,17 @@
 import { useContext, useState, useRef, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import type { Message } from '../../types';
 
 function FriendChat() {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const { user, sendFriendMessage } = useContext(AuthContext);
   
-  const friendId = parseInt(id);
+  const friendId = parseInt(id || '0');
   const friend = user?.friends.find((f) => f.id === friendId);
   
   const [message, setMessage] = useState('');
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -29,25 +29,23 @@ function FriendChat() {
     );
   }
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || !user) return;
     
-    const newMessage = {
+    const newMessage: Message = {
       id: Date.now(),
-      senderId: user.id,
-      senderUsername: user.username,
-      senderAvatar: user.avatar,
       text: message,
+      sender: { id: user.id, username: user.username, avatar: user.avatar },
       timestamp: new Date().toISOString(),
-      isOwn: true,
     };
     
     sendFriendMessage(friendId, newMessage);
     setMessage('');
   };
 
-  const formatTime = (timestamp) => {
+  const formatTime = (timestamp?: string) => {
+    if (!timestamp) return '';
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
@@ -73,12 +71,12 @@ function FriendChat() {
         <div className="friend-chat-messages">
           {chat.length > 0 ? (
             chat.map((msg) => (
-              <div key={msg.id} className={`friend-chat-message ${msg.isOwn ? 'own' : ''}`}>
-                {!msg.isOwn && (
-                  <img src={msg.senderAvatar || friend.avatar} alt={msg.senderUsername} className="chat-avatar" />
+              <div key={msg.id} className={`friend-chat-message ${msg.sender.id === user?.id ? 'own' : ''}`}>
+                {msg.sender.id !== user?.id && (
+                  <img src={msg.sender.avatar || friend.avatar} alt={msg.sender.username} className="chat-avatar" />
                 )}
                 <div className="friend-chat-message-content">
-                  {!msg.isOwn && <span className="chat-username">{msg.senderUsername}</span>}
+                  {msg.sender.id !== user?.id && <span className="chat-username">{msg.sender.username}</span>}
                   <span className="chat-time">{formatTime(msg.timestamp)}</span>
                   <p className="chat-text">{msg.text}</p>
                 </div>

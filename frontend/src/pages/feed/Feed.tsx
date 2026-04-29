@@ -29,7 +29,6 @@ function RotatingText() {
 function Feed() {
   const { user } = useContext(AuthContext);
   
-  // TODO: Remove dummy data - Send GET /api/feed or GET /api/teams?filter=discover, receive [{team with tasks}]
   const taskItems = [
     {
       id: 1,
@@ -85,7 +84,6 @@ function Feed() {
         </p>
       </div>
       <div className="feed-list">
-        {/* TODO: Fetch from /api/teams/{id}/tasks for each team, receive task data with real author/avatar */}
         {taskItems.map((task) => (
           <div key={task.id} className="task-card">
             <div className="task-header">

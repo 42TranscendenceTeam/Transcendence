@@ -13,71 +13,38 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // TODO: POST /api/auth/login with {username, password}
-  // - Receive: {requires2FA: boolean, tempToken?: string} or {token, user} or {error}
-  // - If requires2FA: true, show 2FA input, then POST /api/auth/verify-2fa with {tempToken, code}
-  // - Receive: {token, user}
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      // Simulating backend response for now - Replace with actual API call
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ username, password }),
-      // });
-      // const data = await response.json();
-
-      // Mock response for development
       console.log('Login:', { username, password });
-      
-      // Simulate 2FA check - in real app, backend determines this
       const data = { requires2FA: true, tempToken: 'mock-temp-token' };
       
       if (data.requires2FA) {
         setTempToken(data.tempToken);
         setShow2FA(true);
       } else {
-        // TODO: Replace mock with actual user data from backend
-        // loginTestUser(); // Remove this after backend
         console.log('Login successful, user data:', data.user);
         window.location.href = '/profile';
       }
-    } catch (err) {
+    } catch {
       setError('Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle 2FA code submission
-  const handle2FASubmit = async (e) => {
+  const handle2FASubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      // TODO: POST /api/auth/verify-2fa with {tempToken, code: twoFactorCode}
-      // - Receive: {token, user} or {error: 'Invalid code'}
-      // const response = await fetch('/api/auth/verify-2fa', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ tempToken, code: twoFactorCode }),
-      // });
-      // const data = await response.json();
-
-      // Mock response for development
       console.log('Verifying 2FA code:', { tempToken, code: twoFactorCode });
-      
-      // Simulate successful verification
-      // const data = { token: 'mock-jwt-token', user: {...} };
-      
-      // TODO: Store token and set user context, then redirect
       window.location.href = '/profile';
-    } catch (err) {
+    } catch {
       setError('Invalid verification code. Please try again.');
     } finally {
       setLoading(false);
@@ -200,7 +167,6 @@ function Login() {
         </form>
       )}
       
-      {/* TODO: Redirect to 42 OAuth, handle callback at /auth/42/callback, receive {token, user} */}
       {!show2FA && (
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
           <button type="button" className="btn btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>

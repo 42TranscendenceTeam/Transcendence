@@ -1,16 +1,9 @@
-/**
- * Authentication context provider
- * Manages user authentication state across the application
- */
+import { createContext, useState, useEffect, ReactNode } from 'react';
+import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData } from '../types';
 
-import { createContext, useState, useEffect } from 'react';
+export const AuthContext = createContext<AuthContextType | null>(null);
 
-// Create the authentication context
-export const AuthContext = createContext();
-
-// TODO: Remove after backend - Delete entire defaultTestUser, fetch user from GET /api/auth/me
-// Default test user data with expanded teams
-const defaultTestUser = {
+const defaultTestUser: User = {
   id: 1,
   username: 'TestUser',
   email: 'testuser@student.42i',
@@ -27,7 +20,7 @@ const defaultTestUser = {
       id: 1,
       name: 'Project Alpha',
       objective: 'Creating a REST API for task management system with authentication and user management features',
-      owner: { id: 2, username: 'Felix', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' },
+      owner: { id: 2, username: 'Felix', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix', description: '', twoFactorEnabled: false, friends: [], teams: [] },
       role: 'Member',
       status: 'active',
       members: [
@@ -67,7 +60,7 @@ const defaultTestUser = {
       id: 2,
       name: 'Hackathon Team',
       objective: 'Building a prototype for the upcoming school hackathon event',
-      owner: { id: 1, username: 'TestUser', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=TestUser' },
+      owner: { id: 1, username: 'TestUser', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=TestUser', description: '', twoFactorEnabled: false, friends: [], teams: [] },
       role: 'Leader',
       status: 'active',
       members: [
@@ -97,13 +90,14 @@ const defaultTestUser = {
   ],
 };
 
-// AuthProvider wraps the application to provide authentication functionality
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // TODO: Send GET /api/auth/me with token, receive {user data}
-  // Check for existing test user on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('testUser');
     if (savedUser) {
@@ -112,59 +106,49 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // TODO: Remove - Replace with real API: POST /api/auth/login, set token, fetch user data
-  // Handle test user login (for development/testing)
   const loginTestUser = () => {
     const testUserData = { ...defaultTestUser };
     localStorage.setItem('testUser', JSON.stringify(testUserData));
     setUser(testUserData);
   };
 
-  // TODO: Send POST /api/auth/logout, clear token from storage
-  // Handle user logout
   const logout = () => {
     localStorage.removeItem('testUser');
     setUser(null);
   };
 
-  // TODO: Send PUT /api/users/me with {username, email, description, avatar}, receive updated user
-  // - Validate email is unique, username is available on backend
-  // Update user profile
-  const updateUser = (updates) => {
+  const updateUser = (updates: Partial<User>) => {
+    if (!user) return;
     const updatedUser = { ...user, ...updates };
     localStorage.setItem('testUser', JSON.stringify(updatedUser));
     setUser(updatedUser);
   };
 
-  // TODO: Send POST /api/users/me/2fa/toggle, receive {twoFactorEnabled}
-  // Toggle 2FA
   const toggle2FA = () => {
+    if (!user) return;
     const updatedUser = { ...user, twoFactorEnabled: !user.twoFactorEnabled };
     localStorage.setItem('testUser', JSON.stringify(updatedUser));
     setUser(updatedUser);
   };
 
-  // TODO: Send DELETE /api/friends/{friendId}
-  // Remove a friend
-  const removeFriend = (friendId) => {
+  const removeFriend = (friendId: number) => {
+    if (!user) return;
     const updatedFriends = user.friends.filter((f) => f.id !== friendId);
     const updatedUser = { ...user, friends: updatedFriends };
     localStorage.setItem('testUser', JSON.stringify(updatedUser));
     setUser(updatedUser);
   };
 
-  // TODO: Send DELETE /api/teams/{teamId}/members/me
-  // Leave a team
-  const leaveTeam = (teamId) => {
+  const leaveTeam = (teamId: number) => {
+    if (!user) return;
     const updatedTeams = user.teams.filter((t) => t.id !== teamId);
     const updatedUser = { ...user, teams: updatedTeams };
     localStorage.setItem('testUser', JSON.stringify(updatedUser));
     setUser(updatedUser);
   };
 
-  // TODO: Send POST /api/teams/{teamId}/messages with {text}, receive {message}
-  // Add chat message to a team
-  const addChatMessage = (teamId, message) => {
+  const addChatMessage = (teamId: number, message: Message) => {
+    if (!user) return;
     const updatedTeams = user.teams.map((team) => {
       if (team.id === teamId) {
         return {
@@ -179,9 +163,8 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // TODO: Send POST /api/friends/{friendId}/messages with {text}, receive {message}
-  // Add chat message to a friend conversation
-  const sendFriendMessage = (friendId, message) => {
+  const sendFriendMessage = (friendId: number, message: Message) => {
+    if (!user) return;
     const updatedFriends = user.friends.map((friend) => {
       if (friend.id === friendId) {
         return {
@@ -196,9 +179,8 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // TODO: Send PUT /api/tasks/{taskId} with {status}
-  // Update task status
-  const updateTaskStatus = (teamId, taskId, status) => {
+  const updateTaskStatus = (teamId: number, taskId: number, status: Task['status']) => {
+    if (!user) return;
     const updatedTeams = user.teams.map((team) => {
       if (team.id === teamId) {
         return {
@@ -218,14 +200,13 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // TODO: Send POST /api/teams/{teamId}/tasks with {title, description, status, assignedTo}, receive {task}
-  // Add new task to team
-  const addTask = (teamId, newTask) => {
+  const addTask = (teamId: number, newTask: Partial<Task>) => {
+    if (!user) return;
     const updatedTeams = user.teams.map((team) => {
       if (team.id === teamId) {
         return {
           ...team,
-          tasks: [...team.tasks, { id: Date.now(), ...newTask }],
+          tasks: [...team.tasks, { id: Date.now(), ...newTask } as Task],
         };
       }
       return team;
@@ -235,9 +216,8 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // TODO: Send POST /api/tasks/{taskId}/files with FormData, receive {file}
-  // Upload file to task
-  const uploadFile = (teamId, taskId, file) => {
+  const uploadFile = (teamId: number, taskId: number, file: File) => {
+    if (!user) return;
     const updatedTeams = user.teams.map((team) => {
       if (team.id === teamId) {
         return {
@@ -246,7 +226,7 @@ export const AuthProvider = ({ children }) => {
             if (task.id === taskId) {
               return {
                 ...task,
-                files: [...task.files, { name: file.name, size: file.size }],
+                files: [...task.files, { name: file.name, size: `${(file.size / 1024).toFixed(1)}KB` }],
               };
             }
             return task;
@@ -260,16 +240,15 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // TODO: Send PUT /api/tasks/{taskId} with {assignedTo: memberId}
-  // Update task assignee
-  const updateTaskAssignee = (teamId, taskId, member) => {
+  const updateTaskAssignee = (teamId: number, taskId: number, member: Member) => {
+    if (!user) return;
     const updatedTeams = user.teams.map((team) => {
       if (team.id === teamId) {
         return {
           ...team,
           tasks: team.tasks.map((task) => {
             if (task.id === taskId) {
-              return { ...task, assignedTo: member };
+              return { ...task, assignedTo: { id: member.id, username: member.username } };
             }
             return task;
           }),
@@ -282,9 +261,8 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // TODO: Send POST /api/teams/{teamId}/members with {userId/username, role}
-  // Add member to team
-  const addTeamMember = (teamId, member, role) => {
+  const addTeamMember = (teamId: number, member: Member, role: string) => {
+    if (!user) return;
     const updatedTeams = user.teams.map((team) => {
       if (team.id === teamId) {
         const memberExists = team.members.some((m) => m.id === member.id);
@@ -301,9 +279,8 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // TODO: Send POST /api/friends with {userId/username}
-  // Add friend
-  const addFriend = (friend) => {
+  const addFriend = (friend: Friend) => {
+    if (!user) return;
     const friendExists = user.friends.some((f) => f.id === friend.id);
     if (friendExists) return;
     const updatedUser = {
@@ -314,19 +291,17 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-// TODO: Send GET /api/users/search?q={username}, receive [{user}]
-// Find user by username
-  const findUserByUsername = (username) => {
+  const findUserByUsername = (username: string): User | undefined => {
+    if (!user) return undefined;
     const allUsers = [
       ...user.friends,
-      { id: user.id, username: user.username, avatar: user.avatar },
+      { id: user.id, username: user.username, avatar: user.avatar, email: '', description: '', twoFactorEnabled: false, friends: [], teams: [] },
     ];
     return allUsers.find((u) => u.username.toLowerCase() === username.toLowerCase());
   };
 
-  // TODO: Send DELETE /api/teams/{teamId}/members/{memberId}
-  // Remove member from team
-  const removeTeamMember = (teamId, memberId) => {
+  const removeTeamMember = (teamId: number, memberId: number) => {
+    if (!user) return;
     const updatedTeams = user.teams.map((team) => {
       if (team.id === teamId) {
         return {
@@ -347,15 +322,13 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // TODO: Send POST /api/teams with {name, objective, lookingFor, details}, receive {team}
-  // Create new team
-  const createTeam = (teamData) => {
-    const newTeam = {
+  const createTeam = (teamData: TeamData) => {
+    if (!user) return;
+    const newTeam: Team = {
       id: Date.now(),
       name: teamData.name,
       objective: teamData.description,
-      lookingFor: teamData.lookingFor,
-      details: teamData.details || [],
+      owner: user,
       role: 'Leader',
       status: 'active',
       members: [
@@ -372,9 +345,8 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // TODO: Send PUT /api/teams/{teamId} with {status}
-  // Update team status
-  const updateTeamStatus = (teamId, status) => {
+  const updateTeamStatus = (teamId: number, status: string) => {
+    if (!user) return;
     const updatedTeams = user.teams.map((team) => {
       if (team.id === teamId) {
         return { ...team, status };
@@ -386,9 +358,29 @@ export const AuthProvider = ({ children }) => {
     setUser(updatedUser);
   };
 
-  // Provide auth state and methods to child components
   return (
-    <AuthContext.Provider value={{ user, loginTestUser, logout, updateUser, toggle2FA, removeFriend, leaveTeam, addChatMessage, sendFriendMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, addFriend, findUserByUsername, removeTeamMember, createTeam, updateTeamStatus, loading }}>
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      loginTestUser,
+      logout,
+      updateUser,
+      toggle2FA,
+      removeFriend,
+      leaveTeam,
+      addChatMessage,
+      sendFriendMessage,
+      updateTaskStatus,
+      addTask,
+      uploadFile,
+      updateTaskAssignee,
+      addTeamMember,
+      addFriend,
+      findUserByUsername,
+      removeTeamMember,
+      createTeam,
+      updateTeamStatus,
+    }}>
       {children}
     </AuthContext.Provider>
   );

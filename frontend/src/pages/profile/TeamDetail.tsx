@@ -1,15 +1,16 @@
 import { useContext, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
+import type { Task, Member } from '../../types';
 
 function TeamDetail() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [newTask, setNewTask] = useState({ title: '', description: '', assignedTo: '', status: 'to_do' });
+  const [newTask, setNewTask] = useState({ title: '', description: '', assignedTo: '', status: 'to_do' as Task['status'] });
   const [statusFilter, setStatusFilter] = useState('all');
   const [assigneeFilter, setAssigneeFilter] = useState('all');
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
@@ -17,13 +18,12 @@ function TeamDetail() {
   const [manualUsername, setManualUsername] = useState('');
   const [memberRole, setMemberRole] = useState('Member');
   const [showRemoveMemberModal, setShowRemoveMemberModal] = useState(false);
-  const [memberToRemove, setMemberToRemove] = useState(null);
+  const [memberToRemove, setMemberToRemove] = useState<Member | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [newStatus, setNewStatus] = useState('');
-  const fileInputRefs = useRef({});
+  const fileInputRefs = useRef<Record<number, HTMLInputElement>>({});
 
-  // TODO: Send GET /api/teams/{id}, receive {team with all relations (members, tasks, chat)}
-  const team = user?.teams.find((t) => t.id === parseInt(id));
+  const team = user?.teams.find((t) => t.id === parseInt(id || '0'));
   const isLeader = team?.role === 'Leader';
   const isActive = team?.status === 'active';
   const canEdit = team && isActive;
@@ -36,7 +36,7 @@ function TeamDetail() {
     done: team?.tasks.filter((t) => t.status === 'done').length || 0,
   };
 
-  if (!team) {
+  if (!team || !user) {
     return (
       <div className="team-detail-page">
         <h1>Team not found</h1>
@@ -56,21 +56,20 @@ function TeamDetail() {
     navigate('/profile/teams');
   };
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatMessage.trim() || !canEdit) return;
     const message = {
       id: Date.now(),
-      username: user.username,
-      avatar: user.avatar,
       text: chatMessage,
+      sender: { id: user.id, username: user.username, avatar: user.avatar },
       timestamp: new Date().toISOString(),
     };
     addChatMessage(team.id, message);
     setChatMessage('');
   };
 
-  const handleStatusChangeClick = (status) => {
+  const handleStatusChangeClick = (status: string) => {
     setNewStatus(status);
     setShowStatusModal(true);
   };
@@ -81,7 +80,7 @@ function TeamDetail() {
     setNewStatus('');
   };
 
-  const handleAddTask = (e) => {
+  const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTask.title.trim() || !canEdit) return;
     const assignedMember = team.members.find(m => m.username === newTask.assignedTo);
@@ -89,41 +88,41 @@ function TeamDetail() {
       title: newTask.title,
       description: newTask.description,
       status: newTask.status,
-      assignedTo: assignedMember || null,
+      assignedTo: assignedMember ? { id: assignedMember.id, username: assignedMember.username } : null,
       files: [],
     });
     setNewTask({ title: '', description: '', assignedTo: '', status: 'to_do' });
     setShowTaskForm(false);
   };
 
-  const handleTaskStatusChange = (taskId, newStatus) => {
+  const handleTaskStatusChange = (taskId: number, newStatus: Task['status']) => {
     if (!canEdit) return;
     updateTaskStatus(team.id, taskId, newStatus);
   };
 
-  const handleAssigneeChange = (taskId, memberUsername) => {
+  const handleAssigneeChange = (taskId: number, memberUsername: string) => {
     if (!canEdit) return;
     const member = team.members.find(m => m.username === memberUsername);
-    updateTaskAssignee(team.id, taskId, member || null);
+    if (member) {
+      updateTaskAssignee(team.id, taskId, member);
+    }
   };
 
-  // TODO: Send actual file - POST /api/tasks/{taskId}/files with FormData
-  const handleFileUpload = (taskId) => {
+  const handleFileUpload = (taskId: number) => {
     if (!canEdit) return;
     const input = fileInputRefs.current[taskId];
-    if (input && input.files.length > 0) {
+    if (input && input.files && input.files.length > 0) {
       const file = input.files[0];
-      const mockSize = (Math.random() * 10).toFixed(1) + 'KB';
-      uploadFile(team.id, taskId, { name: file.name, size: mockSize });
+      uploadFile(team.id, taskId, file);
       input.value = '';
     }
   };
 
   const handleAddMemberFromDropdown = () => {
-    if (!selectedFriend || !canEdit) return;
+    if (!selectedFriend || !canEdit || !user) return;
     const friend = user.friends.find((f) => f.username === selectedFriend);
     if (friend) {
-      addTeamMember(team.id, friend, memberRole);
+      addTeamMember(team.id, { id: friend.id, username: friend.username, avatar: friend.avatar, role: memberRole }, memberRole);
       setSelectedFriend('');
       setMemberRole('Member');
       setShowAddMemberModal(false);
@@ -134,14 +133,14 @@ function TeamDetail() {
     if (!manualUsername.trim() || !canEdit) return;
     const foundUser = findUserByUsername(manualUsername.trim());
     if (foundUser) {
-      addTeamMember(team.id, foundUser, memberRole);
+      addTeamMember(team.id, { id: foundUser.id, username: foundUser.username, avatar: foundUser.avatar, role: memberRole }, memberRole);
       setManualUsername('');
       setMemberRole('Member');
       setShowAddMemberModal(false);
     }
   };
 
-  const handleRemoveMember = (member) => {
+  const handleRemoveMember = (member: Member) => {
     if (!canEdit) return;
     setMemberToRemove(member);
     setShowRemoveMemberModal(true);
@@ -154,7 +153,7 @@ function TeamDetail() {
     setMemberToRemove(null);
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'to_do': return 'status-todo';
       case 'in_progress': return 'status-progress';
@@ -163,7 +162,8 @@ function TeamDetail() {
     }
   };
 
-  const formatTime = (timestamp) => {
+  const formatTime = (timestamp?: string) => {
+    if (!timestamp) return '';
     const date = new Date(timestamp);
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
@@ -176,13 +176,6 @@ function TeamDetail() {
             <span className="title-gradient">{team.name}</span>
           </h1>
           <p className="team-objective">{team.objective}</p>
-          {team.details && team.details.length > 0 && (
-            <div className="team-details">
-              {team.details.map((detail) => (
-                <span key={detail} className="team-detail-tag">{detail}</span>
-              ))}
-            </div>
-          )}
         </div>
         <div className="team-header-meta">
           <select
@@ -274,7 +267,7 @@ function TeamDetail() {
               <select
                 className="input"
                 value={newTask.status}
-                onChange={(e) => setNewTask({ ...newTask, status: e.target.value })}
+                onChange={(e) => setNewTask({ ...newTask, status: e.target.value as Task['status'] })}
               >
                 <option value="to_do">To Do</option>
                 <option value="in_progress">In Progress</option>
@@ -324,7 +317,7 @@ function TeamDetail() {
                 <select
                   className="task-status-select"
                   value={task.status}
-                  onChange={(e) => handleTaskStatusChange(task.id, e.target.value)}
+                  onChange={(e) => handleTaskStatusChange(task.id, e.target.value as Task['status'])}
                 >
                   <option value="to_do">To Do</option>
                   <option value="in_progress">In Progress</option>
@@ -352,7 +345,7 @@ function TeamDetail() {
               <span className="task-files">
                 <input
                   type="file"
-                  ref={(el) => (fileInputRefs.current[task.id] = el)}
+                  ref={(el) => { if (el) fileInputRefs.current[task.id] = el; }}
                   onChange={() => handleFileUpload(task.id)}
                   style={{ display: 'none' }}
                 />
@@ -393,10 +386,10 @@ function TeamDetail() {
           <div className="chat-messages">
             {team.chat && team.chat.length > 0 ? (
               team.chat.map((msg) => (
-                <div key={msg.id} className={`chat-message ${msg.username === user.username ? 'own' : ''}`}>
-                  <img src={msg.avatar} alt={msg.username} className="chat-avatar" />
+                <div key={msg.id} className={`chat-message ${msg.sender.username === user.username ? 'own' : ''}`}>
+                  <img src={msg.sender.avatar} alt={msg.sender.username} className="chat-avatar" />
                   <div className="chat-content">
-                    <span className="chat-username">{msg.username}</span>
+                    <span className="chat-username">{msg.sender.username}</span>
                     <span className="chat-time">{formatTime(msg.timestamp)}</span>
                     <p className="chat-text">{msg.text}</p>
                   </div>

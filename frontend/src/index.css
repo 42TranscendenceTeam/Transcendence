@@ -1589,6 +1589,70 @@ input, button, textarea, select {
   padding: 1rem;
 }
 
+/* Confirm Modal */
+.confirm-message {
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.changes-summary {
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.changes-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.changes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.changes-list li {
+  padding: 0.25rem 0;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+/* Success Modal */
+.success-content {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.success-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  background: #d4edda;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.success-icon svg {
+  width: 32px;
+  height: 32px;
+  color: var(--accent);
+}
+
+.success-message {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.btn-success {
+  background: var(--accent);
+}
+
 /* Add Member */
 .add-member-method {
   margin-bottom: 1rem;

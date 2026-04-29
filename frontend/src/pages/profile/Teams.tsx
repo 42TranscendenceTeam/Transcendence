@@ -15,7 +15,6 @@ const TEAM_DETAILS = [
   'Docs',
 ];
 
-// TODO: Remove dummy data - Send GET /api/teams?filter=discover or GET /api/teams/discover
 const MOCK_TEAMS = [
   {
     id: 101,
@@ -60,7 +59,7 @@ function Teams() {
     name: '',
     description: '',
     lookingFor: 2,
-    details: [],
+    details: [] as string[],
   });
   const [showDiscovery, setShowDiscovery] = useState(false);
 
@@ -71,7 +70,7 @@ function Teams() {
   const userTeamIds = user.teams.map((t) => t.id);
   const availableTeams = MOCK_TEAMS.filter((t) => !userTeamIds.includes(t.id));
 
-  const handleCreateTeam = (e) => {
+  const handleCreateTeam = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTeam.name.trim() || !newTeam.description.trim()) return;
     createTeam(newTeam);
@@ -79,7 +78,7 @@ function Teams() {
     setShowCreateModal(false);
   };
 
-  const toggleDetail = (detail) => {
+  const toggleDetail = (detail: string) => {
     setNewTeam((prev) => ({
       ...prev,
       details: prev.details.includes(detail)
@@ -88,8 +87,7 @@ function Teams() {
     }));
   };
 
-  // TODO: Send POST /api/teams/{teamId}/join
-  const handleJoinTeam = (team) => {
+  const handleJoinTeam = (team: typeof MOCK_TEAMS[0]) => {
     alert(`Join request for "${team.name}" - This feature is coming soon!`);
   };
 
@@ -170,7 +168,6 @@ function Teams() {
         </>
       )}
 
-      {/* Create Team Modal */}
       {showCreateModal && (
         <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>

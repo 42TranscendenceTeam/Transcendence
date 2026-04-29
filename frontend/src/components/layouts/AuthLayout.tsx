@@ -1,7 +1,12 @@
+import type { ReactNode } from 'react';
 import BottomNav from './BottomNav';
 import BackButton from '../BackButton';
 
-function AuthLayout({ children }) {
+interface AuthLayoutProps {
+  children: ReactNode;
+}
+
+function AuthLayout({ children }: AuthLayoutProps) {
   return (
     <div className="auth-layout">
       <BackButton />
