@@ -1,7 +1,12 @@
 import 'dotenv/config';
 
-if (!process.env['JWT_SECRET']) {
-  throw new Error('JWT_SECRET is not defined');
+function getEnv(key: string): string {
+  const value = process.env[key];
+  if (!value) {
+    throw new Error(`${key} is not defined`);
+  }
+  return value;
 }
 
-export const JWT_SECRET: string = process.env['JWT_SECRET'];
+export const JWT_SECRET = getEnv('JWT_SECRET');
+export const DATABASE_URL = getEnv('DATABASE_URL');
