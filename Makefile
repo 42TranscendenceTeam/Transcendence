@@ -1,31 +1,61 @@
-# Makefile for Transcendence Frontend
+# Makefile for Transcendence
 # Run 'make' with any target to execute the corresponding action
 
-# Build and start frontend
-all:
-	docker compose up --build
+# Build and start website
+all: build up
 
-# Clean build - removes containers for fresh start
-all-new:
-	docker compose down --remove-orphans
-	docker compose up --build
+# Create database storage and build containers
+build:
+	@mkdir -p ${HOME}/data/database
+	@docker compose -f ./srcs/docker-compose.yml build
 
-# Rebuild only the frontend container
-frontRebuild:
-	docker compose build --no-cache frontend
-	docker compose up -d
+# Create and start containers
+up:
+	@docker compose -f ./srcs/docker-compose.yml up -d --build
+
+# Stop and remove containers and networks
+down:
+	@docker compose -f ./srcs/docker-compose.yml down
 
 # Stop containers
-down:
-	docker compose down
+stop:
+	@docker compose -f ./srcs/docker-compose.yml stop
 
-# Danger: Remove ALL Docker containers and images on system
-remove:
-	@echo "WARNING: This will remove ALL Docker containers and images. Even the ones not related to this project. Do you wish to continue? (yes/no)"
+# Start containers
+start:
+	@docker compose -f ./srcs/docker-compose.yml start
+
+# Stop and remove containers, networks and volumes
+clean:
+	@docker compose -f ./srcs/docker-compose.yml down -v
+
+# Danger: Remove ALL Docker containers and images on system. Delete database
+fclean:
+	@echo "WARNING: This will remove ALL Docker containers and images. Even the ones not related to this project. It will also delete the database! Do you wish to continue? (yes/no)"
 	@read confirm && if [ "$$confirm" = "yes" ]; then \
-		docker rm -f $$(docker ps -aq) && docker rmi -f $$(docker images -aq); \
+		@sudo rm -rf ${HOME}/data
+		@docker rm -f $$(docker ps -aq) && @docker rmi -f $$(docker images -aq); \
+		@docker system prune -a -f \
 	else \
-		echo "Operation canceled."; \
+		@echo "Operation canceled."; \
 	fi
+		
+# Rebuild only the frontend container
+frontRebuild:
+	@docker compose -f ./srcs/docker-compose.yml build --no-cache frontend
+	@docker compose -f ./srcs/docker-compose.yml up 
+	
+# Rebuild only the backend container
+backRebuild:
+	@docker compose -f ./srcs/docker-compose.yml build --no-cache backend
+	@docker compose -f ./srcs/docker-compose.yml up 
+	
+# Rebuild only the database container
+dataRebuild:
+	@docker compose -f ./srcs/docker-compose.yml build --no-cache postgresql
+	@docker compose -f ./srcs/docker-compose.yml up 
+		
+# Clean build - removes containers for fresh start
+re: clean build up
 
-.PHONY: all all-new frontRebuild down remove
+.PHONY: all build up down stop start clean fclean frontRebuild backRebuild dataRebuild re
