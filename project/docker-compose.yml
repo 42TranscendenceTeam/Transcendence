@@ -1,0 +1,57 @@
+# Docker Compose configuration for Frontend only
+# Run with: make all
+
+# TODO: Check what to do with volumes for the frontend and backend
+# TODO: Confirm ports
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "443:443"
+    env_file:
+      - frontend/.env
+    networks:
+      - transcendence
+    restart:
+      on-failure
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    env_file:
+      - backend/.env
+    networks:
+      - transcendence
+    restart:
+      on-failure
+
+  postgresql:
+    image: postgres:18-alpine
+    container_name: postgresql
+    env_file:
+      - postgres/.env
+    volumes:
+      - postgresql:/var/lib/postgres
+    networks:
+      - transcendence
+    restart:
+      on-failure
+
+volumes:
+  postgresql:
+    name: postgresql
+    driver: local
+    driver_opts:
+      type: bind
+      o: bind
+      device: "${HOME}/data/database"
+
+networks:
+  transcendence:
+    name: transcendence
+    driver: bridge

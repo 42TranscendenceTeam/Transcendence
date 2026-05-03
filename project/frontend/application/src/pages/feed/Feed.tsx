@@ -1,0 +1,116 @@
+import { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import FeedLayout from '../../components/layouts/FeedLayout';
+
+function RotatingText() {
+  const phrases = [
+    "Find your team. Share ideas. Build something great.",
+    "Team up, collaborate, and turn ideas into reality.",
+    "Connect. Collaborate. Create.",
+    "Great things happen when the right people build together.",
+    "From ideas to impact — together.",
+    "Join a team, spark ideas, and build what matters."
+  ];
+
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev + 1) % phrases.length);
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [phrases.length]);
+
+  return <span className="rotating-text">{phrases[index]}</span>;
+}
+
+function Feed() {
+  const { user } = useContext(AuthContext);
+  
+  const taskItems = [
+    {
+      id: 1,
+      title: 'Build a Task Manager API',
+      description: 'Creating a REST API for task management with authentication',
+      author: { name: 'Felix', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' },
+      timestamp: '2 hours ago',
+      lookingFor: 2,
+      tags: ['Backend', 'Node.js', 'API'],
+    },
+    {
+      id: 2,
+      title: 'Design System Components',
+      description: 'Need help creating reusable UI components for the frontend',
+      author: { name: 'Luna', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna' },
+      timestamp: '5 hours ago',
+      lookingFor: 1,
+      tags: ['Frontend', 'React', 'Design'],
+    },
+    {
+      id: 3,
+      title: 'Database Schema Refactoring',
+      description: 'Looking to optimize our database structure for better performance',
+      author: { name: 'Alex', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex' },
+      timestamp: '1 day ago',
+      lookingFor: 3,
+      tags: ['Database', 'PostgreSQL', 'Architecture'],
+    },
+  ];
+
+  return (
+    <FeedLayout>
+      <div className="feed-header">
+        {user && (
+          <Link to="/profile" className="welcome-user">
+            <img src={user.avatar} alt={user.username} className="welcome-avatar" />
+            <span className="welcome-text">Back to work {user.username}?</span>
+          </Link>
+        )}
+        {!user && (
+          <Link to="/login" className="welcome-user">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="welcome-avatar">
+              <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.895A15.309 15.309 0 0112 21c-2.17 0-4.207-.316-6.061-1.777a.75.75 0 01-.437-.895z" clipRule="evenodd" />
+            </svg>
+            <span className="welcome-text">Login</span>
+          </Link>
+        )}
+        <h1 className="feed-title">
+          <span className="title-transcendence">Transcendence</span>
+        </h1>
+        <p className="feed-subtitle">
+          <RotatingText />
+        </p>
+      </div>
+      <div className="feed-list">
+        {taskItems.map((task) => (
+          <div key={task.id} className="task-card">
+            <div className="task-header">
+              <img src={task.author.avatar} alt={task.author.name} className="task-avatar" />
+              <div className="task-user-info">
+                <span className="task-author">{task.author.name}</span>
+                <span className="task-timestamp">{task.timestamp}</span>
+              </div>
+            </div>
+            <h2 className="task-title">{task.title}</h2>
+            <p className="task-description">{task.description}</p>
+            <div className="task-tags">
+              {task.tags.map((tag) => (
+                <span key={tag} className="task-tag">{tag}</span>
+              ))}
+            </div>
+            <div className="task-footer">
+              <span className="task-looking">
+                Looking for <strong>{task.lookingFor}</strong> collaborator{task.lookingFor > 1 ? 's' : ''}
+              </span>
+              <button className="btn btn-primary btn-small">Join</button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </FeedLayout>
+  );
+}
+
+export default Feed;
