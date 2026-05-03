@@ -1,0 +1,56 @@
+# Docker Compose configuration for Frontend only
+# Run with: make all
+
+# TODO: Check what to do with volumes for the frontend and backend
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ttm-frontend
+    ports:
+      - "443:443"
+    env_file:
+      - frontend/.env
+    networks:
+      - transcendence
+    restart:
+      on-failure
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - backend/.env
+    networks:
+      - transcendence
+    restart:
+      on-failure
+
+  backend:
+    build:
+      context: ./postgresql
+      dockerfile: Dockerfile
+    env_file:
+      - postgresql/.env
+    volumes:
+      - postgresql:/var/lib/mysql
+    networks:
+      - transcendence
+    restart:
+      on-failure
+
+volumes:
+  postgresql:
+    name: postgresql
+    driver: local
+    driver_opts:
+      type: bind
+      o: bind
+      device: "${HOME}/data/database"
+
+networks:
+  transcendence:
+    name: transcendence
+    driver: bridge
