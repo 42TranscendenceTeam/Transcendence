@@ -4,7 +4,7 @@ import { register, login } from './auth.service.js';
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const result = await register(req.body);
-    res.json(result);
+    res.status(201).json(result);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
   }
