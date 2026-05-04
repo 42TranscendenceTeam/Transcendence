@@ -1,58 +1,68 @@
+import { prisma } from '../prisma.js';
 import { JWT_SECRET } from '../config.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-type User = {
-  id: string;
+type RegisterData = {
   email: string;
   username: string;
   password: string;
 };
 
-const users: User[] = [];
-
-export const register = async ({
-  email,
-  username,
-  password,
-}: {
+type LoginData = {
   email: string;
-  username: string;
   password: string;
-}) => {
+};
+
+export const register = async (data: RegisterData) => {
+  const { email, username, password } = data;
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user: User = {
-    id: Date.now().toString(),
-    email,
-    username,
-    password: hashedPassword,
-  };
+  const existingEmail = await prisma.user.findUnique({
+    where: { email },
+  });
 
-  users.push(user);
+  if (existingEmail) {
+    throw new Error('Email already exists');
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { username },
+  });
+
+  if (existingUser) {
+    throw new Error('Username already exists');
+  }
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      username,
+      password_hash: hashedPassword,
+    },
+  });
 
   const token = jwt.sign({ id: user.id }, JWT_SECRET);
 
   return {
-    user: { id: user.id, email, username },
+    user: { id: user.id, email: user.email, username: user.username },
     token,
   };
 };
 
-export const login = async ({
-  email,
-  password,
-}: {
-  email: string;
-  password: string;
-}) => {
-  const user = users.find((u) => u.email === email);
+export const login = async (data: LoginData) => {
+  const { email, password } = data;
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
 
   if (!user) {
     throw new Error('User not found');
   }
 
-  const isValid = await bcrypt.compare(password, user.password);
+  const isValid = await bcrypt.compare(password, user.password_hash);
 
   if (!isValid) {
     throw new Error('Invalid password');
