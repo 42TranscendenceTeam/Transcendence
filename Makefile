@@ -30,14 +30,14 @@ clean:
 	@docker compose -f ./srcs/docker-compose.yml down -v
 
 # Danger: Remove ALL Docker containers and images on system. Delete database
-fclean:
+fclean: clean
 	@echo "WARNING: This will remove ALL Docker containers and images. Even the ones not related to this project. It will also delete the database! Do you wish to continue? (yes/no)"
 	@read confirm && if [ "$$confirm" = "yes" ]; then \
-		@sudo rm -rf ${HOME}/data
-		@docker rm -f $$(docker ps -aq) && @docker rmi -f $$(docker images -aq); \
-		@docker system prune -a -f \
+		sudo rm -rf ${HOME}/data; \
+		docker rm -f $$(docker ps -aq) && docker rmi -f $$(docker images -aq); \
+		docker system prune -a --volumes; \
 	else \
-		@echo "Operation canceled."; \
+		echo "Operation canceled."; \
 	fi
 		
 # Rebuild only the frontend container
