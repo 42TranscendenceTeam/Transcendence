@@ -1,4 +1,4 @@
-FROM node:20-alpine as builder
+FROM node:25-alpine AS builder
 
 WORKDIR /app
 
@@ -8,8 +8,4 @@ RUN npm install
 
 COPY ./application .
 
-EXPOSE 5000
-
-EXPOSE 5432
-
-ENTRYPOINT [ "npm", "run", "build"]
+ENTRYPOINT [ "npm", "run", "dev"]
