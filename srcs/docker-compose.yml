@@ -2,14 +2,15 @@
 # Run with: make all
 
 # TODO: Check what to do with volumes for the frontend and backend
+# TODO: Confirm ports
 services:
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: ttm-frontend
     ports:
       - "443:443"
+      - "5000:5000"
     env_file:
       - frontend/.env
     networks:
@@ -23,19 +24,24 @@ services:
       dockerfile: Dockerfile
     env_file:
       - backend/.env
+    ports:
+      - "5432:5432"
+      - "5000:5000"
     networks:
       - transcendence
     restart:
       on-failure
 
-  backend:
+  postgresql:
     build:
       context: ./postgresql
       dockerfile: Dockerfile
     env_file:
       - postgresql/.env
+    ports:
+      - "5432:5432"
     volumes:
-      - postgresql:/var/lib/mysql
+      - postgresql:/var/lib/postgresql
     networks:
       - transcendence
     restart:
