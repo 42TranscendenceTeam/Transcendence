@@ -1,5 +1,22 @@
+/**
+ * Authentication Context Provider
+ * 
+ * Manages user authentication state and provides authentication functions
+ * throughout the application.
+ * 
+ * Features:
+ * - Mock mode: Uses localStorage for demo purposes
+ * - Real mode: Integrates with backend API
+ * 
+ * TODO: Remove mock data after full backend implementation
+ */
+
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData } from '../types';
+import { api } from '../services/api';
+
+// TODO: Mock data, delete after full backend implementations
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -99,24 +116,45 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('testUser');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
+    // TODO: Mock data, delete after full backend implementations
+    if (USE_MOCK) {
+      const savedUser = localStorage.getItem('testUser');
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+    } else {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        // TODO: Fetch user data from backend using token
+      }
     }
     setLoading(false);
   }, []);
 
-  const loginTestUser = () => {
-    const testUserData = { ...defaultTestUser };
-    localStorage.setItem('testUser', JSON.stringify(testUserData));
-    setUser(testUserData);
+  const loginTestUser = async () => {
+    // TODO: Mock data, delete after full backend implementations
+    if (USE_MOCK) {
+      const testUserData = { ...defaultTestUser };
+      localStorage.setItem('testUser', JSON.stringify(testUserData));
+      setUser(testUserData);
+    } else {
+      // TODO: Implement actual login via API
+      // const result = await api.login({ email, password });
+      // localStorage.setItem('authToken', result.token);
+    }
   };
 
   const logout = () => {
-    localStorage.removeItem('testUser');
+    // TODO: Mock data, delete after full backend implementations
+    if (USE_MOCK) {
+      localStorage.removeItem('testUser');
+    } else {
+      localStorage.removeItem('authToken');
+    }
     setUser(null);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const updateUser = (updates: Partial<User>) => {
     if (!user) return;
     const updatedUser = { ...user, ...updates };
@@ -124,6 +162,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const toggle2FA = () => {
     if (!user) return;
     const updatedUser = { ...user, twoFactorEnabled: !user.twoFactorEnabled };
@@ -131,6 +170,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const removeFriend = (friendId: number) => {
     if (!user) return;
     const updatedFriends = user.friends.filter((f) => f.id !== friendId);
@@ -139,6 +179,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const leaveTeam = (teamId: number) => {
     if (!user) return;
     const updatedTeams = user.teams.filter((t) => t.id !== teamId);
@@ -147,6 +188,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const addChatMessage = (teamId: number, message: Message) => {
     if (!user) return;
     const updatedTeams = user.teams.map((team) => {
@@ -163,6 +205,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const sendFriendMessage = (friendId: number, message: Message) => {
     if (!user) return;
     const updatedFriends = user.friends.map((friend) => {
@@ -179,6 +222,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const updateTaskStatus = (teamId: number, taskId: number, status: Task['status']) => {
     if (!user) return;
     const updatedTeams = user.teams.map((team) => {
@@ -200,6 +244,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const addTask = (teamId: number, newTask: Partial<Task>) => {
     if (!user) return;
     const updatedTeams = user.teams.map((team) => {
@@ -216,6 +261,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const uploadFile = (teamId: number, taskId: number, file: File) => {
     if (!user) return;
     const updatedTeams = user.teams.map((team) => {
@@ -240,6 +286,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const updateTaskAssignee = (teamId: number, taskId: number, member: Member) => {
     if (!user) return;
     const updatedTeams = user.teams.map((team) => {
@@ -261,6 +308,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const addTeamMember = (teamId: number, member: Member, role: string) => {
     if (!user) return;
     const updatedTeams = user.teams.map((team) => {
@@ -279,6 +327,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const addFriend = (friend: Friend) => {
     if (!user) return;
     const friendExists = user.friends.some((f) => f.id === friend.id);
@@ -291,6 +340,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const findUserByUsername = (username: string): User | undefined => {
     if (!user) return undefined;
     const allUsers = [
@@ -300,6 +350,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return allUsers.find((u) => u.username.toLowerCase() === username.toLowerCase());
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const removeTeamMember = (teamId: number, memberId: number) => {
     if (!user) return;
     const updatedTeams = user.teams.map((team) => {
@@ -322,6 +373,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const createTeam = (teamData: TeamData) => {
     if (!user) return;
     const newTeam: Team = {
@@ -345,6 +397,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(updatedUser);
   };
 
+  // TODO: Mock data, delete after full backend implementations
   const updateTeamStatus = (teamId: number, status: string) => {
     if (!user) return;
     const updatedTeams = user.teams.map((team) => {

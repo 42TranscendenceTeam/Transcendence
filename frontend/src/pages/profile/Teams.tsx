@@ -1,3 +1,12 @@
+/**
+ * Teams List Page Component
+ * 
+ * Displays all teams the user is member of.
+ * Mock data currently used.
+ * 
+ * TODO: Connect to real API when backend is ready
+ */
+
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';

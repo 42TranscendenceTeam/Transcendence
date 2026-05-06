@@ -1,3 +1,10 @@
+/**
+ * Feed Layout Component
+ * 
+ * Layout for the Feed page.
+ * Includes BottomNav
+ */
+
 import type { ReactNode } from 'react';
 import BottomNav from './BottomNav';
 

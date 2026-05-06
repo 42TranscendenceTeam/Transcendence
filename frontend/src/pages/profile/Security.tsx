@@ -1,3 +1,13 @@
+/**
+ * Security Settings Page Component
+ * 
+ * Security settings including:
+ * - Password change
+ * - Two-factor authentication toggle
+ * 
+ * TODO: Connect to real API when backend is ready
+ */
+
 import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 

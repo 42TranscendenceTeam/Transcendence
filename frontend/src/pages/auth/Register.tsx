@@ -1,16 +1,74 @@
+/**
+ * Registration Page Component
+ * 
+ * New user registration page with validation.
+ * 
+ * Validation:
+ * - Username required
+ * - Email format validation
+ * - Password required
+ * - Confirm password must match
+ * 
+ * Mock Mode: Shows "not implemented" alert
+ * Real Mode: Calls api.register() to create account
+ */
+
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import AuthLayout from '../../components/layouts/AuthLayout';
+import { api } from '../../services/api';
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function Register() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Registration is not yet implemented. Please use the 42 login option.');
+    setError('');
+
+    if (!USE_MOCK) {
+      if (!username.trim()) {
+        setError('Username is required');
+        return;
+      }
+      if (!email) {
+        setError('Email is required');
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setError('Please enter a valid email address');
+        return;
+      }
+      if (!password) {
+        setError('Password is required');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const result = await api.register({ email, username, password });
+        localStorage.setItem('authToken', result.token);
+        navigate('/login');
+      } catch (err: any) {
+        setError(err.message || 'Registration failed. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert('Registration is not yet implemented. Please use the 42 login option.');
+    }
   };
 
   return (
@@ -61,9 +119,14 @@ function Register() {
             placeholder="Confirm your password"
           />
         </div>
-        <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }}>
-          Register
-        </button>
+<button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading}>
+            {loading ? 'Signing up...' : 'Register'}
+          </button>
+          {error && (
+            <div style={{ color: '#ef4444', marginBottom: '1rem', textAlign: 'center', fontSize: '0.875rem' }}>
+              {error}
+            </div>
+          )}
         <div style={{ textAlign: 'center' }}>
           <span style={{ color: 'var(--text-secondary)' }}>Already have an account? </span>
           <Link to="/login" style={{ color: 'var(--accent)' }}>Sign in</Link>

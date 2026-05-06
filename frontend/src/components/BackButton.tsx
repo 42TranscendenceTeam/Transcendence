@@ -1,3 +1,10 @@
+/**
+ * Back Button Component
+ * 
+ * Navigation button to return to previous page.
+ * Used in auth layout pages.
+ */
+
 import { useNavigate } from 'react-router-dom';
 
 function BackButton() {

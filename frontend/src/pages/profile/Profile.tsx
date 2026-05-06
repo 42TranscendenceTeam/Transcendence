@@ -1,3 +1,10 @@
+/**
+ * Profile Page Component
+ * 
+ * Displays user profile information including
+ * avatar, username, email, and description.
+ */
+
 import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 

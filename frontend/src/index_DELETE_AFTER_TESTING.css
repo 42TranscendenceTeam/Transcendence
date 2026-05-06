@@ -1,7 +1,17 @@
+/*
+ * Load Tailwind
+ * base - reset (normalize styles)
+ * componentes - pre build classes
+ * utilities - for things like flex, text-center, etc
+*/
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Definition of costum CSS variables for colors
+ */
 :root {
   --bg-primary: #181f2c;
   --bg-card: #222d3d;
@@ -19,12 +29,18 @@
   --neon-pink: #ec4899;
 }
 
+/*
+ * Reset some default browser styles
+ */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/*
+ * Style for the main container
+ */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--bg-primary);
@@ -44,14 +60,23 @@ a {
   text-decoration: none;
 }
 
+/*
+ * Link hover effect
+ */
 a:hover {
   text-decoration: underline;
 }
 
+/*
+ * Ensure form elements inherit font
+ */
 input, button, textarea, select {
   font-family: inherit;
 }
 
+/*
+ * Base button style (shared by all buttons)
+ */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -65,35 +90,53 @@ input, button, textarea, select {
   outline: none;
 }
 
+/*
+ * Primary action button (highlighted)
+ */
 .btn-primary {
   background: linear-gradient(135deg, var(--accent) 0%, #2d8ab4 100%);
   color: white;
   box-shadow: 0 0 8px var(--neon-purple);
 }
 
+/*
+ * Primary button hover animation
+ */
 .btn-primary:hover {
   background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent) 100%);
   transform: translateY(-1px);
   box-shadow: 0 0 15px var(--neon-purple), 0 0 25px var(--neon-purple);
 }
 
+/*
+ * Secondary button (less emphasis)
+ */
 .btn-secondary {
   background: var(--bg-card);
   color: var(--text-primary);
   border: 1px solid var(--border);
 }
 
+/*
+ * Secondary button hover effect
+ */
 .btn-secondary:hover {
   background: var(--bg-card-hover);
   border-color: var(--border-light);
   box-shadow: 0 0 8px var(--neon-purple);
 }
 
+/*
+ * Smaller button variant
+ */
 .btn-small {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
 }
 
+/*
+ * Card container (used across UI blocks)
+ */
 .card {
   background: var(--bg-card);
   border-radius: 1rem;
@@ -101,6 +144,9 @@ input, button, textarea, select {
   padding: 1.5rem;
 }
 
+/*
+ * Input field base style
+ */
 .input {
   width: 100%;
   padding: 0.75rem 1rem;

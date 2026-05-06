@@ -1,0 +1,175 @@
+/*
+ * Modal overlay backdrop
+ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/*
+ * Modal container
+ */
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  width: 90%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/*
+ * Modal header
+ */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/*
+ * Modal header heading
+ */
+.modal-header h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/*
+ * Modal close button
+ */
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+/*
+ * Modal close button hover
+ */
+.modal-close:hover {
+  color: var(--text-primary);
+}
+
+/*
+ * Modal body
+ */
+.modal-body {
+  padding: 1rem;
+}
+
+/* ========================================
+   Confirm Modal
+   ======================================== */
+
+/*
+ * Confirm message
+ */
+.confirm-message {
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+/*
+ * Changes summary
+ */
+.changes-summary {
+  background: var(--bg-secondary);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/*
+ * Changes label
+ */
+.changes-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+/*
+ * Changes list
+ */
+.changes-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/*
+ * Changes list item
+ */
+.changes-list li {
+  padding: 0.25rem 0;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+/* ========================================
+   Success Modal
+   ======================================== */
+
+/*
+ * Success content container
+ */
+.success-content {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/*
+ * Success icon
+ */
+.success-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  background: #d4edda;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+ * Success icon SVG
+ */
+.success-icon svg {
+  width: 32px;
+  height: 32px;
+  color: var(--accent);
+}
+
+/*
+ * Success message
+ */
+.success-message {
+  color: var(--text-primary);
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+/*
+ * Success button
+ */
+.btn-success {
+  background: var(--accent);
+}

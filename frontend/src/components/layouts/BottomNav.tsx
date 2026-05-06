@@ -1,3 +1,10 @@
+/**
+ * Bottom Navigation Component
+ * 
+ * Mobile-friendly bottom navigation bar.
+ * Shows different links based on auth state.
+ */
+
 import { Link, useLocation } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
