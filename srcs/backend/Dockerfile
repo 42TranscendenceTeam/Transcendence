@@ -8,4 +8,8 @@ RUN npm install
 
 COPY ./application .
 
-ENTRYPOINT [ "npm", "run", "dev"]
+COPY ./setup/entrypoint.sh /entrypoint.sh
+
+RUN chmod 755 /entrypoint.sh
+
+ENTRYPOINT [ "/entrypoint.sh" ]
