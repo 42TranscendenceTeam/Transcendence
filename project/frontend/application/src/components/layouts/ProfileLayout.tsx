@@ -1,3 +1,10 @@
+/**
+ * Profile Layout Component
+ * 
+ * Layout for profile pages (Profile, Teams, Friends, etc.)
+ * Includes navigation and user info
+ */
+
 import { Link, useLocation } from 'react-router-dom';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';

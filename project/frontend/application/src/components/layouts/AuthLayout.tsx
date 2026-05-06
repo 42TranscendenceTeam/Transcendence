@@ -1,3 +1,10 @@
+/**
+ * Auth Layout Component
+ * 
+ * Layout for authentication pages (Login, Register, etc.)
+ * Includes BottomNav and BackButton
+ */
+
 import type { ReactNode } from 'react';
 import BottomNav from './BottomNav';
 import BackButton from '../BackButton';

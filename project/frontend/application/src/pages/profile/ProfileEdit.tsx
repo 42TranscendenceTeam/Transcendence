@@ -1,3 +1,15 @@
+/**
+ * Profile Edit Page Component
+ * 
+ * Allows user to edit their profile including:
+ * - Avatar selection
+ * - Username
+ * - Email
+ * - Description
+ * 
+ * TODO: Connect to real API when backend is ready
+ */
+
 import { useState, useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 

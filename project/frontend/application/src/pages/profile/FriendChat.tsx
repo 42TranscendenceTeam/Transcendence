@@ -1,3 +1,11 @@
+/**
+ * Friend Chat Page Component
+ * 
+ * Direct messaging with a friend.
+ * 
+ * TODO: Connect to real API when backend is ready
+ */
+
 import { useContext, useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';

@@ -1,3 +1,20 @@
+/**
+ * TypeScript Type Definitions
+ * 
+ * Contains all TypeScript interfaces and types used
+ * throughout the application for type safety.
+ * 
+ * Types:
+ * - User: User profile data
+ * - Team: Team entity with members and tasks
+ * - Task: Task item with status
+ * - Member: Team member with role
+ * - Message: Chat message
+ * - Friend: Friend relationship
+ * - AuthContextType: Authentication context type
+ * - TeamData: Team creation data
+ */
+
 export interface User {
   id: number;
   username: string;

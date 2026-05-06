@@ -1,3 +1,10 @@
+/**
+ * Terms of Service Page Component
+ * 
+ * Displays the application's terms of service.
+ * Static content page.
+ */
+
 import AuthLayout from '../../components/layouts/AuthLayout';
 
 function TermsOfService() {

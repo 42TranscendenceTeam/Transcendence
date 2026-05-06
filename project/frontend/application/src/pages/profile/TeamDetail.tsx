@@ -1,3 +1,15 @@
+/**
+ * Team Detail Page Component
+ * 
+ * Displays single team details including:
+ * - Team info and members
+ * - Tasks list
+ * - Team chat
+ * - Task creation/editing
+ * 
+ * TODO: Connect to real API when backend is ready
+ */
+
 import { useContext, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
@@ -141,13 +153,13 @@ function TeamDetail() {
   };
 
   const handleRemoveMember = (member: Member) => {
-    if (!canEdit) return;
+    if (!isLeader) return;
     setMemberToRemove(member);
     setShowRemoveMemberModal(true);
   };
 
   const handleConfirmRemove = () => {
-    if (!canEdit || !memberToRemove) return;
+    if (!isLeader || !memberToRemove) return;
     removeTeamMember(team.id, memberToRemove.id);
     setShowRemoveMemberModal(false);
     setMemberToRemove(null);
@@ -208,7 +220,7 @@ function TeamDetail() {
               <img src={member.avatar} alt={member.username} className="member-avatar" />
               <span className="member-name">{member.username}</span>
               <span className={`member-role ${member.role.toLowerCase()}`}>{member.role}</span>
-              {canEdit && member.id !== user.id && (
+              {isLeader && member.id !== user.id && (
                 <button className="btn-remove-member" onClick={() => handleRemoveMember(member)} title="Remove member">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clipRule="evenodd" />

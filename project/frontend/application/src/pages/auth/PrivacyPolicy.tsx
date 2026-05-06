@@ -1,3 +1,10 @@
+/**
+ * Privacy Policy Page Component
+ * 
+ * Displays the application's privacy policy.
+ * Static content page.
+ */
+
 import AuthLayout from '../../components/layouts/AuthLayout';
 
 function PrivacyPolicy() {

@@ -1,0 +1,330 @@
+/*
+ * Feed page layout
+ */
+.feed-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * Feed main content area
+ */
+.feed-main {
+  flex: 1;
+  padding: 1rem;
+  padding-bottom: 3.5rem;
+  padding-top: 4rem;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/*
+ * Feed header section
+ */
+.feed-header {
+  margin-bottom: 1.5rem;
+}
+
+/*
+ * Welcome user indicator
+ */
+.welcome-user {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  z-index: 101;
+  transition: box-shadow 0.3s ease;
+}
+
+/*
+ * Welcome user hover effect
+ */
+.welcome-user:hover {
+  box-shadow: 0 0 12px var(--neon-purple), 0 0 20px var(--neon-blue);
+}
+
+/*
+ * Welcome user avatar
+ */
+.welcome-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--text-secondary);
+}
+
+/*
+ * Welcome user text
+ */
+.welcome-text {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+/*
+ * Feed page title
+ */
+.feed-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  text-align: center;
+}
+
+/*
+ * Transcendence title gradient
+ */
+.title-transcendence {
+  font-size: 2.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent) 0%, #89d4e8 50%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  display: block;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/*
+ * Shimmer animation keyframes
+ */
+@keyframes shimmer {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.2);
+  }
+}
+
+/*
+ * Feed subtitle text
+ */
+.feed-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-align: center;
+  min-height: 1.5rem;
+}
+
+/*
+ * Rotating text animation
+ */
+.rotating-text {
+  display: inline-block;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/*
+ * Fade in animation keyframes
+ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*
+ * Feed task list container
+ */
+.feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/*
+ * Task card component
+ */
+.task-card {
+  background: var(--bg-card);
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  padding: 1rem;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/*
+ * Task card hover effect
+ */
+.task-card:hover {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+/*
+ * Task card header
+ */
+.task-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+/*
+ * Task card avatar
+ */
+.task-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+}
+
+/*
+ * Task user info container
+ */
+.task-user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * Task author name
+ */
+.task-author {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+/*
+ * Task timestamp
+ */
+.task-timestamp {
+  font-size: 0.625rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * Task title text
+ */
+.task-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: var(--text-primary);
+}
+
+/*
+ * Task description text
+ */
+.task-description {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.8rem;
+  line-height: 1.5;
+}
+
+/*
+ * Task tags container
+ */
+.task-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.8rem;
+}
+
+/*
+ * Task tag item
+ */
+.task-tag {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * Task card footer
+ */
+.task-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--border);
+}
+
+/*
+ * Task looking text
+ */
+.task-looking {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * Task looking strong text
+ */
+.task-looking strong {
+  color: var(--accent);
+}
+
+/*
+ * Bottom navigation bar
+ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.1rem 0;
+  z-index: 100;
+}
+
+/*
+ * Bottom navigation item
+ */
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.625rem;
+  padding: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+/*
+ * Bottom navigation item hover/active states
+ */
+.bottom-nav-item:hover,
+.bottom-nav-item.active {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/*
+ * Bottom navigation icon
+ */
+.bottom-nav-item .nav-icon {
+  width: 10px;
+  height: 10px;
+}

@@ -1,3 +1,10 @@
+/**
+ * Main Application Router
+ * 
+ * Defines all application routes using React Router.
+ * Sets up authentication context and routes.
+ */
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useContext, useEffect, ReactNode } from 'react';
 import { AuthProvider, AuthContext } from './context/AuthContext';
@@ -19,21 +26,18 @@ interface ProtectedRouteProps {
   children: ReactNode;
 }
 
+/*
+ * ProtectedRoute method will ensure only authenticated users can access certain routes.
+*/
 function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useContext(AuthContext);
-
-  useEffect(() => {
-    if (!loading && !user) {
-      window.location.href = '/login';
-    }
-  }, [user, loading]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
   if (!user) {
-    return null;
+    return <Navigate to="/login" />;
   }
 
   return children;
@@ -41,24 +45,14 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
+    <AuthProvider> {/* Provides authentication context to the entire app. */}
+      <Router> {/* Enables navigation, /login, /profile, etc. */}
+        <Routes> {/* Container for all routes. */}
           <Route path="/" element={<Feed />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
-          <Route
-            path="/teams/:id"
-            element={
-              <ProtectedRoute>
-                <ProfileLayout>
-                  <TeamDetail />
-                </ProfileLayout>
-              </ProtectedRoute>
-            }
-          />
           <Route
             path="/profile"
             element={

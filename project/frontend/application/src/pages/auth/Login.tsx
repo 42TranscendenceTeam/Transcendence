@@ -1,11 +1,29 @@
+/**
+ * Login Page Component
+ * 
+ * User authentication page with email/password login.
+ * Supports both mock mode and real backend API.
+ * 
+ * Mock Mode (VITE_USE_MOCK=true):
+ * - Uses mock 2FA flow for demo
+ * 
+ * Real Mode (VITE_USE_MOCK=false):
+ * - Calls api.login() from services/api.ts
+ * - Stores auth token on successful login
+ */
+
 import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import AuthLayout from '../../components/layouts/AuthLayout';
+import { api } from '../../services/api';
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function Login() {
   const { loginTestUser } = useContext(AuthContext);
-  const [username, setUsername] = useState('');
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [show2FA, setShow2FA] = useState(false);
   const [twoFactorCode, setTwoFactorCode] = useState('');
@@ -16,23 +34,35 @@ function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
-    try {
-      console.log('Login:', { username, password });
-      const data = { requires2FA: true, tempToken: 'mock-temp-token' };
-      
-      if (data.requires2FA) {
-        setTempToken(data.tempToken);
-        setShow2FA(true);
-      } else {
-        console.log('Login successful, user data:', data.user);
-        window.location.href = '/profile';
+    if (USE_MOCK) {
+      try {
+        console.log('Login:', { email, password });
+        const data = { requires2FA: true, tempToken: 'mock-temp-token' };
+        
+        if (data.requires2FA) {
+          setTempToken(data.tempToken);
+          setShow2FA(true);
+        } else {
+          console.log('Login successful, user data:', data.user);
+          window.location.href = '/profile';
+        }
+      } catch {
+        setError('Login failed. Please try again.');
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      setError('Login failed. Please try again.');
-    } finally {
-      setLoading(false);
+    } else {
+      setLoading(true);
+      try {
+        const result = await api.login({ email, password });
+        localStorage.setItem('authToken', result.token);
+        navigate('/profile');
+      } catch (err: any) {
+        setError(err.message || 'Login failed. Please check your credentials.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -64,14 +94,14 @@ function Login() {
       {!show2FA ? (
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1rem' }}>
-            <label className="label" htmlFor="username">Username</label>
+            <label className="label" htmlFor="email">Email</label>
             <input
-              type="text"
-              id="username"
+              type="email"
+              id="email"
               className="input"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
               required
             />
           </div>

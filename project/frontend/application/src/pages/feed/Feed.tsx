@@ -1,3 +1,11 @@
+/**
+ * Feed Page Component
+ * 
+ * Main feed displaying activity and tasks across teams.
+ * 
+ * TODO: Connect to real API when backend is ready
+ */
+
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
