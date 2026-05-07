@@ -31,14 +31,12 @@ services:
       on-failure
 
   postgresql:
-    build:
-      context: ./postgresql
-      dockerfile: Dockerfile
+    image: postgres:18-alpine
     container_name: postgresql
     env_file:
-      - postgresql/.env
+      - postgres/.env
     volumes:
-      - postgresql:/var/lib/postgresql
+      - postgresql:/var/lib/postgres
     networks:
       - transcendence
     restart:
