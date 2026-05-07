@@ -2,9 +2,11 @@
 set -e
 
 # Wait until Postgres responds
-until psql ping -h"$DB_HOST" -P"$DB_PORT" --silent; do
+while ! nc "$DB_HOST" "$DB_PORT"; do
   echo " Postgresql is unavailable - sleeping..."
   sleep 2
 done
+
+echo "Backend is running"
 
 exec npm run dev
