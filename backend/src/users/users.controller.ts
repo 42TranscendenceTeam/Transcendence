@@ -9,7 +9,8 @@ export const getMeController = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateMeController = async (req: AuthRequest, res: Response) => {
-  const data: UpdateUserDTO = req.body;
+  const { username, email, bio, avatar_url } = req.body;
+  const data: UpdateUserDTO = { username, email, bio, avatar_url };
 
   const updated = await updateMe(req.user!.id, data);
 

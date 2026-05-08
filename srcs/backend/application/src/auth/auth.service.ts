@@ -8,6 +8,10 @@ import type { RegisterDTO, LoginDTO } from './auth.types.js';
 export const register = async (data: RegisterDTO) => {
   const { email, username, password } = data;
 
+  if (!email || !username || !password) {
+    throw new AppError('Missing required fields', 400);
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const existingEmail = await prisma.user.findUnique({
@@ -44,6 +48,10 @@ export const register = async (data: RegisterDTO) => {
 
 export const login = async (data: LoginDTO) => {
   const { email, password } = data;
+
+  if (!email || !password) {
+    throw new AppError('Missing required fields', 400);
+  }
 
   const user = await prisma.user.findUnique({
     where: { email },
