@@ -3,15 +3,25 @@ import './config.js';
 import express from 'express';
 import type { Request, Response } from 'express';
 import authRoutes from './auth/auth.routes.js';
+import userRoutes from './users/users.routes.js';
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 app.use('/auth', authRoutes);
+app.use('/users', userRoutes);
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });
+});
+
+app.use((err: any, req: any, res: any, next: any) => {
+  const status = err.statusCode || 500;
+
+  res.status(status).json({
+    error: err.message || 'Internal server error',
+  });
 });
 
 app.listen(PORT, () => {

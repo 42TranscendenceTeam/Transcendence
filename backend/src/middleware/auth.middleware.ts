@@ -2,19 +2,11 @@ import { JWT_SECRET } from '../config.js';
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-type JwtUser = {
-  id: string;
-};
-
 export interface AuthRequest extends Request {
-  user?: JwtUser | string | jwt.JwtPayload;
+  user?: {id: number};
 }
 
-export function authMiddleware(
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) {
+export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const authHeader = req.headers.authorization;
 
@@ -28,8 +20,9 @@ export function authMiddleware(
       return res.status(401).json({ error: 'Invalid token format' });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload & { id: number; };
+
+    req.user = { id: decoded.id };
     next();
   } catch (err) {
     return res.status(401).json({ error: 'Invalid token' });
