@@ -1,61 +1,70 @@
+import { prisma } from '../prisma.js';
 import { JWT_SECRET } from '../config.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { AppError } from '../utils/AppError.js';
+import type { RegisterDTO, LoginDTO } from './auth.types.js';
 
-type User = {
-  id: string;
-  email: string;
-  username: string;
-  password: string;
-};
+export const register = async (data: RegisterDTO) => {
+  const { email, username, password } = data;
 
-const users: User[] = [];
+  if (!email || !username || !password) {
+    throw new AppError('Missing required fields', 400);
+  }
 
-export const register = async ({
-  email,
-  username,
-  password,
-}: {
-  email: string;
-  username: string;
-  password: string;
-}) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user: User = {
-    id: Date.now().toString(),
-    email,
-    username,
-    password: hashedPassword,
-  };
+  const existingEmail = await prisma.user.findUnique({
+    where: { email },
+  });
 
-  users.push(user);
+  if (existingEmail) {
+    throw new AppError('Email already exists', 400);
+  }
+
+  const existingUser = await prisma.user.findUnique({
+    where: { username },
+  });
+
+  if (existingUser) {
+    throw new AppError('Username already exists', 400);
+  }
+
+  const user = await prisma.user.create({
+    data: {
+      email,
+      username,
+      password_hash: hashedPassword,
+    },
+  });
 
   const token = jwt.sign({ id: user.id }, JWT_SECRET);
 
   return {
-    user: { id: user.id, email, username },
+    user: { id: user.id, email: user.email, username: user.username },
     token,
   };
 };
 
-export const login = async ({
-  email,
-  password,
-}: {
-  email: string;
-  password: string;
-}) => {
-  const user = users.find((u) => u.email === email);
+export const login = async (data: LoginDTO) => {
+  const { email, password } = data;
 
-  if (!user) {
-    throw new Error('User not found');
+  if (!email || !password) {
+    throw new AppError('Missing required fields', 400);
   }
 
-  const isValid = await bcrypt.compare(password, user.password);
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  const isValid = await bcrypt.compare(password, user.password_hash);
 
   if (!isValid) {
-    throw new Error('Invalid password');
+    throw new AppError('Invalid password', 401);
   }
 
   const token = jwt.sign({ id: user.id }, JWT_SECRET);
