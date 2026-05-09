@@ -5,7 +5,7 @@
  * Sets up authentication context and routes.
  */
 
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useContext, useEffect, ReactNode } from 'react';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import Feed from './pages/feed/Feed';
