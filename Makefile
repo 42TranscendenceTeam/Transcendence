@@ -1,6 +1,10 @@
 # Makefile for Transcendence
 # Run 'make' with any target to execute the corresponding action
 
+###############################################################################
+############################## MAIN COMMANDS ##################################
+###############################################################################
+
 # Build and start website
 all: build up
 
@@ -25,10 +29,11 @@ stop:
 start:
 	@docker compose -f ./project/docker-compose.yml start
 
+
 # Stop and remove containers, networks and volumes
 clean:
 	@docker compose -f ./project/docker-compose.yml down -v
-
+	
 # Danger: Remove ALL Docker containers and images on system. Delete database
 fclean: clean
 	@echo "WARNING: This will remove ALL Docker containers and images. Even the ones not related to this project. It will also delete the database! Do you wish to continue? (yes/no)"
@@ -58,4 +63,20 @@ dataRebuild:
 # Clean build - removes containers for fresh start
 re: clean build up
 
-.PHONY: all build up down stop start clean fclean frontRebuild backRebuild dataRebuild re
+###############################################################################
+################################# DEV UTILS ###################################
+###############################################################################
+
+# Init prisma studio server in backend container
+studio:
+	@docker exec -it backend npx prisma studio --port 5555 --browser none
+
+# Migrate prisma schema to DB
+migrate:
+	@docker exec -it backend npx prisma migrate dev
+	
+# Seed DB
+seed:
+	@docker exec -it backend npm run seed
+
+.PHONY: all build up down stop start clean fclean frontRebuild backRebuild dataRebuild re studio migrate seed
