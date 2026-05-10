@@ -2,11 +2,11 @@ FROM node:25-alpine AS builder
 
 WORKDIR /app
 
-COPY ./application/package*.json .
+COPY ./application .
 
 RUN npm install
 
-COPY ./application .
+COPY ./.env .
 
 COPY ./setup/entrypoint.sh /entrypoint.sh
 

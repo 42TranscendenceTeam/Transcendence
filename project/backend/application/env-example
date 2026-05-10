@@ -1,2 +1,0 @@
-JWT_SECRET=randomstring
-DATABASE_URL=test

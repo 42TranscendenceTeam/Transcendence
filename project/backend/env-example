@@ -1,2 +1,4 @@
+DATABASE_URL="postgresql://db_user:passcode@postgresql:5432/user_database"
+JWT_SECRET=anything
 DB_HOST=postgresql
 DB_PORT=5432
