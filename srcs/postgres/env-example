@@ -1,3 +1,0 @@
-POSTGRES_PASSWORD=passcode
-POSTGRES_USER=db_user
-POSTGRES_DB=user_database

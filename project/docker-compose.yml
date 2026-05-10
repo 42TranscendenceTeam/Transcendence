@@ -23,6 +23,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
+    ports:
+      - "5555:5555"
     env_file:
       - backend/.env
     networks:
@@ -31,25 +33,16 @@ services:
       on-failure
 
   postgresql:
-    image: postgres:18-alpine
+    image: postgres:16-alpine
     container_name: postgresql
     env_file:
       - postgres/.env
     volumes:
-      - postgresql:/var/lib/postgres
+      - ${HOME}/data/database:/var/lib/postgresql/data
     networks:
       - transcendence
     restart:
       on-failure
-
-volumes:
-  postgresql:
-    name: postgresql
-    driver: local
-    driver_opts:
-      type: bind
-      o: bind
-      device: "${HOME}/data/database"
 
 networks:
   transcendence:
