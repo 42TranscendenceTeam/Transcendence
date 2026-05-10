@@ -7,27 +7,27 @@ all: build up
 # Create database storage and build containers
 build:
 	@mkdir -p ${HOME}/data/database
-	@docker compose -f ./srcs/docker-compose.yml build
+	@docker compose -f ./project/docker-compose.yml build
 
 # Create and start containers
 up:
-	@docker compose -f ./srcs/docker-compose.yml up -d --build
+	@docker compose -f ./project/docker-compose.yml up -d --build
 
 # Stop and remove containers and networks
 down:
-	@docker compose -f ./srcs/docker-compose.yml down
+	@docker compose -f ./project/docker-compose.yml down
 
 # Stop containers
 stop:
-	@docker compose -f ./srcs/docker-compose.yml stop
+	@docker compose -f ./project/docker-compose.yml stop
 
 # Start containers
 start:
-	@docker compose -f ./srcs/docker-compose.yml start
+	@docker compose -f ./project/docker-compose.yml start
 
 # Stop and remove containers, networks and volumes
 clean:
-	@docker compose -f ./srcs/docker-compose.yml down -v
+	@docker compose -f ./project/docker-compose.yml down -v
 
 # Danger: Remove ALL Docker containers and images on system. Delete database
 fclean: clean
@@ -42,18 +42,18 @@ fclean: clean
 		
 # Rebuild only the frontend container
 frontRebuild:
-	@docker compose -f ./srcs/docker-compose.yml build --no-cache frontend
-	@docker compose -f ./srcs/docker-compose.yml up 
+	@docker compose -f ./project/docker-compose.yml build --no-cache frontend
+	@docker compose -f ./project/docker-compose.yml up 
 	
 # Rebuild only the backend container
 backRebuild:
-	@docker compose -f ./srcs/docker-compose.yml build --no-cache backend
-	@docker compose -f ./srcs/docker-compose.yml up 
+	@docker compose -f ./project/docker-compose.yml build --no-cache backend
+	@docker compose -f ./project/docker-compose.yml up 
 	
 # Rebuild only the database container
 dataRebuild:
-	@docker compose -f ./srcs/docker-compose.yml build --no-cache postgresql
-	@docker compose -f ./srcs/docker-compose.yml up 
+	@docker compose -f ./project/docker-compose.yml build --no-cache postgresql
+	@docker compose -f ./project/docker-compose.yml up 
 		
 # Clean build - removes containers for fresh start
 re: clean build up
