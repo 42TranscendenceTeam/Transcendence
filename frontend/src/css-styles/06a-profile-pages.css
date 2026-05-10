@@ -158,7 +158,7 @@
 }
 
 /*
- * Form group
+ * Form group container
  */
 .form-group {
   display: flex;
@@ -167,7 +167,7 @@
 }
 
 /*
- * Form label
+ * Form label styling
  */
 .form-label {
   font-size: 0.875rem;
@@ -176,7 +176,7 @@
 }
 
 /*
- * Form input
+ * Form input field
  */
 .form-input {
   padding: 0.75rem;
@@ -205,7 +205,7 @@
 }
 
 /*
- * Avatar section
+ * Avatar section container
  */
 .avatar-section {
   display: flex;
@@ -219,7 +219,7 @@
 }
 
 /*
- * Current avatar
+ * Current avatar styling
  */
 .current-avatar {
   width: 96px;
@@ -229,7 +229,7 @@
 }
 
 /*
- * Avatar label
+ * Avatar label text
  */
 .avatar-label {
   font-size: 0.875rem;
@@ -265,24 +265,107 @@
 }
 
 /*
- * Language select dropdown
+ * Custom language dropdown
  */
-.language-select {
-  padding: 0.75rem;
+.language-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.language-dropdown-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
-  background: var(--bg-input);
   color: var(--text-primary);
-  font-size: 0.875rem;
+  font-size: 1rem;
   cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.language-dropdown-trigger:hover {
+  border-color: var(--border-light);
+}
+
+.language-dropdown-trigger:focus {
+  outline: none;
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-purple);
 }
 
 /*
- * Focus state for language select dropdown
+ * Language flag icon
  */
-.language-select:focus {
-  outline: none;
-  border-color: var(--accent);
+.language-flag {
+  font-size: 1.25rem;
+}
+
+/*
+ * Language name text
+ */
+.language-name {
+  flex: 1;
+  text-align: left;
+}
+
+/*
+ * Dropdown arrow icon
+ */
+.language-arrow {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.language-arrow.open {
+  transform: rotate(180deg);
+}
+
+/*
+ * Language dropdown menu
+ */
+.language-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+
+  display: flex !important;
+  flex-direction: column !important;
+
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  z-index: 100;
+}
+
+/*
+ * Language dropdown item
+ */
+.language-dropdown-item {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.75rem;
+
+  width: 100%;
+}
+
+.language-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.language-dropdown-item:hover {
+  background: var(--bg-card-hover);
+}
+
+.language-dropdown-item.selected {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--accent);
 }
 
 /*
@@ -304,7 +387,7 @@
 }
 
 /*
- * Security section
+ * Security section container
  */
 .security-section {
   background: var(--bg-card);
@@ -324,7 +407,7 @@
 }
 
 /*
- * Security option
+ * Security option container
  */
 .security-option {
   display: flex;
