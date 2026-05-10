@@ -11,6 +11,4 @@ echo "Backend is running"
 
 npx prisma migrate dev
 
-npm run seed
-
 exec npm run dev
