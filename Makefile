@@ -1,6 +1,10 @@
 # Makefile for Transcendence
 # Run 'make' with any target to execute the corresponding action
 
+###############################################################################
+############################## MAIN COMMANDS ##################################
+###############################################################################
+
 # Build and start website
 all: build up
 
@@ -25,10 +29,11 @@ stop:
 start:
 	@docker compose -f ./project/docker-compose.yml start
 
+
 # Stop and remove containers, networks and volumes
 clean:
 	@docker compose -f ./project/docker-compose.yml down -v
-
+	
 # Danger: Remove ALL Docker containers and images on system. Delete database
 fclean: clean
 	@echo "WARNING: This will remove ALL Docker containers and images. Even the ones not related to this project. It will also delete the database! Do you wish to continue? (yes/no)"
