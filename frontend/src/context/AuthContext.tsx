@@ -105,6 +105,7 @@ const defaultTestUser: User = {
       chat: [],
     },
   ],
+  globalChat: [],
 };
 
 interface AuthProviderProps {
@@ -120,7 +121,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (USE_MOCK) {
       const savedUser = localStorage.getItem('testUser');
       if (savedUser) {
-        setUser(JSON.parse(savedUser));
+        const parsedUser = JSON.parse(savedUser);
+        if (!parsedUser.globalChat) {
+          parsedUser.globalChat = [];
+        }
+        setUser(parsedUser);
       }
     } else {
       const token = localStorage.getItem('authToken');
@@ -218,6 +223,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       return friend;
     });
     const updatedUser = { ...user, friends: updatedFriends };
+    localStorage.setItem('testUser', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
+  const sendGlobalMessage = (message: Message) => {
+    if (!user) return;
+    const updatedUser = {
+      ...user,
+      globalChat: [...(user.globalChat || []), message],
+    };
     localStorage.setItem('testUser', JSON.stringify(updatedUser));
     setUser(updatedUser);
   };
@@ -423,6 +438,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       leaveTeam,
       addChatMessage,
       sendFriendMessage,
+      sendGlobalMessage,
       updateTaskStatus,
       addTask,
       uploadFile,

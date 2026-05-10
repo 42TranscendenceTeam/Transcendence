@@ -24,6 +24,7 @@ export interface User {
   twoFactorEnabled: boolean;
   friends: Friend[];
   teams: Team[];
+  globalChat: Message[];
 }
 
 export interface Friend {
@@ -31,6 +32,7 @@ export interface Friend {
   username: string;
   avatar: string;
   chat: Message[];
+  isOnline?: boolean;
 }
 
 export interface Team {
@@ -91,6 +93,7 @@ export interface AuthContextType {
   leaveTeam: (teamId: number) => void;
   addChatMessage: (teamId: number, message: Message) => void;
   sendFriendMessage: (friendId: number, message: Message) => void;
+  sendGlobalMessage: (message: Message) => void;
   updateTaskStatus: (teamId: number, taskId: number, status: Task['status']) => void;
   addTask: (teamId: number, newTask: Partial<Task>) => void;
   uploadFile: (teamId: number, taskId: number, file: File) => void;

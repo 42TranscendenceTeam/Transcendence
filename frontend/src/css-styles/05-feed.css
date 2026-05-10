@@ -328,3 +328,25 @@
   width: 10px;
   height: 10px;
 }
+
+/*
+ * Feed sidebar (Global Chat)
+ */
+.feed-sidebar {
+  display: none;
+}
+
+/*
+ * Responsive styles for Feed sidebar
+ */
+@media (min-width: 768px) {
+  .feed-sidebar {
+    display: block;
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    width: 350px;
+    height: calc(100vh - 2rem);
+    z-index: 150;
+  }
+}
