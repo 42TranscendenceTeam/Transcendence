@@ -7,27 +7,27 @@ all: build up
 # Create database storage and build containers
 build:
 	@mkdir -p ${HOME}/data/database
-	@docker compose -f ./srcs/docker-compose.yml build
+	@docker compose -f ./project/docker-compose.yml build
 
 # Create and start containers
 up:
-	@docker compose -f ./srcs/docker-compose.yml up -d --build
+	@docker compose -f ./project/docker-compose.yml up -d --build
 
 # Stop and remove containers and networks
 down:
-	@docker compose -f ./srcs/docker-compose.yml down
+	@docker compose -f ./project/docker-compose.yml down
 
 # Stop containers
 stop:
-	@docker compose -f ./srcs/docker-compose.yml stop
+	@docker compose -f ./project/docker-compose.yml stop
 
 # Start containers
 start:
-	@docker compose -f ./srcs/docker-compose.yml start
+	@docker compose -f ./project/docker-compose.yml start
 
 # Stop and remove containers, networks and volumes
 clean:
-	@docker compose -f ./srcs/docker-compose.yml down -v
+	@docker compose -f ./project/docker-compose.yml down -v
 
 # Danger: Remove ALL Docker containers and images on system. Delete database
 fclean: clean
