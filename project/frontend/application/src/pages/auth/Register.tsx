@@ -15,12 +15,14 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import { api } from '../../services/api';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function Register() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -60,7 +62,7 @@ function Register() {
       try {
         const result = await api.register({ email, username, password });
         localStorage.setItem('authToken', result.token);
-        navigate('/login');
+        navigate('/feed');
       } catch (err: any) {
         setError(err.message || 'Registration failed. Please try again.');
       } finally {
@@ -76,61 +78,61 @@ function Register() {
       <h1 className="auth-title">Transcendence</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '1rem' }}>
-          <label className="label" htmlFor="username">Username</label>
+          <label className="label" htmlFor="username">{t('auth.register.username')}</label>
           <input
             type="text"
             id="username"
             className="input"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Choose a username"
+            placeholder={t('auth.register.usernamePlaceholder')}
           />
         </div>
         <div style={{ marginBottom: '1rem' }}>
-          <label className="label" htmlFor="email">Email (optional)</label>
+          <label className="label" htmlFor="email">{t('auth.register.email')} ({t('common.optional')})</label>
           <input
             type="email"
             id="email"
             className="input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
+            placeholder={t('auth.register.emailPlaceholder')}
           />
         </div>
         <div style={{ marginBottom: '1rem' }}>
-          <label className="label" htmlFor="password">Password</label>
+          <label className="label" htmlFor="password">{t('auth.register.password')}</label>
           <input
             type="password"
             id="password"
             className="input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Create a password"
+            placeholder={t('auth.register.passwordPlaceholder')}
           />
         </div>
         <div style={{ marginBottom: '1.5rem' }}>
-          <label className="label" htmlFor="confirmPassword">Confirm Password</label>
+          <label className="label" htmlFor="confirmPassword">{t('auth.register.confirmPassword')}</label>
           <input
             type="password"
             id="confirmPassword"
             className="input"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm your password"
+            placeholder={t('auth.register.confirmPasswordPlaceholder')}
           />
         </div>
 <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading}>
-            {loading ? 'Signing up...' : 'Register'}
+            {loading ? t('common.loading') : t('auth.register.submit')}
           </button>
           {error && (
             <div style={{ color: '#ef4444', marginBottom: '1rem', textAlign: 'center', fontSize: '0.875rem' }}>
               {error}
             </div>
           )}
-        <div style={{ textAlign: 'center' }}>
-          <span style={{ color: 'var(--text-secondary)' }}>Already have an account? </span>
-          <Link to="/login" style={{ color: 'var(--accent)' }}>Sign in</Link>
-        </div>
+          <div style={{ textAlign: 'center' }}>
+            <span style={{ color: 'var(--text-secondary)' }}>{t('auth.register.hasAccount')} </span>
+            <Link to="/login" style={{ color: 'var(--accent)' }}>{t('auth.register.login')}</Link>
+          </div>
       </form>
     </AuthLayout>
   );

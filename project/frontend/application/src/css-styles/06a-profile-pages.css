@@ -1,0 +1,439 @@
+/*
+ * Friends page header
+ */
+.friends-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+/*
+ * Friends header title override
+ */
+.friends-header .profile-page-title {
+  margin-bottom: 0;
+}
+
+/*
+ * Friends list container
+ */
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/*
+ * Friend card component
+ */
+.friend-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.friend-card:hover {
+  border-color: var(--accent);
+}
+
+/*
+ * Friend avatar
+ */
+.friend-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/*
+ * Friend info container
+ */
+.friend-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/*
+ * Friend username
+ */
+.friend-username {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.125rem;
+}
+
+/*
+ * Friend online status
+ */
+.friend-status {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * Status indicator base styles
+ */
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+/*
+ * Status indicator for online users
+ */
+.status-indicator.online {
+  background: #22c55e;
+}
+
+/*
+ * Status indicator for offline users
+ */
+.status-indicator.offline {
+  background: #ef4444;
+}
+
+/*
+ * Friend actions container
+ */
+.friend-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/*
+ * Friend action button
+ */
+.friend-action-btn {
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.friend-action-btn.primary {
+  background: var(--accent);
+  color: var(--bg-primary);
+}
+
+.friend-action-btn.secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.friend-action-btn.danger {
+  background: transparent;
+  color: #ef4444;
+  border: 1px solid #ef4444;
+}
+
+/*
+ * Hover effect for friend action buttons
+ */
+.friend-action-btn:hover {
+  opacity: 0.8;
+}
+
+/*
+ * Profile edit form container
+ */
+.profile-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/*
+ * Form group
+ */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/*
+ * Form label
+ */
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/*
+ * Form input
+ */
+.form-input {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+/*
+ * Focus state for form input fields
+ */
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/*
+ * Form textarea for multi-line input
+ */
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/*
+ * Avatar section
+ */
+.avatar-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+/*
+ * Current avatar
+ */
+.current-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+}
+
+/*
+ * Avatar label
+ */
+.avatar-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * Avatar select button
+ */
+.avatar-select-btn {
+  padding: 0.5rem 1rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.avatar-select-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/*
+ * Language selector container
+ */
+.language-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/*
+ * Language select dropdown
+ */
+.language-select {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+/*
+ * Focus state for language select dropdown
+ */
+.language-select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/*
+ * Save button container
+ */
+.save-button-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/*
+ * Security page container
+ */
+.security-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/*
+ * Security section
+ */
+.security-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+/*
+ * Security section title
+ */
+.security-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+/*
+ * Security option
+ */
+.security-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+/*
+ * Last child border removal for security options
+ */
+.security-option:last-child {
+  border-bottom: none;
+}
+
+/*
+ * Security option label
+ */
+.security-option-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.security-option-label span:first-child {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.security-option-label span:last-child {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * Toggle switch for enabling/disabling options
+ */
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 24px;
+  background: var(--bg-input);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+/*
+ * Active state for toggle switch
+ */
+.toggle-switch.active {
+  background: var(--accent);
+}
+
+/*
+ * Toggle switch handle
+ */
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+
+/*
+ * Active state for toggle switch handle
+ */
+.toggle-switch.active::after {
+  transform: translateX(24px);
+}
+
+/*
+ * Danger zone section for security settings
+ */
+.security-danger-zone {
+  border-color: #ef4444;
+}
+
+/*
+ * Danger zone title styling
+ */
+.security-danger-zone .security-section-title {
+  color: #ef4444;
+}
+
+/*
+ * Delete account button
+ */
+.delete-account-btn {
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: 1px solid #ef4444;
+  border-radius: 0.5rem;
+  color: #ef4444;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/*
+ * Hover effect for delete account button
+ */
+.delete-account-btn:hover {
+  background: #ef4444;
+  color: white;
+}

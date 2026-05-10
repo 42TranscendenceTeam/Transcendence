@@ -9,10 +9,12 @@
 
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import type { Friend } from '../../types';
 
 function Friends() {
+  const { t } = useTranslation();
   const { user, removeFriend, addFriend, findUserByUsername } = useContext(AuthContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [friendToRemove, setFriendToRemove] = useState<Friend | null>(null);
@@ -69,12 +71,12 @@ function Friends() {
   return (
     <div className="friends-page">
       <div className="friends-header">
-        <h1 className="profile-page-title">Friends</h1>
+        <h1 className="profile-page-title">{t('friends.title')}</h1>
         <button className="btn btn-primary btn-small" onClick={() => setShowAddFriendModal(true)}>
-          + Add Friend
+          + {t('friends.addFriend')}
         </button>
       </div>
-      <p className="profile-page-subtitle">You have {user.friends.length} friends</p>
+      <p className="profile-page-subtitle">{t('friends.youHave') || 'You have'} {user.friends.length} {t('friends.title').toLowerCase()}</p>
 
       <div className="friends-list">
         {user.friends.map((friend) => (
@@ -82,18 +84,21 @@ function Friends() {
             <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
             <div className="friend-info">
               <span className="friend-name">{friend.username}</span>
+              <span className={`friend-status ${friend.isOnline ? 'online' : 'offline'}`}>
+                {friend.isOnline ? t('common.online') : t('common.offline')}
+              </span>
             </div>
             <Link
               to={`/profile/friends/${friend.id}`}
               className="btn btn-secondary btn-small"
             >
-              Chat
+              {t('friends.chat')}
             </Link>
             <button
               className="btn btn-secondary btn-small"
               onClick={() => handleRemoveClick(friend)}
             >
-              Remove
+              {t('friends.remove')}
             </button>
           </div>
         ))}
@@ -101,8 +106,8 @@ function Friends() {
 
       {user.friends.length === 0 && (
         <div className="empty-state">
-          <p>You have no friends yet.</p>
-          <p className="empty-hint">Find collaborators on the home page!</p>
+          <p>{t('friends.noFriends')}</p>
+          <p className="empty-hint">{t('teams.findCollaborators')}</p>
         </div>
       )}
 
@@ -110,16 +115,16 @@ function Friends() {
         <div className="modal-overlay" onClick={() => setShowRemoveModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Remove Friend</h2>
+              <h2>{t('friends.removeFriend') || 'Remove Friend'}</h2>
               <button className="modal-close" onClick={() => setShowRemoveModal(false)}>&times;</button>
             </div>
             <div className="modal-body">
               <p className="remove-member-message">
-                Are you sure you want to remove <strong>{friendToRemove?.username}</strong> from your friends?
+                {t('friends.confirmRemove') || 'Are you sure you want to remove'} <strong>{friendToRemove?.username}</strong> {t('friends.fromFriends') || 'from your friends'}?
               </p>
               <div className="remove-member-actions">
-                <button className="btn btn-secondary" onClick={() => setShowRemoveModal(false)}>Cancel</button>
-                <button className="btn btn-danger" onClick={handleConfirmRemove}>Remove</button>
+                <button className="btn btn-secondary" onClick={() => setShowRemoveModal(false)}>{t('common.cancel')}</button>
+                <button className="btn btn-danger" onClick={handleConfirmRemove}>{t('friends.remove')}</button>
               </div>
             </div>
           </div>
@@ -130,45 +135,45 @@ function Friends() {
         <div className="modal-overlay" onClick={() => setShowAddFriendModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Add Friend</h2>
+              <h2>{t('friends.addFriend')}</h2>
               <button className="modal-close" onClick={() => setShowAddFriendModal(false)}>&times;</button>
             </div>
             <div className="modal-body">
               <div className="add-member-method">
-                <label className="input-label">Select from Users</label>
+                <label className="input-label">{t('friends.selectFromUsers') || 'Select from Users'}</label>
                 <div className="add-member-row">
                   <select
                     className="input"
                     value={selectedUser}
                     onChange={(e) => setSelectedUser(e.target.value)}
                   >
-                    <option value="">Select a user...</option>
+                    <option value="">{t('teams.selectFriend')}</option>
                     {availableUsers.map((u) => (
                       <option key={u.id} value={u.username}>{u.username}</option>
                     ))}
                   </select>
-                  <button className="btn btn-primary" onClick={handleAddFromDropdown}>Add</button>
+                  <button className="btn btn-primary" onClick={handleAddFromDropdown}>{t('common.add')}</button>
                 </div>
               </div>
 
-              <div className="add-member-divider">OR</div>
+              <div className="add-member-divider">{t('teams.or')}</div>
 
               <div className="add-member-method">
-                <label className="input-label">Add by Username</label>
+                <label className="input-label">{t('teams.addByUsername')}</label>
                 <div className="add-member-row">
                   <input
                     type="text"
-                    placeholder="Enter username"
+                    placeholder={t('teams.enterUsername')}
                     className="input"
                     value={manualUsername}
                     onChange={(e) => setManualUsername(e.target.value)}
                   />
-                  <button className="btn btn-primary" onClick={handleAddManual}>Add</button>
+                  <button className="btn btn-primary" onClick={handleAddManual}>{t('common.add')}</button>
                 </div>
               </div>
 
               {availableUsers.length === 0 && user.friends.length > 0 && (
-                <p className="empty-hint text-center">No users available to add</p>
+                <p className="empty-hint text-center">{t('friends.noUsersToAdd') || 'No users available to add'}</p>
               )}
             </div>
           </div>

@@ -12,10 +12,12 @@
 
 import { useContext, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import type { Task, Member } from '../../types';
 
 function TeamDetail() {
+  const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus } = useContext(AuthContext);
@@ -51,8 +53,8 @@ function TeamDetail() {
   if (!team || !user) {
     return (
       <div className="team-detail-page">
-        <h1>Team not found</h1>
-        <p>This team does not exist or you are not a member.</p>
+        <h1>{t('teams.notFound') || 'Team not found'}</h1>
+        <p>{t('teams.notFoundDesc') || 'This team does not exist or you are not a member.'}</p>
       </div>
     );
   }
@@ -196,8 +198,8 @@ function TeamDetail() {
             onChange={(e) => handleStatusChangeClick(e.target.value)}
             disabled={!canChangeStatus}
           >
-            <option value="active">Active</option>
-            <option value="finished">Finished</option>
+            <option value="active">{t('teams.active') || 'Active'}</option>
+            <option value="finished">{t('teams.finished') || 'Finished'}</option>
           </select>
           <span className="team-members-count">
             {team.members.length}/{team.lookingFor || '∞'}
@@ -207,10 +209,10 @@ function TeamDetail() {
 
       <div className="team-section">
         <div className="section-header">
-          <h2 className="team-section-title">Members ({team.members.length})</h2>
+          <h2 className="team-section-title">{t('teams.members')} ({team.members.length})</h2>
           {canEdit && (
             <button className="btn btn-primary btn-small" onClick={() => setShowAddMemberModal(true)}>
-              + Add Member
+              + {t('teams.addMember') || 'Add Member'}
             </button>
           )}
         </div>
@@ -235,15 +237,15 @@ function TeamDetail() {
       <div className="team-section">
         <div className="section-header">
           <div className="task-counts">
-            <span className="task-counts-label">Tasks:</span>
-            <span className="task-count total">Total: {taskCounts.total}</span>
-            <span className="task-count to_do">To Do: {taskCounts.to_do}</span>
-            <span className="task-count in_progress">In Progress: {taskCounts.in_progress}</span>
-            <span className="task-count done">Done: {taskCounts.done}</span>
+            <span className="task-counts-label">{t('tasks.title')}:</span>
+            <span className="task-count total">{t('tasks.total')}: {taskCounts.total}</span>
+            <span className="task-count to_do">{t('tasks.open')}: {taskCounts.to_do}</span>
+            <span className="task-count in_progress">{t('tasks.inProgress')}: {taskCounts.in_progress}</span>
+            <span className="task-count done">{t('tasks.done')}: {taskCounts.done}</span>
           </div>
           {canEdit && (
             <button className="btn btn-primary btn-small" onClick={() => setShowTaskForm(!showTaskForm)}>
-              {showTaskForm ? 'Cancel' : '+ New Task'}
+              {showTaskForm ? t('common.cancel') : '+ ' + t('tasks.createTask')}
             </button>
           )}
         </div>
@@ -252,14 +254,14 @@ function TeamDetail() {
           <form onSubmit={handleAddTask} className="task-form">
             <input
               type="text"
-              placeholder="Task title"
+              placeholder={t('teams.taskTitle')}
               className="input"
               value={newTask.title}
               onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
               required
             />
             <textarea
-              placeholder="Description"
+              placeholder={t('tasks.description')}
               className="input textarea"
               value={newTask.description}
               onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
@@ -271,7 +273,7 @@ function TeamDetail() {
                 value={newTask.assignedTo}
                 onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
               >
-                <option value="">Assign to...</option>
+                <option value="">{t('teams.assignTo')}</option>
                 {team.members.map((member) => (
                   <option key={member.id} value={member.username}>{member.username}</option>
                 ))}
@@ -281,11 +283,11 @@ function TeamDetail() {
                 value={newTask.status}
                 onChange={(e) => setNewTask({ ...newTask, status: e.target.value as Task['status'] })}
               >
-                <option value="to_do">To Do</option>
-                <option value="in_progress">In Progress</option>
-                <option value="done">Done</option>
+                <option value="to_do">{t('tasks.open')}</option>
+                <option value="in_progress">{t('tasks.inProgress')}</option>
+                <option value="done">{t('tasks.done')}</option>
               </select>
-              <button type="submit" className="btn btn-primary">Add</button>
+              <button type="submit" className="btn btn-primary">{t('common.add') || 'Add'}</button>
             </div>
           </form>
         )}
@@ -296,17 +298,17 @@ function TeamDetail() {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
-            <option value="all">All Status</option>
-            <option value="to_do">To Do</option>
-            <option value="in_progress">In Progress</option>
-            <option value="done">Done</option>
+            <option value="all">{t('teams.allStatus')}</option>
+            <option value="to_do">{t('tasks.open')}</option>
+            <option value="in_progress">{t('tasks.inProgress')}</option>
+            <option value="done">{t('tasks.done')}</option>
           </select>
           <select
             className="input filter-select"
             value={assigneeFilter}
             onChange={(e) => setAssigneeFilter(e.target.value)}
           >
-            <option value="all">All Assignees</option>
+            <option value="all">{t('teams.allAssignees')}</option>
             {team.members.map((member) => (
               <option key={member.id} value={member.username}>{member.username}</option>
             ))}
@@ -315,11 +317,11 @@ function TeamDetail() {
 
         <div className="tasks-table">
           <div className="tasks-header">
-            <span>Title</span>
-            <span>Description</span>
-            <span>Status</span>
-            <span>Assigned To</span>
-            <span>Files</span>
+            <span>{t('teams.title_col')}</span>
+            <span>{t('teams.description')}</span>
+            <span>{t('teams.status_col')}</span>
+            <span>{t('teams.assignedTo_col')}</span>
+            <span>{t('teams.files_col')}</span>
           </div>
           {filteredTasks.map((task) => (
             <div key={task.id} className="task-row">
@@ -331,9 +333,9 @@ function TeamDetail() {
                   value={task.status}
                   onChange={(e) => handleTaskStatusChange(task.id, e.target.value as Task['status'])}
                 >
-                  <option value="to_do">To Do</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="done">Done</option>
+                  <option value="to_do">{t('tasks.open')}</option>
+                  <option value="in_progress">{t('tasks.inProgress')}</option>
+                  <option value="done">{t('tasks.done')}</option>
                 </select>
               ) : (
                 <span className={`task-status ${getStatusColor(task.status)}`}>
@@ -346,7 +348,7 @@ function TeamDetail() {
                   value={task.assignedTo?.username || ''}
                   onChange={(e) => handleAssigneeChange(task.id, e.target.value)}
                 >
-                  <option value="">Unassigned</option>
+                  <option value="">{t('teams.unassigned')}</option>
                   {team.members.map((member) => (
                     <option key={member.id} value={member.username}>{member.username}</option>
                   ))}
@@ -366,7 +368,7 @@ function TeamDetail() {
                   className="file-upload-btn"
                   onClick={() => fileInputRefs.current[task.id]?.click()}
                   disabled={!canEdit}
-                  title="Upload file"
+                  title={t('teams.uploadFile')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path fillRule="evenodd" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75z" clipRule="evenodd" />
@@ -387,13 +389,13 @@ function TeamDetail() {
             </div>
           ))}
           {filteredTasks.length === 0 && (
-            <div className="tasks-empty">No tasks match the selected filters.</div>
+            <div className="tasks-empty">{t('teams.noTasksMatch')}</div>
           )}
         </div>
       </div>
 
       <div className="team-section">
-        <h2 className="team-section-title">Team Chat</h2>
+        <h2 className="team-section-title">{t('teams.chat')}</h2>
         <div className="chat-container">
           <div className="chat-messages">
             {team.chat && team.chat.length > 0 ? (
@@ -408,19 +410,19 @@ function TeamDetail() {
                 </div>
               ))
             ) : (
-              <p className="chat-empty">No messages yet. Start the conversation!</p>
+              <p className="chat-empty">{t('teams.noMessages')}. {t('teams.startConversation')}</p>
             )}
           </div>
           <form onSubmit={handleSendMessage} className="chat-input-container">
             <input
               type="text"
-              placeholder={isActive ? "Type a message..." : "Chat disabled - team is finished"}
+              placeholder={isActive ? t('teams.typeMessage') : t('teams.chatDisabled')}
               className="chat-input"
               value={chatMessage}
               onChange={(e) => setChatMessage(e.target.value)}
               disabled={!canEdit}
             />
-            <button type="submit" className="btn btn-primary chat-send" disabled={!canEdit}>Send</button>
+            <button type="submit" className="btn btn-primary chat-send" disabled={!canEdit}>{t('teams.send')}</button>
           </form>
         </div>
       </div>
@@ -429,16 +431,16 @@ function TeamDetail() {
         <div className="modal-overlay" onClick={() => setShowStatusModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Change Team Status</h2>
+              <h2>{t('teams.changeStatus')}</h2>
               <button className="modal-close" onClick={() => setShowStatusModal(false)}>&times;</button>
             </div>
             <div className="modal-body">
               <p className="remove-member-message">
-                Are you sure you want to set this team as {newStatus}?
+                {t('teams.confirmStatus')} {newStatus}?
               </p>
               <div className="remove-member-actions">
-                <button className="btn btn-secondary" onClick={() => setShowStatusModal(false)}>Cancel</button>
-                <button className="btn btn-primary" onClick={handleConfirmStatusChange}>Confirm</button>
+                <button className="btn btn-secondary" onClick={() => setShowStatusModal(false)}>{t('common.cancel')}</button>
+                <button className="btn btn-primary" onClick={handleConfirmStatusChange}>{t('common.confirm')}</button>
               </div>
             </div>
           </div>
@@ -449,51 +451,51 @@ function TeamDetail() {
         <div className="modal-overlay" onClick={() => setShowAddMemberModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Add Member</h2>
+              <h2>{t('teams.addMemberTitle')}</h2>
               <button className="modal-close" onClick={() => setShowAddMemberModal(false)}>&times;</button>
             </div>
             <div className="modal-body">
               <div className="add-member-method">
-                <label className="input-label">Select from Friends</label>
+                <label className="input-label">{t('friends.addFriend') || 'Select from Friends'}</label>
                 <div className="add-member-row">
                   <select
                     className="input"
                     value={selectedFriend}
                     onChange={(e) => setSelectedFriend(e.target.value)}
                   >
-                    <option value="">Select a friend...</option>
+                    <option value="">{t('teams.selectFriend')}</option>
                     {user.friends
                       .filter((f) => !team.members.some((m) => m.id === f.id))
                       .map((friend) => (
                         <option key={friend.id} value={friend.username}>{friend.username}</option>
                       ))}
                   </select>
-                  <button className="btn btn-primary" onClick={handleAddMemberFromDropdown}>Add</button>
+                  <button className="btn btn-primary" onClick={handleAddMemberFromDropdown}>{t('common.add') || 'Add'}</button>
                 </div>
               </div>
-              <div className="add-member-divider">OR</div>
+              <div className="add-member-divider">{t('teams.or')}</div>
               <div className="add-member-method">
-                <label className="input-label">Add by Username</label>
+                <label className="input-label">{t('teams.addByUsername')}</label>
                 <div className="add-member-row">
                   <input
                     type="text"
-                    placeholder="Enter username"
+                    placeholder={t('teams.enterUsername')}
                     className="input"
                     value={manualUsername}
                     onChange={(e) => setManualUsername(e.target.value)}
                   />
-                  <button className="btn btn-primary" onClick={handleAddMemberManual}>Add</button>
+                  <button className="btn btn-primary" onClick={handleAddMemberManual}>{t('common.add') || 'Add'}</button>
                 </div>
               </div>
               <div className="add-member-role">
-                <label className="input-label">Role:</label>
+                <label className="input-label">{t('teams.role')}:</label>
                 <select
                   className="input"
                   value={memberRole}
                   onChange={(e) => setMemberRole(e.target.value)}
                 >
-                  <option value="Member">Member</option>
-                  <option value="Leader">Leader</option>
+                  <option value="Member">{t('teams.member')}</option>
+                  <option value="Leader">{t('teams.owner')}</option>
                 </select>
               </div>
             </div>
@@ -505,16 +507,16 @@ function TeamDetail() {
         <div className="modal-overlay" onClick={() => setShowRemoveMemberModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Remove Member</h2>
+              <h2>{t('teams.removeMember')}</h2>
               <button className="modal-close" onClick={() => setShowRemoveMemberModal(false)}>&times;</button>
             </div>
             <div className="modal-body">
               <p className="remove-member-message">
-                Are you sure you want to remove {memberToRemove?.username} from the team?
+                {t('teams.confirmRemove')} {memberToRemove?.username} {t('teams.fromTeam') || 'from the team'}?
               </p>
               <div className="remove-member-actions">
-                <button className="btn btn-secondary" onClick={() => setShowRemoveMemberModal(false)}>Cancel</button>
-                <button className="btn btn-danger" onClick={handleConfirmRemove}>Remove</button>
+                <button className="btn btn-secondary" onClick={() => setShowRemoveMemberModal(false)}>{t('common.cancel')}</button>
+                <button className="btn btn-danger" onClick={handleConfirmRemove}>{t('teams.remove')}</button>
               </div>
             </div>
           </div>
@@ -524,14 +526,14 @@ function TeamDetail() {
       <div className="team-actions">
         {showLeaveConfirm ? (
           <div className="leave-confirm">
-            <p>Are you sure you want to leave this team?</p>
+            <p>{t('teams.confirmLeave')}</p>
             <div className="leave-confirm-buttons">
-              <button className="btn btn-secondary" onClick={() => setShowLeaveConfirm(false)}>Cancel</button>
-              <button className="btn btn-danger" onClick={handleLeaveTeam}>Confirm Leave</button>
+              <button className="btn btn-secondary" onClick={() => setShowLeaveConfirm(false)}>{t('common.cancel')}</button>
+              <button className="btn btn-danger" onClick={handleLeaveTeam}>{t('teams.leaveTeam')}</button>
             </div>
           </div>
         ) : (
-          <button className="btn btn-outline-danger" onClick={() => setShowLeaveConfirm(true)}>Leave Team</button>
+          <button className="btn btn-outline-danger" onClick={() => setShowLeaveConfirm(true)}>{t('teams.leaveTeam')}</button>
         )}
       </div>
     </div>

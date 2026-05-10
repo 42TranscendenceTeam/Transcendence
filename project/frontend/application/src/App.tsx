@@ -48,7 +48,14 @@ function App() {
     <AuthProvider> {/* Provides authentication context to the entire app. */}
       <Router> {/* Enables navigation, /login, /profile, etc. */}
         <Routes> {/* Container for all routes. */}
-          <Route path="/" element={<Feed />} />
+          <Route
+            path="/"
+            element={
+              <ProfileLayout>
+                <Feed />
+              </ProfileLayout>
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
