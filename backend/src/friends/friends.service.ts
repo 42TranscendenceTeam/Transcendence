@@ -41,3 +41,59 @@ export const getFriends = async (userId: number) => {
 		};
 	});
 };
+
+// Returns friend requests SENT from the user
+export const getSentFriendRequests = async (userId: number) => {
+
+	const requests = await prisma.friendRequest.findMany({
+		where: {
+			sender_id: userId,
+			status: 'pending',
+		},
+
+		include: {
+			receiver: {
+				select: {
+					id: true,
+					username: true,
+					avatar_url: true,
+				},
+			},
+		},
+	});
+
+	return requests.map((request) => ({
+		request_id: request.id,
+		status: request.status,
+		sent_at: request.sent_at,
+		user: request.receiver,
+	}));
+};
+
+// Returns friend requests RECEIVED from the user
+export const getReceivedFriendRequests = async (userId: number) => {
+
+	const requests = await prisma.friendRequest.findMany({
+		where: {
+			receiver_id: userId,
+			status: 'pending',
+		},
+
+		include: {
+			sender: {
+				select: {
+					id: true,
+					username: true,
+					avatar_url: true,
+				},
+			},
+		},
+	});
+
+	return requests.map((request) => ({
+		request_id: request.id,
+		status: request.status,
+		sent_at: request.sent_at,
+		user: request.sender,
+	}));
+};
