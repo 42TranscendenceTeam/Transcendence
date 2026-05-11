@@ -1,0 +1,272 @@
+/*
+ * Team Detail Page container
+ */
+.team-detail-page {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 1rem;
+}
+
+/*
+ * Team Detail Page header
+ */
+.team-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+/*
+ * Team Detail Page title
+ */
+.team-detail-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/*
+ * Team Detail Page objective text
+ */
+.team-detail-objective {
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+/*
+ * Team Detail Page actions container
+ */
+.team-detail-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/*
+ * Team information grid
+ */
+.team-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+/*
+ * Team information card
+ */
+.team-info-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+/*
+ * Team information label
+ */
+.team-info-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+/*
+ * Team information value
+ */
+.team-info-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/*
+ * Members list container
+ */
+.members-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/*
+ * Member card component
+ */
+.member-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+  position: relative;
+}
+
+/*
+ * Member avatar
+ */
+.member-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+/*
+ * Member name text
+ */
+.member-name {
+  font-weight: 500;
+}
+
+/*
+ * Member role badge
+ */
+.member-role {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+}
+
+/*
+ * Leader role badge styling
+ */
+.member-role.leader {
+  background: rgba(62, 175, 209, 0.2);
+  color: var(--accent);
+}
+
+/*
+ * Member role badge styling
+ */
+.member-role.member {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+/*
+ * Tasks table container
+ */
+.tasks-table {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+}
+
+/*
+ * Tasks table header
+ */
+.tasks-header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-primary);
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  min-width: 700px;
+}
+
+/*
+ * Task row in the table
+ */
+.task-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+  align-items: center;
+  min-width: 700px;
+}
+
+/*
+ * Remove border for the last task row
+ */
+.task-row:last-child {
+  border-bottom: none;
+}
+
+/*
+ * Task title in the row
+ */
+.task-row .task-title {
+  font-weight: 500;
+}
+
+/*
+ * Task description in the row
+ */
+.task-row .task-description {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+/*
+ * Task status badge
+ */
+.task-status {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+/*
+ * Status badge for tasks in "To Do"
+ */
+.status-todo {
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+}
+
+/*
+ * Status badge for tasks in progress
+ */
+.status-progress {
+  background: rgba(62, 175, 209, 0.2);
+  color: var(--accent);
+}
+
+/*
+ * Status badge for completed tasks
+ */
+.status-done {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--success);
+}
+
+/*
+ * Task files container
+ */
+.task-files {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/*
+ * Individual file item in task files
+ */
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+
+/*
+ * File icon in task files
+ */
+.file-icon {
+  width: 14px;
+  height: 14px;
+}

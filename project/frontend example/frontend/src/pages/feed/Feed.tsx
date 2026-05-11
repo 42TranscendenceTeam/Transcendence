@@ -73,14 +73,6 @@ function Feed() {
 
   const headerContent = (
     <div className="feed-header">
-      {!user && (
-        <Link to="/login" className="welcome-user">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="welcome-avatar">
-            <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.895A15.309 15.309 0 0112 21c-2.17 0-4.207-.316-6.061-1.777a.75.75 0 01-.437-.895z" clipRule="evenodd" />
-          </svg>
-          <span className="welcome-text">{t('auth.login.title')}</span>
-        </Link>
-      )}
       <h1 className="feed-title">
         <span className="title-transcendence">Transcendence</span>
       </h1>

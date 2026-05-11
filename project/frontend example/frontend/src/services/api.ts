@@ -124,29 +124,11 @@ export const api = {
 
   // TODO: Define wich methos will require "getAuthHeaders" and wich don't
   // ========== USER PROFILE ==========
+  // TODO: Implement - Backend needs to provide GET /users/me
   getCurrentUser(): Promise<UserProfile> {
-    return fetch(`${API_URL}/users/me`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...api.getAuthHeaders(),
-      },
-    }).then((response) => {
-      if (!response.ok) {
-        throw new Error('Failed to get current user');
-      }
-      return response.json();
-    }).then((data) => ({
-      id: data.id,
-      username: data.username,
-      email: data.email,
-      avatar: data.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`,
-      description: data.bio || '',
-      twoFactorEnabled: false,
-      friends: [],
-      teams: [],
-      globalChat: [],
-    }));
+    // Frontend sends: nothing (uses token from getAuthHeaders)
+    // Backend returns: { id, username, email, avatar, description, twoFactorEnabled }
+    throw new Error('TODO: Implement GET /users/me');
   },
 
   // TODO: Implement - Backend needs to provide PUT /users/me

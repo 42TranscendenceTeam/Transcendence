@@ -40,7 +40,7 @@ function Login() {
     if (USE_MOCK) {
       try {
         console.log('Login:', { email, password });
-        const data = { requires2FA: false, tempToken: 'mock-temp-token' };
+        const data = { requires2FA: true, tempToken: 'mock-temp-token' };
         
         if (data.requires2FA) {
           setTempToken(data.tempToken);
@@ -59,7 +59,7 @@ function Login() {
       try {
         const result = await api.login({ email, password });
         localStorage.setItem('authToken', result.token);
-        window.location.href = '/';
+        navigate('/');
       } catch (err: any) {
         setError(err.message || 'Login failed. Please check your credentials.');
       } finally {
