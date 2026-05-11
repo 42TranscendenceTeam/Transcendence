@@ -7,14 +7,20 @@
  * - Team chat
  * - Task creation/editing
  * 
- * TODO: Connect to real API when backend is ready
+ * Uses real API for user search when adding members.
  */
 
-import { useContext, useState, useRef } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { api } from '../../services/api';
 import type { Task, Member } from '../../types';
+
+interface SearchUser {
+  id: number;
+  username: string;
+}
 
 function TeamDetail() {
   const { t } = useTranslation();
@@ -35,7 +41,30 @@ function TeamDetail() {
   const [memberToRemove, setMemberToRemove] = useState<Member | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [newStatus, setNewStatus] = useState('');
+  const [allUsers, setAllUsers] = useState<SearchUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [errorUsers, setErrorUsers] = useState('');
   const fileInputRefs = useRef<Record<number, HTMLInputElement>>({});
+
+  useEffect(() => {
+    if (showAddMemberModal && allUsers.length === 0) {
+      fetchUsers();
+    }
+  }, [showAddMemberModal]);
+
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    setErrorUsers('');
+    try {
+      const users = await api.searchUsers('');
+      setAllUsers(users);
+    } catch (err) {
+      setErrorUsers('Failed to load users');
+      console.error(err);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
 
   const team = user?.teams.find((t) => t.id === parseInt(id || '0'));
   const isLeader = team?.role === 'Leader';
@@ -58,6 +87,15 @@ function TeamDetail() {
       </div>
     );
   }
+
+  const availableUsers = allUsers
+    .filter((u) => u.id !== user.id)
+    .filter((u) => !team.members.some((m) => m.id === u.id))
+    .map((u) => ({
+      id: u.id,
+      username: u.username,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`,
+    }));
 
   const filteredTasks = team.tasks.filter((task) => {
     const statusMatch = statusFilter === 'all' || task.status === statusFilter;
@@ -134,23 +172,42 @@ function TeamDetail() {
 
   const handleAddMemberFromDropdown = () => {
     if (!selectedFriend || !canEdit || !user) return;
-    const friend = user.friends.find((f) => f.username === selectedFriend);
-    if (friend) {
-      addTeamMember(team.id, { id: friend.id, username: friend.username, avatar: friend.avatar, role: memberRole }, memberRole);
+    const userToAdd = availableUsers.find((u) => u.username === selectedFriend);
+    if (userToAdd) {
+      addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: memberRole }, memberRole);
       setSelectedFriend('');
       setMemberRole('Member');
       setShowAddMemberModal(false);
     }
   };
 
-  const handleAddMemberManual = () => {
+  const handleAddMemberManual = async () => {
     if (!manualUsername.trim() || !canEdit) return;
-    const foundUser = findUserByUsername(manualUsername.trim());
-    if (foundUser) {
-      addTeamMember(team.id, { id: foundUser.id, username: foundUser.username, avatar: foundUser.avatar, role: memberRole }, memberRole);
-      setManualUsername('');
-      setMemberRole('Member');
-      setShowAddMemberModal(false);
+    setLoadingUsers(true);
+    setErrorUsers('');
+    try {
+      const users = await api.searchUsers(manualUsername.trim());
+      const foundUser = users.find(
+        (u) => u.username.toLowerCase() === manualUsername.trim().toLowerCase()
+      );
+      if (foundUser && !team.members.some((m) => m.id === foundUser.id)) {
+        addTeamMember(team.id, {
+          id: foundUser.id,
+          username: foundUser.username,
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${foundUser.username}`,
+          role: memberRole,
+        }, memberRole);
+        setManualUsername('');
+        setMemberRole('Member');
+        setShowAddMemberModal(false);
+      } else {
+        setErrorUsers('User not found or already a member');
+      }
+    } catch (err) {
+      setErrorUsers('Failed to find user');
+      console.error(err);
+    } finally {
+      setLoadingUsers(false);
     }
   };
 
@@ -456,21 +513,25 @@ function TeamDetail() {
             </div>
             <div className="modal-body">
               <div className="add-member-method">
-                <label className="input-label">{t('friends.addFriend') || 'Select from Friends'}</label>
+                <label className="input-label">{t('friends.selectFromUsers') || 'Select from Users'}</label>
                 <div className="add-member-row">
-                  <select
-                    className="input"
-                    value={selectedFriend}
-                    onChange={(e) => setSelectedFriend(e.target.value)}
-                  >
-                    <option value="">{t('teams.selectFriend')}</option>
-                    {user.friends
-                      .filter((f) => !team.members.some((m) => m.id === f.id))
-                      .map((friend) => (
-                        <option key={friend.id} value={friend.username}>{friend.username}</option>
-                      ))}
-                  </select>
-                  <button className="btn btn-primary" onClick={handleAddMemberFromDropdown}>{t('common.add') || 'Add'}</button>
+                  {loadingUsers && allUsers.length === 0 ? (
+                    <span className="loading-text">Loading users...</span>
+                  ) : (
+                    <>
+                      <select
+                        className="input"
+                        value={selectedFriend}
+                        onChange={(e) => setSelectedFriend(e.target.value)}
+                      >
+                        <option value="">{t('teams.selectFriend')}</option>
+                        {availableUsers.map((u) => (
+                          <option key={u.id} value={u.username}>{u.username}</option>
+                        ))}
+                      </select>
+                      <button className="btn btn-primary" onClick={handleAddMemberFromDropdown}>{t('teams.addMember')}</button>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="add-member-divider">{t('teams.or')}</div>
@@ -484,9 +545,12 @@ function TeamDetail() {
                     value={manualUsername}
                     onChange={(e) => setManualUsername(e.target.value)}
                   />
-                  <button className="btn btn-primary" onClick={handleAddMemberManual}>{t('common.add') || 'Add'}</button>
+                  <button className="btn btn-primary" onClick={handleAddMemberManual} disabled={loadingUsers}>
+                    {loadingUsers ? '...' : t('common.add')}
+                  </button>
                 </div>
               </div>
+              {errorUsers && <p className="error-text">{errorUsers}</p>}
               <div className="add-member-role">
                 <label className="input-label">{t('teams.role')}:</label>
                 <select

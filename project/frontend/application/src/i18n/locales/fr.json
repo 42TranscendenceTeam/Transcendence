@@ -208,6 +208,7 @@
   "friends": {
     "title": "Amis",
     "myFriends": "Mes amis",
+    "youHave": "Vous avez",
     "addFriend": "Ajouter un ami",
     "searchUsers": "Rechercher des utilisateurs...",
     "friendRequests": "Demandes d'ami",

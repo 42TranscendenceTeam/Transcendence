@@ -130,7 +130,9 @@ function Teams() {
                   <span className="team-name">{team.name}</span>
                   <span className="team-role">{team.role}</span>
                 </div>
-                <span className={`team-status ${team.status}`}>{team.status}</span>
+                <span className={`team-status ${team.status}`}>
+                  {team.status === 'active' ? t('teams.active') : team.status === 'finished' ? t('teams.finished') : team.status}
+                </span>
               </Link>
             ))}
           </div>
