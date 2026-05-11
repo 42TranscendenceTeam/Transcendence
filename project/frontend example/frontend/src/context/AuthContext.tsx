@@ -117,31 +117,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        if (USE_MOCK) {
-          const savedUser = localStorage.getItem('testUser');
-          if (savedUser) {
-            const parsedUser = JSON.parse(savedUser);
-            if (!parsedUser.globalChat) {
-              parsedUser.globalChat = [];
-            }
-            setUser(parsedUser);
-          }
-        } else {
-          const token = localStorage.getItem('authToken');
-          if (token) {
-            const userData = await api.getCurrentUser();
-            setUser(userData as User);
-          }
+    // TODO: Mock data, delete after full backend implementations
+    if (USE_MOCK) {
+      const savedUser = localStorage.getItem('testUser');
+      if (savedUser) {
+        const parsedUser = JSON.parse(savedUser);
+        if (!parsedUser.globalChat) {
+          parsedUser.globalChat = [];
         }
-      } catch {
-        localStorage.removeItem('authToken');
-      } finally {
-        setLoading(false);
+        setUser(parsedUser);
       }
-    };
-    loadUser();
+    } else {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        // TODO: Fetch user data from backend using token
+      }
+    }
+    setLoading(false);
   }, []);
 
   const loginTestUser = async () => {

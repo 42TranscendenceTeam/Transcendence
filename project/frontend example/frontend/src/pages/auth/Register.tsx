@@ -62,7 +62,7 @@ function Register() {
       try {
         const result = await api.register({ email, username, password });
         localStorage.setItem('authToken', result.token);
-        window.location.href = '/';
+        navigate('/feed');
       } catch (err: any) {
         setError(err.message || 'Registration failed. Please try again.');
       } finally {
