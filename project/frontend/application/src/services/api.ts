@@ -21,8 +21,9 @@
 
 /*
  *  API URL for Production or Development
+ *  Uses relative path for nginx proxy, falls back to localhost for development
  */
-const API_URL = import.meta.env.VITE_API_URL || 'https://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 /*
  *  Exports to define what shape data must have.
@@ -117,6 +118,22 @@ export const api = {
         return response.json().then((error) => {
           throw new Error(error.error || 'Login failed');
         });
+      }
+      return response.json();
+    });
+  },
+
+  // ========== USER SEARCH ==========
+  searchUsers(query: string): Promise<{id: number, username: string}[]> {
+    return fetch(`${API_URL}/users/search?q=${encodeURIComponent(query)}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to search users');
       }
       return response.json();
     });
