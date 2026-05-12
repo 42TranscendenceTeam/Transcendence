@@ -133,6 +133,7 @@ export const sendFriendRequest = async (userId: number, receiverId: number) => {
 
 	const requestExists = await prisma.friendRequest.findFirst({
 		where: {
+			status: 'pending',
 			OR: [
 				{
 					sender_id: userId,
@@ -153,6 +154,63 @@ export const sendFriendRequest = async (userId: number, receiverId: number) => {
 		data: {
 			sender_id: userId,
 			receiver_id: receiverId,
+		},
+	});
+};
+
+// Accept pending friend request
+export const acceptFriendRequest = async (userId: number, requestId: number) => {
+
+	const request = await prisma.friendRequest.findFirst({
+		where: {
+			id: requestId,
+			receiver_id: userId,
+			status: 'pending',
+		},
+	});
+
+	if (!request)
+		throw new AppError("Friend request not found.", 404);
+
+	const friendship = await prisma.friendship.create({
+		data: {
+			user_id_first: request.sender_id,
+			user_id_second: userId,
+		},
+	});
+
+	await prisma.friendRequest.update({
+		where: {
+			id: request.id,
+		},
+		data: {
+			status: 'accepted',
+		}
+	});
+
+	return friendship;
+};
+
+// Decline pending friend request
+export const declineFriendRequest = async (userId: number, requestId: number) => {
+
+	const request = await prisma.friendRequest.findFirst({
+		where: {
+			id: requestId,
+			receiver_id: userId,
+			status: 'pending',
+		},
+	});
+
+	if (!request)
+		throw new AppError("Friend request not found.", 404);
+
+	return prisma.friendRequest.update({
+		where: {
+			id: request.id,
+		},
+		data: {
+			status: 'rejected',
 		},
 	});
 };
