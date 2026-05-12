@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { asyncHandler } from "../utils/AppError.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
-import { getFriendsController, getSentFriendRequestsController, getReceivedFriendRequestsController, sendFriendRequestController, acceptFriendRequestController, declineFriendRequestController } from "./friends.controller.js";
+import { getFriendsController, getSentFriendRequestsController, getReceivedFriendRequestsController, sendFriendRequestController, acceptFriendRequestController, rejectFriendRequestController, deleteFriendController } from "./friends.controller.js";
 
 const router = Router();
 
@@ -10,6 +10,7 @@ router.get('/requests/sent', authMiddleware, asyncHandler(getSentFriendRequestsC
 router.get('/requests/received', authMiddleware, asyncHandler(getReceivedFriendRequestsController));
 router.post('/requests', authMiddleware, asyncHandler(sendFriendRequestController));
 router.post('/requests/:id/accept', authMiddleware, asyncHandler(acceptFriendRequestController));
-router.post('/requests/:id/decline', authMiddleware, asyncHandler(declineFriendRequestController));
+router.post('/requests/:id/reject', authMiddleware, asyncHandler(rejectFriendRequestController));
+router.delete('/:id', authMiddleware, asyncHandler(deleteFriendController));
 
 export default router;

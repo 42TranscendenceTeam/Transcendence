@@ -192,7 +192,7 @@ export const acceptFriendRequest = async (userId: number, requestId: number) => 
 };
 
 // Decline pending friend request
-export const declineFriendRequest = async (userId: number, requestId: number) => {
+export const rejectFriendRequest = async (userId: number, requestId: number) => {
 
 	const request = await prisma.friendRequest.findFirst({
 		where: {
@@ -211,6 +211,34 @@ export const declineFriendRequest = async (userId: number, requestId: number) =>
 		},
 		data: {
 			status: 'rejected',
+		},
+	});
+};
+
+// Delete friend
+export const deleteFriend = async (userId: number, friendId: number) => {
+
+	const friendship = await prisma.friendship.findFirst({
+		where: {
+			OR: [
+				{
+					user_id_first: userId,
+					user_id_second: friendId,
+				},
+				{
+					user_id_first: friendId,
+					user_id_second: userId,
+				},
+			],
+		},
+	});
+
+	if (!friendship)
+		throw new AppError("Friendship not found.", 404);
+
+	return prisma.friendship.delete({
+		where: {
+			id: friendship.id,
 		},
 	});
 };
