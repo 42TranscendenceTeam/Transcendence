@@ -1,5 +1,5 @@
-import { prisma } from '../prisma.js';
 import { AppError } from '../utils/AppError.js';
+import { prisma } from '../prisma.js';
 import type { } from './friends.types.js';
 
 // Returns friends list of logged-in user
@@ -96,4 +96,63 @@ export const getReceivedFriendRequests = async (userId: number) => {
 		sent_at: request.sent_at,
 		user: request.sender,
 	}));
+};
+
+// Sends a friend request
+export const sendFriendRequest = async (userId: number, receiverId: number) => {
+
+	if (userId === receiverId)
+		throw new AppError("Can't send a friend request to yourself.", 400);
+
+	const receiver = await prisma.user.findUnique({
+		where: {
+			id: receiverId,
+		},
+	});
+
+	if (!receiver)
+		throw new AppError("That user does not exist.", 404);
+
+	const alreadyFriends = await prisma.friendship.findFirst({
+		where: {
+			OR: [
+				{
+					user_id_first: userId,
+					user_id_second: receiverId,
+				},
+				{
+					user_id_first: receiverId,
+					user_id_second: userId,
+				},
+			],
+		},
+	});
+
+	if (alreadyFriends)
+		throw new AppError("You are already friends.", 400);
+
+	const requestExists = await prisma.friendRequest.findFirst({
+		where: {
+			OR: [
+				{
+					sender_id: userId,
+					receiver_id: receiverId,
+				},
+				{
+					sender_id: receiverId,
+					receiver_id: userId,
+				},
+			],
+		},
+	});
+
+	if (requestExists)
+		throw new AppError("Friend request already exists.", 400);
+
+	return prisma.friendRequest.create({
+		data: {
+			sender_id: userId,
+			receiver_id: receiverId,
+		},
+	});
 };
