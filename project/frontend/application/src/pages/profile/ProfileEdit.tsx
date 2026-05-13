@@ -1,7 +1,22 @@
+/**
+ * Profile Edit Page Component
+ * 
+ * Allows user to edit their profile including:
+ * - Avatar selection
+ * - Username
+ * - Email
+ * - Description
+ * 
+ * TODO: Connect to real API when backend is ready
+ */
+
 import { useState, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import LanguageSelector from '../../components/LanguageSelector';
 
 function ProfileEdit() {
+  const { t, i18n } = useTranslation();
   const { user, updateUser } = useContext(AuthContext);
 
   const initialUsername = user?.username || '';
@@ -13,9 +28,17 @@ function ProfileEdit() {
   const [email, setEmail] = useState(initialEmail);
   const [description, setDescription] = useState(initialDescription);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatar);
+  const [language, setLanguage] = useState(i18n.language);
 
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      alert('Avatar upload is not yet implemented.');
+    }
+  };
 
   const avatarSeeds = ['Felix', 'Luna', 'Alex', 'Max', 'Nina', 'Sam', 'Kate', 'John'];
   const avatarOptions = avatarSeeds.map((seed) => ({
@@ -27,21 +50,26 @@ function ProfileEdit() {
     username !== initialUsername ||
     email !== initialEmail ||
     description !== initialDescription ||
-    avatarUrl !== initialAvatar;
+    avatarUrl !== initialAvatar ||
+    language !== i18n.language;
 
   const getChangesSummary = () => {
     const changes: string[] = [];
     if (username !== initialUsername) {
-      changes.push(`Username: ${initialUsername} → ${username}`);
+      changes.push(`${t('profile.edit.username')}: ${initialUsername} → ${username}`);
     }
     if (email !== initialEmail) {
-      changes.push(`Email: ${initialEmail} → ${email}`);
+      changes.push(`${t('profile.edit.email')}: ${initialEmail} → ${email}`);
     }
     if (description !== initialDescription) {
-      changes.push(`Description updated`);
+      changes.push(`${t('profile.edit.description')} updated`);
     }
     if (avatarUrl !== initialAvatar) {
-      changes.push(`Avatar changed`);
+      changes.push(`${t('profile.edit.avatar')} changed`);
+    }
+    if (language !== i18n.language) {
+      const langNames: Record<string, string> = { en: 'English', fr: 'Français', pt: 'Português' };
+      changes.push(`${t('profile.edit.language')}: ${langNames[i18n.language] || i18n.language} → ${langNames[language] || language}`);
     }
     return changes;
   };
@@ -52,12 +80,16 @@ function ProfileEdit() {
   };
 
   const handleConfirm = () => {
+    if (language !== i18n.language) {
+      i18n.changeLanguage(language);
+    }
     updateUser({ username, email, description, avatar: avatarUrl });
     setShowConfirmModal(false);
     setShowSuccessModal(true);
   };
 
   const handleCancel = () => {
+    setLanguage(i18n.language);
     setShowConfirmModal(false);
   };
 
@@ -75,11 +107,11 @@ function ProfileEdit() {
 
   return (
     <div className="profile-edit-page">
-      <h1 className="profile-page-title">Edit Profile</h1>
+      <h1 className="profile-page-title">{t('profile.edit.title')}</h1>
 
       <form onSubmit={handleSubmit} className="profile-form">
         <div className="form-group">
-          <label className="label">Username</label>
+          <label className="label">{t('profile.edit.username')}</label>
           <input
             type="text"
             className="input"
@@ -90,33 +122,38 @@ function ProfileEdit() {
         </div>
 
         <div className="form-group">
-          <label className="label">Email</label>
+          <label className="label">{t('profile.edit.email')}</label>
           <input
             type="email"
             className="input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
+            placeholder={t('auth.login.emailPlaceholder')}
           />
         </div>
 
         <div className="form-group">
-          <label className="label">Description</label>
+          <label className="label">{t('profile.edit.description')}</label>
           <textarea
             className="input textarea"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Tell us about yourself..."
+            placeholder={t('profile.edit.descriptionPlaceholder')}
             rows={3}
           />
         </div>
 
         <div className="form-group">
-          <label className="label">Avatar</label>
+          <label className="label">{t('profile.edit.language')}</label>
+          <LanguageSelector value={language} onChange={setLanguage} />
+        </div>
+
+        <div className="form-group">
+          <label className="label">{t('profile.edit.currentAvatar')}</label>
           <div className="avatar-preview">
             <img src={avatarUrl || user.avatar} alt="Avatar preview" />
           </div>
-          <p className="label-small">Select an avatar:</p>
+          <p className="label-small">{t('profile.edit.selectDefaultAvatar')}</p>
           <div className="avatar-options">
             {avatarOptions.map((option) => (
               <button
@@ -129,9 +166,20 @@ function ProfileEdit() {
               </button>
             ))}
           </div>
+          <div className="avatar-upload">
+            <label className="upload-label">
+              {t('profile.edit.uploadAvatar')}
+              <input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleAvatarUpload}
+                style={{ display: 'none' }}
+              />
+            </label>
+          </div>
         </div>
 
-        <button type="submit" className="btn btn-primary">Save Changes</button>
+        <button type="submit" className="btn btn-primary">{t('profile.edit.saveChanges')}</button>
       </form>
 
       {/* Confirmation Modal */}
@@ -139,17 +187,17 @@ function ProfileEdit() {
         <div className="modal-overlay" onClick={handleCancel}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>{hasChanges ? 'Confirm Changes' : 'No Changes'}</h2>
+              <h2>{hasChanges ? t('profile.edit.confirmChanges') : t('profile.edit.noChanges')}</h2>
               <button className="modal-close" onClick={handleCancel}>&times;</button>
             </div>
             <div className="modal-body">
               {hasChanges ? (
                 <>
                   <p className="confirm-message">
-                    Are you sure you want to save these changes?
+                    {t('profile.edit.confirmMessage')}
                   </p>
                   <div className="changes-summary">
-                    <p className="changes-label">Changes to be saved:</p>
+                    <p className="changes-label">{t('profile.edit.changesToSave')}</p>
                     <ul className="changes-list">
                       {getChangesSummary().map((change, index) => (
                         <li key={index}>{change}</li>
@@ -159,17 +207,17 @@ function ProfileEdit() {
                 </>
               ) : (
                 <p className="confirm-message">
-                  No changes have been made to your profile.
+                  {t('profile.edit.noChangesMessage')}
                 </p>
               )}
             </div>
             <div className="modal-actions">
               <button className="btn btn-secondary" onClick={handleCancel}>
-                {hasChanges ? 'Cancel' : 'Close'}
+                {hasChanges ? t('common.cancel') : t('common.close')}
               </button>
               {hasChanges && (
                 <button className="btn btn-primary" onClick={handleConfirm}>
-                  Confirm
+                  {t('common.confirm')}
                 </button>
               )}
             </div>
@@ -182,7 +230,7 @@ function ProfileEdit() {
         <div className="modal-overlay" onClick={handleSuccessClose}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Success</h2>
+              <h2>{t('common.success')}</h2>
               <button className="modal-close" onClick={handleSuccessClose}>&times;</button>
             </div>
             <div className="modal-body">
@@ -193,13 +241,13 @@ function ProfileEdit() {
                   </svg>
                 </div>
                 <p className="success-message">
-                  Profile updated successfully!
+                  {t('profile.edit.success')}
                 </p>
               </div>
             </div>
             <div className="modal-actions">
               <button className="btn btn-primary" onClick={handleSuccessClose}>
-                Close
+                {t('common.close')}
               </button>
             </div>
           </div>

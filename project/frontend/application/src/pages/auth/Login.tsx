@@ -1,11 +1,31 @@
+/**
+ * Login Page Component
+ * 
+ * User authentication page with email/password login.
+ * Supports both mock mode and real backend API.
+ * 
+ * Mock Mode (VITE_USE_MOCK=true):
+ * - Uses mock 2FA flow for demo
+ * 
+ * Real Mode (VITE_USE_MOCK=false):
+ * - Calls api.login() from services/api.ts
+ * - Stores auth token on successful login
+ */
+
 import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import AuthLayout from '../../components/layouts/AuthLayout';
+import { api } from '../../services/api';
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function Login() {
+  const { t } = useTranslation();
   const { loginTestUser } = useContext(AuthContext);
-  const [username, setUsername] = useState('');
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [show2FA, setShow2FA] = useState(false);
   const [twoFactorCode, setTwoFactorCode] = useState('');
@@ -16,23 +36,35 @@ function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
-    try {
-      console.log('Login:', { username, password });
-      const data = { requires2FA: true, tempToken: 'mock-temp-token' };
-      
-      if (data.requires2FA) {
-        setTempToken(data.tempToken);
-        setShow2FA(true);
-      } else {
-        console.log('Login successful, user data:', data.user);
-        window.location.href = '/profile';
+    if (USE_MOCK) {
+      try {
+        console.log('Login:', { email, password });
+        const data = { requires2FA: false, tempToken: 'mock-temp-token' };
+        
+        if (data.requires2FA) {
+          setTempToken(data.tempToken);
+          setShow2FA(true);
+        } else {
+          console.log('Login successful, user data:', data.user);
+          window.location.href = '/';
+        }
+      } catch {
+        setError('Login failed. Please try again.');
+      } finally {
+        setLoading(false);
       }
-    } catch {
-      setError('Login failed. Please try again.');
-    } finally {
-      setLoading(false);
+    } else {
+      setLoading(true);
+      try {
+        const result = await api.login({ email, password });
+        localStorage.setItem('authToken', result.token);
+        window.location.href = '/';
+      } catch (err: any) {
+        setError(err.message || 'Login failed. Please check your credentials.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -43,7 +75,7 @@ function Login() {
 
     try {
       console.log('Verifying 2FA code:', { tempToken, code: twoFactorCode });
-      window.location.href = '/profile';
+      window.location.href = '/';
     } catch {
       setError('Invalid verification code. Please try again.');
     } finally {
@@ -64,43 +96,43 @@ function Login() {
       {!show2FA ? (
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1rem' }}>
-            <label className="label" htmlFor="username">Username</label>
+            <label className="label" htmlFor="email">{t('auth.login.email')}</label>
             <input
-              type="text"
-              id="username"
+              type="email"
+              id="email"
               className="input"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t('auth.login.emailPlaceholder')}
               required
             />
           </div>
           <div style={{ marginBottom: '1.5rem' }}>
-            <label className="label" htmlFor="password">Password</label>
+            <label className="label" htmlFor="password">{t('auth.login.password')}</label>
             <input
               type="password"
               id="password"
               className="input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder={t('auth.login.passwordPlaceholder')}
               required
             />
           </div>
           <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? t('common.loading') : t('auth.login.submit')}
           </button>
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>Don't have an account? </span>
-            <Link to="/register" style={{ color: 'var(--accent)' }}>Sign up</Link>
+            <span style={{ color: 'var(--text-secondary)' }}>{t('auth.login.noAccount')} </span>
+            <Link to="/register" style={{ color: 'var(--accent)' }}>{t('auth.login.register')}</Link>
           </div>
           <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>Just testing? </span>
+            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{t('auth.login.justTesting') || 'Just testing?'} </span>
             <button
               type="button"
               onClick={() => {
                 loginTestUser();
-                window.location.href = '/profile';
+                window.location.href = '/';
               }}
               style={{
                 background: 'none',
@@ -113,7 +145,7 @@ function Login() {
                 marginLeft: '0.25rem',
               }}
             >
-              Use TestLogin
+              {t('auth.login.useTestLogin') || 'Use TestLogin'}
             </button>
           </div>
         </form>
@@ -121,14 +153,14 @@ function Login() {
         <form onSubmit={handle2FASubmit}>
           <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
-              Two-Factor Authentication
+              {t('auth.login.twoFactorTitle') || 'Two-Factor Authentication'}
             </p>
             <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-              Enter the 6-digit code from your authenticator app
+              {t('auth.login.twoFactorDesc') || 'Enter the 6-digit code from your authenticator app'}
             </p>
           </div>
           <div style={{ marginBottom: '1.5rem' }}>
-            <label className="label" htmlFor="twoFactorCode">Verification Code</label>
+            <label className="label" htmlFor="twoFactorCode">{t('auth.login.verificationCode') || 'Verification Code'}</label>
             <input
               type="text"
               id="twoFactorCode"
@@ -143,7 +175,7 @@ function Login() {
             />
           </div>
           <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading || twoFactorCode.length !== 6}>
-            {loading ? 'Verifying...' : 'Verify'}
+            {loading ? t('common.loading') : t('auth.login.verify') || 'Verify'}
           </button>
           <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
             <button
@@ -161,7 +193,7 @@ function Login() {
                 fontSize: '0.875rem',
               }}
             >
-              Back to Login
+              {t('auth.login.backToLogin') || 'Back to Login'}
             </button>
           </div>
         </form>
@@ -171,7 +203,7 @@ function Login() {
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
           <button type="button" className="btn btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
             <img src="/42logo.png" alt="42 logo" style={{ width: '20px', height: '20px' }} />
-            Sign in with 42
+            {t('auth.login.signInWith42') || 'Sign in with 42'}
           </button>
         </div>
       )}

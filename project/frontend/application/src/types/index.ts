@@ -1,3 +1,20 @@
+/**
+ * TypeScript Type Definitions
+ * 
+ * Contains all TypeScript interfaces and types used
+ * throughout the application for type safety.
+ * 
+ * Types:
+ * - User: User profile data
+ * - Team: Team entity with members and tasks
+ * - Task: Task item with status
+ * - Member: Team member with role
+ * - Message: Chat message
+ * - Friend: Friend relationship
+ * - AuthContextType: Authentication context type
+ * - TeamData: Team creation data
+ */
+
 export interface User {
   id: number;
   username: string;
@@ -7,6 +24,7 @@ export interface User {
   twoFactorEnabled: boolean;
   friends: Friend[];
   teams: Team[];
+  globalChat: Message[];
 }
 
 export interface Friend {
@@ -14,6 +32,7 @@ export interface Friend {
   username: string;
   avatar: string;
   chat: Message[];
+  isOnline?: boolean;
 }
 
 export interface Team {
@@ -74,6 +93,7 @@ export interface AuthContextType {
   leaveTeam: (teamId: number) => void;
   addChatMessage: (teamId: number, message: Message) => void;
   sendFriendMessage: (friendId: number, message: Message) => void;
+  sendGlobalMessage: (message: Message) => void;
   updateTaskStatus: (teamId: number, taskId: number, status: Task['status']) => void;
   addTask: (teamId: number, newTask: Partial<Task>) => void;
   uploadFile: (teamId: number, taskId: number, file: File) => void;

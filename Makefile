@@ -68,6 +68,7 @@ re: clean build up
 ###############################################################################
 
 # Init prisma studio server in backend container
+#vafernan - 11.05 - updated to use port 5555 for nginx proxy access at /studio
 studio:
 	@docker exec -it backend npx prisma studio --port 5555 --browser none
 

@@ -1,28 +1,67 @@
-import { useContext, useState } from 'react';
+/**
+ * Friends List Page Component
+ * 
+ * Displays user's friends list.
+ * Uses real API for user search.
+ */
+
+import { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { api } from '../../services/api';
 import type { Friend } from '../../types';
 
+interface SearchUser {
+  id: number;
+  username: string;
+}
+
 function Friends() {
+  const { t } = useTranslation();
   const { user, removeFriend, addFriend, findUserByUsername } = useContext(AuthContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [friendToRemove, setFriendToRemove] = useState<Friend | null>(null);
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState('');
   const [manualUsername, setManualUsername] = useState('');
+  const [allUsers, setAllUsers] = useState<SearchUser[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [errorUsers, setErrorUsers] = useState('');
+
+  useEffect(() => {
+    if (showAddFriendModal && allUsers.length === 0) {
+      fetchUsers();
+    }
+  }, [showAddFriendModal]);
+
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    setErrorUsers('');
+    try {
+      const users = await api.searchUsers('');
+      setAllUsers(users);
+    } catch (err) {
+      setErrorUsers('Failed to load users');
+      console.error(err);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
 
   if (!user) {
     return null;
   }
 
-  const availableUsers = user.friends.length > 0
-    ? [
-        { id: 1, username: 'Felix', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix', chat: [] },
-        { id: 2, username: 'Luna', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna', chat: [] },
-        { id: 3, username: 'Alex', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex', chat: [] },
-        { id: 4, username: 'Max', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Max', chat: [] },
-      ].filter((u) => !user.friends.some((f) => f.id === u.id))
-    : [];
+  const availableUsers = allUsers
+    .filter((u) => u.id !== user.id)
+    .filter((u) => !user.friends.some((f) => f.id === u.id))
+    .map((u) => ({
+      id: u.id,
+      username: u.username,
+      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`,
+      chat: [],
+    }));
 
   const handleRemoveClick = (friend: Friend) => {
     setFriendToRemove(friend);
@@ -47,25 +86,44 @@ function Friends() {
     }
   };
 
-  const handleAddManual = () => {
+  const handleAddManual = async () => {
     if (!manualUsername.trim()) return;
-    const foundUser = findUserByUsername(manualUsername.trim());
-    if (foundUser && !user.friends.some((f) => f.id === foundUser.id)) {
-      addFriend({ id: foundUser.id, username: foundUser.username, avatar: foundUser.avatar, chat: [] });
-      setManualUsername('');
-      setShowAddFriendModal(false);
+    setLoadingUsers(true);
+    setErrorUsers('');
+    try {
+      const users = await api.searchUsers(manualUsername.trim());
+      const foundUser = users.find(
+        (u) => u.username.toLowerCase() === manualUsername.trim().toLowerCase()
+      );
+      if (foundUser && !user.friends.some((f) => f.id === foundUser.id)) {
+        addFriend({
+          id: foundUser.id,
+          username: foundUser.username,
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${foundUser.username}`,
+          chat: [],
+        });
+        setManualUsername('');
+        setShowAddFriendModal(false);
+      } else {
+        setErrorUsers('User not found');
+      }
+    } catch (err) {
+      setErrorUsers('Failed to find user');
+      console.error(err);
+    } finally {
+      setLoadingUsers(false);
     }
   };
 
   return (
     <div className="friends-page">
       <div className="friends-header">
-        <h1 className="profile-page-title">Friends</h1>
+        <h1 className="profile-page-title">{t('friends.title')}</h1>
         <button className="btn btn-primary btn-small" onClick={() => setShowAddFriendModal(true)}>
-          + Add Friend
+          + {t('friends.addFriend')}
         </button>
       </div>
-      <p className="profile-page-subtitle">You have {user.friends.length} friends</p>
+      <p className="profile-page-subtitle">{t('friends.youHave')} {user.friends.length} {t('friends.title').toLowerCase()}</p>
 
       <div className="friends-list">
         {user.friends.map((friend) => (
@@ -73,18 +131,21 @@ function Friends() {
             <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
             <div className="friend-info">
               <span className="friend-name">{friend.username}</span>
+              <span className={`friend-status ${friend.isOnline ? 'online' : 'offline'}`}>
+                {friend.isOnline ? t('common.online') : t('common.offline')}
+              </span>
             </div>
             <Link
               to={`/profile/friends/${friend.id}`}
               className="btn btn-secondary btn-small"
             >
-              Chat
+              {t('friends.chat')}
             </Link>
             <button
               className="btn btn-secondary btn-small"
               onClick={() => handleRemoveClick(friend)}
             >
-              Remove
+              {t('friends.remove')}
             </button>
           </div>
         ))}
@@ -92,8 +153,8 @@ function Friends() {
 
       {user.friends.length === 0 && (
         <div className="empty-state">
-          <p>You have no friends yet.</p>
-          <p className="empty-hint">Find collaborators on the home page!</p>
+          <p>{t('friends.noFriends')}</p>
+          <p className="empty-hint">{t('teams.findCollaborators')}</p>
         </div>
       )}
 
@@ -101,16 +162,16 @@ function Friends() {
         <div className="modal-overlay" onClick={() => setShowRemoveModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Remove Friend</h2>
+              <h2>{t('friends.removeFriend') || 'Remove Friend'}</h2>
               <button className="modal-close" onClick={() => setShowRemoveModal(false)}>&times;</button>
             </div>
             <div className="modal-body">
               <p className="remove-member-message">
-                Are you sure you want to remove <strong>{friendToRemove?.username}</strong> from your friends?
+                {t('friends.confirmRemove') || 'Are you sure you want to remove'} <strong>{friendToRemove?.username}</strong> {t('friends.fromFriends') || 'from your friends'}?
               </p>
               <div className="remove-member-actions">
-                <button className="btn btn-secondary" onClick={() => setShowRemoveModal(false)}>Cancel</button>
-                <button className="btn btn-danger" onClick={handleConfirmRemove}>Remove</button>
+                <button className="btn btn-secondary" onClick={() => setShowRemoveModal(false)}>{t('common.cancel')}</button>
+                <button className="btn btn-danger" onClick={handleConfirmRemove}>{t('friends.remove')}</button>
               </div>
             </div>
           </div>
@@ -121,45 +182,55 @@ function Friends() {
         <div className="modal-overlay" onClick={() => setShowAddFriendModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Add Friend</h2>
+              <h2>{t('friends.addFriend')}</h2>
               <button className="modal-close" onClick={() => setShowAddFriendModal(false)}>&times;</button>
             </div>
             <div className="modal-body">
               <div className="add-member-method">
-                <label className="input-label">Select from Users</label>
+                <label className="input-label">{t('friends.selectFromUsers') || 'Select from Users'}</label>
                 <div className="add-member-row">
-                  <select
-                    className="input"
-                    value={selectedUser}
-                    onChange={(e) => setSelectedUser(e.target.value)}
-                  >
-                    <option value="">Select a user...</option>
-                    {availableUsers.map((u) => (
-                      <option key={u.id} value={u.username}>{u.username}</option>
-                    ))}
-                  </select>
-                  <button className="btn btn-primary" onClick={handleAddFromDropdown}>Add</button>
+                  {loadingUsers && allUsers.length === 0 ? (
+                    <span className="loading-text">Loading users...</span>
+                  ) : (
+                    <>
+                      <select
+                        className="input"
+                        value={selectedUser}
+                        onChange={(e) => setSelectedUser(e.target.value)}
+                      >
+                        <option value="">{t('teams.selectFriend')}</option>
+                        {availableUsers.map((u) => (
+                          <option key={u.id} value={u.username}>{u.username}</option>
+                        ))}
+                      </select>
+                      <button className="btn btn-primary" onClick={handleAddFromDropdown}>{t('friends.addFriend')}</button>
+                    </>
+                  )}
                 </div>
               </div>
 
-              <div className="add-member-divider">OR</div>
+              <div className="add-member-divider">{t('teams.or')}</div>
 
               <div className="add-member-method">
-                <label className="input-label">Add by Username</label>
+                <label className="input-label">{t('teams.addByUsername')}</label>
                 <div className="add-member-row">
                   <input
                     type="text"
-                    placeholder="Enter username"
+                    placeholder={t('teams.enterUsername')}
                     className="input"
                     value={manualUsername}
                     onChange={(e) => setManualUsername(e.target.value)}
                   />
-                  <button className="btn btn-primary" onClick={handleAddManual}>Add</button>
+                  <button className="btn btn-primary" onClick={handleAddManual} disabled={loadingUsers}>
+                    {loadingUsers ? '...' : t('common.add')}
+                  </button>
                 </div>
               </div>
 
-              {availableUsers.length === 0 && user.friends.length > 0 && (
-                <p className="empty-hint text-center">No users available to add</p>
+              {errorUsers && <p className="error-text">{errorUsers}</p>}
+
+              {availableUsers.length === 0 && user.friends.length > 0 && !loadingUsers && (
+                <p className="empty-hint text-center">{t('friends.noUsersToAdd') || 'No users available to add'}</p>
               )}
             </div>
           </div>
