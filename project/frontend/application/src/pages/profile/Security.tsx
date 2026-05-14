@@ -30,17 +30,18 @@ function Security() {
         <p className="security-description">
           {t('profile.security.twoFactorDesc')}
         </p>
-        <label className="security-toggle">
-          <input
-            type="checkbox"
-            checked={user.twoFactorEnabled}
-            onChange={toggle2FA}
-          />
-          <span className="toggle-switch"></span>
-          <span className="toggle-text">
-            {user.twoFactorEnabled ? t('profile.security.enable') : t('profile.security.disable')}
-          </span>
-        </label>
+        <div className="security-toggle">
+          <label className="security-toggle-label">
+            <input
+              type="checkbox"
+              checked={user.twoFactorEnabled}
+              onChange={toggle2FA}
+            />
+            <span className="toggle-text">
+              {user.twoFactorEnabled ? t('profile.security.enable') : t('profile.security.disable')}
+            </span>
+          </label>
+        </div>
       </div>
     </div>
   );
