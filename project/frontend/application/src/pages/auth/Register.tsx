@@ -1,16 +1,76 @@
+/**
+ * Registration Page Component
+ * 
+ * New user registration page with validation.
+ * 
+ * Validation:
+ * - Username required
+ * - Email format validation
+ * - Password required
+ * - Confirm password must match
+ * 
+ * Mock Mode: Shows "not implemented" alert
+ * Real Mode: Calls api.register() to create account
+ */
+
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import AuthLayout from '../../components/layouts/AuthLayout';
+import { api } from '../../services/api';
+
+const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function Register() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Registration is not yet implemented. Please use the 42 login option.');
+    setError('');
+
+    if (!USE_MOCK) {
+      if (!username.trim()) {
+        setError('Username is required');
+        return;
+      }
+      if (!email) {
+        setError('Email is required');
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setError('Please enter a valid email address');
+        return;
+      }
+      if (!password) {
+        setError('Password is required');
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        return;
+      }
+
+      setLoading(true);
+      try {
+        const result = await api.register({ email, username, password });
+        localStorage.setItem('authToken', result.token);
+        window.location.href = '/';
+      } catch (err: any) {
+        setError(err.message || 'Registration failed. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert('Registration is not yet implemented. Please use the 42 login option.');
+    }
   };
 
   return (
@@ -18,56 +78,61 @@ function Register() {
       <h1 className="auth-title">Transcendence</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '1rem' }}>
-          <label className="label" htmlFor="username">Username</label>
+          <label className="label" htmlFor="username">{t('auth.register.username')}</label>
           <input
             type="text"
             id="username"
             className="input"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Choose a username"
+            placeholder={t('auth.register.usernamePlaceholder')}
           />
         </div>
         <div style={{ marginBottom: '1rem' }}>
-          <label className="label" htmlFor="email">Email (optional)</label>
+          <label className="label" htmlFor="email">{t('auth.register.email')} ({t('common.optional')})</label>
           <input
             type="email"
             id="email"
             className="input"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
+            placeholder={t('auth.register.emailPlaceholder')}
           />
         </div>
         <div style={{ marginBottom: '1rem' }}>
-          <label className="label" htmlFor="password">Password</label>
+          <label className="label" htmlFor="password">{t('auth.register.password')}</label>
           <input
             type="password"
             id="password"
             className="input"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Create a password"
+            placeholder={t('auth.register.passwordPlaceholder')}
           />
         </div>
         <div style={{ marginBottom: '1.5rem' }}>
-          <label className="label" htmlFor="confirmPassword">Confirm Password</label>
+          <label className="label" htmlFor="confirmPassword">{t('auth.register.confirmPassword')}</label>
           <input
             type="password"
             id="confirmPassword"
             className="input"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="Confirm your password"
+            placeholder={t('auth.register.confirmPasswordPlaceholder')}
           />
         </div>
-        <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }}>
-          Register
-        </button>
-        <div style={{ textAlign: 'center' }}>
-          <span style={{ color: 'var(--text-secondary)' }}>Already have an account? </span>
-          <Link to="/login" style={{ color: 'var(--accent)' }}>Sign in</Link>
-        </div>
+<button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading}>
+            {loading ? t('common.loading') : t('auth.register.submit')}
+          </button>
+          {error && (
+            <div style={{ color: '#ef4444', marginBottom: '1rem', textAlign: 'center', fontSize: '0.875rem' }}>
+              {error}
+            </div>
+          )}
+          <div style={{ textAlign: 'center' }}>
+            <span style={{ color: 'var(--text-secondary)' }}>{t('auth.register.hasAccount')} </span>
+            <Link to="/login" style={{ color: 'var(--accent)' }}>{t('auth.register.login')}</Link>
+          </div>
       </form>
     </AuthLayout>
   );

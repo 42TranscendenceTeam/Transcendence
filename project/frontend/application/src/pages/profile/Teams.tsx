@@ -1,5 +1,15 @@
+/**
+ * Teams List Page Component
+ * 
+ * Displays all teams the user is member of.
+ * Mock data currently used.
+ * 
+ * TODO: Connect to real API when backend is ready
+ */
+
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 
 const TEAM_DETAILS = [
@@ -53,6 +63,7 @@ const MOCK_TEAMS = [
 ];
 
 function Teams() {
+  const { t } = useTranslation();
   const { user, createTeam } = useContext(AuthContext);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newTeam, setNewTeam] = useState({
@@ -94,23 +105,23 @@ function Teams() {
   return (
     <div className="teams-page">
       <div className="teams-header">
-        <h1 className="profile-page-title">Teams</h1>
+        <h1 className="profile-page-title">{t('teams.title')}</h1>
         <div className="teams-header-buttons">
           <button
             className={`btn btn-small ${showDiscovery ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setShowDiscovery(!showDiscovery)}
           >
-            {showDiscovery ? 'My Teams' : 'Discover Teams'}
+            {showDiscovery ? t('teams.myTeams') : t('teams.discover') || 'Discover Teams'}
           </button>
           <button className="btn btn-primary btn-small" onClick={() => setShowCreateModal(true)}>
-            + Create Team
+            + {t('teams.createTeam')}
           </button>
         </div>
       </div>
 
       {!showDiscovery && (
         <>
-          <p className="profile-page-subtitle">You are in {user.teams.length} active teams</p>
+          <p className="profile-page-subtitle">{t('teams.youAreIn') || 'You are in'} {user.teams.length} {t('teams.activeTeams') || 'active teams'}</p>
 
           <div className="teams-list">
             {user.teams.map((team) => (
@@ -119,15 +130,17 @@ function Teams() {
                   <span className="team-name">{team.name}</span>
                   <span className="team-role">{team.role}</span>
                 </div>
-                <span className={`team-status ${team.status}`}>{team.status}</span>
+                <span className={`team-status ${team.status}`}>
+                  {team.status === 'active' ? t('teams.active') : team.status === 'finished' ? t('teams.finished') : team.status}
+                </span>
               </Link>
             ))}
           </div>
 
           {user.teams.length === 0 && (
             <div className="empty-state">
-              <p>You are not in any team yet.</p>
-              <p className="empty-hint">Find collaborators on the home page!</p>
+              <p>{t('teams.noTeams')}</p>
+              <p className="empty-hint">{t('teams.findCollaborators') || 'Find collaborators on the home page!'}</p>
             </div>
           )}
         </>
@@ -135,7 +148,7 @@ function Teams() {
 
       {showDiscovery && (
         <>
-          <p className="profile-page-subtitle">Open teams you can join</p>
+          <p className="profile-page-subtitle">{t('teams.openTeams') || 'Open teams you can join'}</p>
 
           <div className="teams-list">
             {availableTeams.map((team) => (
@@ -152,7 +165,7 @@ function Teams() {
                 <div className="team-meta">
                   <span className="team-members-count">{team.members.length}/{team.lookingFor}</span>
                   <button className="btn btn-secondary btn-small" onClick={() => handleJoinTeam(team)}>
-                    Join
+                    {t('teams.join')}
                   </button>
                 </div>
               </div>
@@ -161,8 +174,8 @@ function Teams() {
 
           {availableTeams.length === 0 && (
             <div className="empty-state">
-              <p>No teams available to join.</p>
-              <p className="empty-hint">Check back later!</p>
+              <p>{t('teams.noAvailable') || 'No teams available to join.'}</p>
+              <p className="empty-hint">{t('teams.checkLater') || 'Check back later!'}</p>
             </div>
           )}
         </>
@@ -172,16 +185,16 @@ function Teams() {
         <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Create Team</h2>
+              <h2>{t('teams.createTeam')}</h2>
               <button className="modal-close" onClick={() => setShowCreateModal(false)}>&times;</button>
             </div>
             <form onSubmit={handleCreateTeam} className="modal-body">
               <div className="form-group">
-                <label className="input-label">Team Name</label>
+                <label className="input-label">{t('teams.teamName')}</label>
                 <input
                   type="text"
                   className="input"
-                  placeholder="Enter team name"
+                  placeholder={t('teams.teamNamePlaceholder')}
                   value={newTeam.name}
                   onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })}
                   required
@@ -189,10 +202,10 @@ function Teams() {
               </div>
 
               <div className="form-group">
-                <label className="input-label">Description</label>
+                <label className="input-label">{t('teams.teamDescription')}</label>
                 <textarea
                   className="input textarea"
-                  placeholder="Describe your team's goal"
+                  placeholder={t('teams.teamDescriptionPlaceholder')}
                   value={newTeam.description}
                   onChange={(e) => setNewTeam({ ...newTeam, description: e.target.value })}
                   rows={3}
@@ -201,7 +214,7 @@ function Teams() {
               </div>
 
               <div className="form-group">
-                <label className="input-label">Looking for (number of members)</label>
+                <label className="input-label">{t('teams.lookingFor') || 'Looking for (number of members)'}</label>
                 <input
                   type="number"
                   className="input"
@@ -213,7 +226,7 @@ function Teams() {
               </div>
 
               <div className="form-group">
-                <label className="input-label">Details (select all that apply)</label>
+                <label className="input-label">{t('teams.details') || 'Details (select all that apply)'}</label>
                 <div className="team-details-select">
                   {TEAM_DETAILS.map((detail) => (
                     <button
@@ -230,10 +243,10 @@ function Teams() {
 
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowCreateModal(false)}>
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  Create
+                  {t('teams.create')}
                 </button>
               </div>
             </form>

@@ -2,6 +2,10 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+#vafernan - 11.05 - set backend API URL
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 COPY ./application .
 
 RUN npm install

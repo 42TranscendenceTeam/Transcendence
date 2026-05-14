@@ -1,42 +1,68 @@
+/**
+ * Terms of Service Page Component
+ * 
+ * Displays the application's terms of service.
+ * Static content page.
+ */
+
+import { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import { AuthContext } from '../../context/AuthContext';
 import AuthLayout from '../../components/layouts/AuthLayout';
+import ProfileLayout from '../../components/layouts/ProfileLayout';
 
 function TermsOfService() {
-  return (
-    <AuthLayout>
-      <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 600 }}>Terms of Service</h1>
+  const { t } = useTranslation();
+  const { user } = useContext(AuthContext);
+
+  const pageContent = (
+    <div style={{ maxWidth: '400px', margin: '0 auto' }}>
+        <h1 style={{ textAlign: 'center', marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 600 }}>{t('legal.terms.title')}</h1>
         
         <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: '1.7' }}>
           <p style={{ marginBottom: '1rem' }}>
-            By using Transcendence, you agree to these Terms of Service. Please read them carefully before using our service.
+            {t('legal.terms.intro')}
           </p>
           
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Acceptable Use</h2>
+          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('legal.terms.acceptableUse')}</h2>
           <p style={{ marginBottom: '1rem' }}>
-            You agree to use the service in accordance with all applicable laws and regulations. You will not engage in any activity that interferes with or disrupts the service.
+            {t('legal.terms.acceptableUseText')}
           </p>
           
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Account Responsibilities</h2>
+          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('legal.terms.accountResponsibilities')}</h2>
           <p style={{ marginBottom: '1rem' }}>
-            You are responsible for maintaining the security of your account and for all activities that occur under your account.
+            {t('legal.terms.accountResponsibilitiesText')}
           </p>
           
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Intellectual Property</h2>
+          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('legal.terms.intellectualProperty')}</h2>
           <p style={{ marginBottom: '1rem' }}>
-            The service and its content are protected by copyright and other intellectual property rights. You may not copy, modify, or distribute our content without our permission.
+            {t('legal.terms.intellectualPropertyText')}
           </p>
           
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Limitation of Liability</h2>
+          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('legal.terms.limitationLiability')}</h2>
           <p style={{ marginBottom: '1rem' }}>
-            The service is provided "as is" without any warranties. We will not be liable for any damages arising from your use of the service.
+            {t('legal.terms.limitationLiabilityText')}
           </p>
           
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>Changes to Terms</h2>
+          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('legal.terms.changesToTerms')}</h2>
           <p>
-            We reserve the right to modify these terms at any time. Your continued use of the service constitutes acceptance of any changes.
+            {t('legal.terms.changesToTermsText')}
           </p>
         </div>
-      </div>
+    </div>
+  );
+
+  if (user) {
+    return (
+      <ProfileLayout>
+        {pageContent}
+      </ProfileLayout>
+    );
+  }
+
+  return (
+    <AuthLayout>
+      {pageContent}
     </AuthLayout>
   );
 }

@@ -1,0 +1,1082 @@
+/*
+ * Teams page header
+ */
+.teams-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+/*
+ * Teams header buttons container
+ */
+.teams-header-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/*
+ * Teams list container
+ */
+.teams-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/*
+ * Team card component
+ */
+.team-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/*
+ * Team card hover effect
+ */
+.team-card:hover {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+}
+
+/*
+ * Team card link reset
+ */
+.team-card,
+.team-card:hover {
+  text-decoration: none;
+}
+
+/*
+ * Team card anchor reset
+ */
+.team-card a,
+.team-card a:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+/*
+ * Team card text reset on hover
+ */
+.team-card:hover .team-name,
+.team-card:hover .team-description {
+  text-decoration: none;
+}
+
+/*
+ * Team info container
+ */
+.team-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+/*
+ * Team name
+ */
+.team-name {
+  font-weight: 500;
+}
+
+/*
+ * Team role badge
+ */
+.team-role {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * Team description
+ */
+.team-description {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * Team details tags container
+ */
+.team-details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.25rem;
+}
+
+/*
+ * Team detail tag
+ */
+.team-detail-tag {
+  font-size: 0.625rem;
+  padding: 0.125rem 0.375rem;
+  background: var(--bg-primary);
+  border-radius: 0.25rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * Team meta information
+ */
+.team-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+}
+
+/*
+ * Team members count
+ */
+.team-members-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/*
+ * Team status badge
+ */
+.team-status {
+  font-size: 0.625rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  text-transform: capitalize;
+}
+
+/*
+ * Team status active/open
+ */
+.team-status.active,
+.team-status.open {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+/*
+ * Team status finished
+ */
+.team-status.finished {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+}
+
+/* ========================================
+   Team Detail Page
+   ======================================== */
+
+/*
+ * Team detail page container
+ */
+.team-detail-page {
+  width: 100%;
+  max-width: 100%;
+  padding: 0 1rem;
+}
+
+/*
+ * Team detail header
+ */
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+/*
+ * Team header content
+ */
+.team-header-content {
+  flex: 1;
+}
+
+/*
+ * Team header centered (detail page variant)
+ */
+.team-detail-page .team-header {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+/*
+ * Team title
+ */
+.team-title {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/*
+ * Title gradient effect
+ */
+.title-gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, #89d4e8 50%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/*
+ * Team objective text
+ */
+.team-objective {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/*
+ * Team section container
+ */
+.team-section {
+  margin-bottom: 1.5rem;
+}
+
+/*
+ * Section header
+ */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+/*
+ * Section header title override
+ */
+.section-header .team-section-title {
+  margin-bottom: 0;
+}
+
+/* ========================================
+   Task Counts
+   ======================================== */
+
+/*
+ * Task counts container
+ */
+.task-counts {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+}
+
+/*
+ * Task counts label
+ */
+.task-counts-label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/*
+ * Task count badge
+ */
+.task-count {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/*
+ * Task count total
+ */
+.task-count.total {
+  background: transparent;
+  border: 1px solid #3498db;
+  color: #3498db;
+}
+
+/*
+ * Task count to_do
+ */
+.task-count.to_do {
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+}
+
+/*
+ * Task count in_progress
+ */
+.task-count.in_progress {
+  background: rgba(243, 156, 18, 0.15);
+  color: #f39c12;
+}
+
+/*
+ * Task count done
+ */
+.task-count.done {
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+}
+
+/*
+ * Team section title
+ */
+.team-section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+/* ========================================
+   Task Form
+   ======================================== */
+
+/*
+ * Task form container
+ */
+.task-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/*
+ * Task form row
+ */
+.task-form-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/*
+ * Task form row children
+ */
+.task-form-row select,
+.task-form-row .btn {
+  flex: 1;
+}
+
+/*
+ * Task form row first child
+ */
+.task-form-row select:first-child {
+  flex: 2;
+}
+
+/*
+ * Task status select dropdown
+ */
+.task-status-select {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/*
+ * Task status select hover/focus
+ */
+.task-status-select:hover,
+.task-status-select:focus {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 8px var(--neon-purple);
+  outline: none;
+}
+
+/* ========================================
+   Task Filters
+   ======================================== */
+
+/*
+ * Task filters container
+ */
+.task-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/*
+ * Filter select dropdown
+ */
+.filter-select {
+  min-width: 140px;
+  font-size: 0.75rem;
+  padding: 0.375rem 0.5rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/*
+ * Filter select hover/focus
+ */
+.filter-select:hover,
+.filter-select:focus {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 8px var(--neon-purple);
+  outline: none;
+}
+
+/* ========================================
+   Assigned Select
+   ======================================== */
+
+/*
+ * Assigned select dropdown
+ */
+.assigned-select {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  max-width: 100px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/*
+ * Assigned select hover/focus
+ */
+.assigned-select:hover,
+.assigned-select:focus {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 8px var(--neon-purple);
+  outline: none;
+}
+
+/* ========================================
+   File Upload
+   ======================================== */
+
+/*
+ * File upload button
+ */
+.file-upload-btn {
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+/*
+ * File upload button hover
+ */
+.file-upload-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/*
+ * File upload button SVG
+ */
+.file-upload-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ========================================
+   Tasks Empty State
+   ======================================== */
+
+/*
+ * Tasks empty state
+ */
+.tasks-empty {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+/* ========================================
+   Members
+   ======================================== */
+
+/*
+ * Members list container
+ */
+.members-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+/*
+ * Member card
+ */
+.member-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
+  position: relative;
+}
+
+/*
+ * Member avatar
+ */
+.member-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+/*
+ * Member name
+ */
+.member-name {
+  font-weight: 500;
+}
+
+/*
+ * Member role badge
+ */
+.member-role {
+  font-size: 0.75rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+}
+
+/*
+ * Member role leader
+ */
+.member-role.leader {
+  background: rgba(62, 175, 209, 0.2);
+  color: var(--accent);
+}
+
+/*
+ * Member role member
+ */
+.member-role.member {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+}
+
+/* ========================================
+   Tasks Table
+   ======================================== */
+
+/*
+ * Tasks table container
+ */
+.tasks-table {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow-x: auto;
+}
+
+/*
+ * Tasks table header row
+ */
+.tasks-header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-primary);
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  min-width: 700px;
+}
+
+/*
+ * Task table row
+ */
+.task-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+  align-items: center;
+  min-width: 700px;
+}
+
+/*
+ * Task row last child
+ */
+.task-row:last-child {
+  border-bottom: none;
+}
+
+/*
+ * Task row title
+ */
+.task-row .task-title {
+  font-weight: 500;
+}
+
+/*
+ * Task row description
+ */
+.task-row .task-description {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+}
+
+/*
+ * Task status badge (table variant)
+ */
+.task-status {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+/*
+ * Status todo
+ */
+.status-todo {
+  background: rgba(107, 114, 128, 0.2);
+  color: #9ca3af;
+}
+
+/*
+ * Status progress
+ */
+.status-progress {
+  background: rgba(62, 175, 209, 0.2);
+  color: var(--accent);
+}
+
+/*
+ * Status done
+ */
+.status-done {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--success);
+}
+
+/*
+ * Task files container
+ */
+.task-files {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/*
+ * File item
+ */
+.file-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+
+/*
+ * File icon
+ */
+.file-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* ========================================
+   Team Actions
+   ======================================== */
+
+/*
+ * Team actions container
+ */
+.team-actions {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+/*
+ * Outline danger button
+ */
+.btn-outline-danger {
+  background: transparent;
+  border: 1px solid var(--error);
+  color: var(--error);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/*
+ * Outline danger button hover
+ */
+.btn-outline-danger:hover {
+  background: var(--error);
+  color: white;
+}
+
+/*
+ * Danger button
+ */
+.btn-danger {
+  background: var(--error);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/*
+ * Danger button hover
+ */
+.btn-danger:hover {
+  background: #dc2626;
+}
+
+/*
+ * Leave confirmation modal
+ */
+.leave-confirm {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+/*
+ * Leave confirm paragraph
+ */
+.leave-confirm p {
+  margin-bottom: 1rem;
+}
+
+/*
+ * Leave confirm buttons
+ */
+.leave-confirm-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* ========================================
+   Team Header Detail
+   ======================================== */
+
+/*
+ * Team header meta container
+ */
+.team-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/*
+ * Team header meta members count
+ */
+.team-header-meta .team-members-count {
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-primary);
+  border-radius: 0.5rem;
+}
+
+/*
+ * Team status select dropdown
+ */
+.team-status-select {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/*
+ * Team status select active
+ */
+.team-status-select.active {
+  border-color: #2ecc71;
+  color: #2ecc71;
+}
+
+/*
+ * Team status select finished
+ */
+.team-status-select.finished {
+  border-color: #e74c3c;
+  color: #e74c3c;
+}
+
+/*
+ * Team status select disabled
+ */
+.team-status-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ========================================
+   Team Details Select
+   ======================================== */
+
+/*
+ * Detail tag
+ */
+.detail-tag {
+  font-size: 0.625rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/*
+ * Detail tag hover
+ */
+.detail-tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/*
+ * Detail tag selected
+ */
+.detail-tag.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+/*
+ * Team details select container
+ */
+.team-details-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+/* ========================================
+   Modal Actions
+   ======================================== */
+
+/*
+ * Modal actions container
+ */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/*
+ * Form group for modal
+ */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+/*
+ * Input label
+ */
+.form-group .input-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.375rem;
+}
+
+/*
+ * Team status uppercase variant
+ */
+.team-status {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+/*
+ * Team status active variant
+ */
+.team-status.active {
+  background: rgba(16, 185, 129, 0.2);
+  color: var(--success);
+}
+
+/* ========================================
+   Add Member
+   ======================================== */
+
+/*
+ * Add member method container
+ */
+.add-member-method {
+  margin-bottom: 1rem;
+}
+
+/*
+ * Add member row
+ */
+.add-member-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/*
+ * Add member row input
+ */
+.add-member-row .input {
+  flex: 1;
+}
+
+/*
+ * Add member divider
+ */
+.add-member-divider {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  margin: 1rem 0;
+  position: relative;
+}
+
+/*
+ * Add member divider before/after
+ */
+.add-member-divider::before,
+.add-member-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 40%;
+  height: 1px;
+  background: var(--border);
+}
+
+/*
+ * Add member divider before
+ */
+.add-member-divider::before {
+  left: 0;
+}
+
+/*
+ * Add member divider after
+ */
+.add-member-divider::after {
+  right: 0;
+}
+
+/*
+ * Add member role container
+ */
+.add-member-role {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+/*
+ * Add member role input
+ */
+.add-member-role .input {
+  flex: 1;
+}
+
+/* ========================================
+   Remove Member Modal
+   ======================================== */
+
+/*
+ * Remove member message
+ */
+.remove-member-message {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+/*
+ * Remove member actions
+ */
+.remove-member-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+/*
+ * Remove member button
+ */
+.btn-remove-member {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  transition: all 0.2s;
+}
+
+/*
+ * Remove member button hover
+ */
+.btn-remove-member:hover {
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+}
+
+/*
+ * Remove member button SVG
+ */
+.btn-remove-member svg {
+  width: 18px;
+  height: 18px;
+}

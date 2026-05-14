@@ -1,16 +1,27 @@
+/**
+ * Feed Page Component
+ * 
+ * Main feed displaying activity and tasks across teams.
+ * 
+ * TODO: Connect to real API when backend is ready
+ */
+
 import { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import FeedLayout from '../../components/layouts/FeedLayout';
 
 function RotatingText() {
+  const { t } = useTranslation();
+
   const phrases = [
-    "Find your team. Share ideas. Build something great.",
-    "Team up, collaborate, and turn ideas into reality.",
-    "Connect. Collaborate. Create.",
-    "Great things happen when the right people build together.",
-    "From ideas to impact — together.",
-    "Join a team, spark ideas, and build what matters."
+    t('feed.rotatingPhrase1'),
+    t('feed.rotatingPhrase2'),
+    t('feed.rotatingPhrase3'),
+    t('feed.rotatingPhrase4'),
+    t('feed.rotatingPhrase5'),
+    t('feed.rotatingPhrase6'),
   ];
 
   const [index, setIndex] = useState(0);
@@ -27,6 +38,7 @@ function RotatingText() {
 }
 
 function Feed() {
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   
   const taskItems = [
@@ -59,30 +71,27 @@ function Feed() {
     },
   ];
 
+  const headerContent = (
+    <div className="feed-header">
+      {!user && (
+        <Link to="/login" className="welcome-user">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="welcome-avatar">
+            <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.895A15.309 15.309 0 0112 21c-2.17 0-4.207-.316-6.061-1.777a.75.75 0 01-.437-.895z" clipRule="evenodd" />
+          </svg>
+          <span className="welcome-text">{t('auth.login.title')}</span>
+        </Link>
+      )}
+      <h1 className="feed-title">
+        <span className="title-transcendence">Transcendence</span>
+      </h1>
+      <p className="feed-subtitle">
+        <RotatingText />
+      </p>
+    </div>
+  );
+
   return (
-    <FeedLayout>
-      <div className="feed-header">
-        {user && (
-          <Link to="/profile" className="welcome-user">
-            <img src={user.avatar} alt={user.username} className="welcome-avatar" />
-            <span className="welcome-text">Back to work {user.username}?</span>
-          </Link>
-        )}
-        {!user && (
-          <Link to="/login" className="welcome-user">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="welcome-avatar">
-              <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.895A15.309 15.309 0 0112 21c-2.17 0-4.207-.316-6.061-1.777a.75.75 0 01-.437-.895z" clipRule="evenodd" />
-            </svg>
-            <span className="welcome-text">Login</span>
-          </Link>
-        )}
-        <h1 className="feed-title">
-          <span className="title-transcendence">Transcendence</span>
-        </h1>
-        <p className="feed-subtitle">
-          <RotatingText />
-        </p>
-      </div>
+    <FeedLayout header={headerContent}>
       <div className="feed-list">
         {taskItems.map((task) => (
           <div key={task.id} className="task-card">
@@ -102,9 +111,9 @@ function Feed() {
             </div>
             <div className="task-footer">
               <span className="task-looking">
-                Looking for <strong>{task.lookingFor}</strong> collaborator{task.lookingFor > 1 ? 's' : ''}
+                {t('feed.lookingFor') || 'Looking for'} <strong>{task.lookingFor}</strong> {task.lookingFor > 1 ? t('feed.collaborators') : t('feed.collaborator')}
               </span>
-              <button className="btn btn-primary btn-small">Join</button>
+              <button className="btn btn-primary btn-small">{t('teams.join')}</button>
             </div>
           </div>
         ))}
