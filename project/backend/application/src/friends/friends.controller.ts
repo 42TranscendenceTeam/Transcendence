@@ -21,7 +21,7 @@ export const getReceivedFriendRequestsController = async (req: AuthRequest, res:
 export const sendFriendRequestController = async (req: AuthRequest, res: Response) => {
 	const { receiverId } = req.body;
 
-	if (!receiverId)
+	if (!receiverId || Number.isNaN(Number(receiverId)))
 		throw new AppError("Mandatory valid receiver ID.", 400);
 
 	const request = await sendFriendRequest(req.user!.id, Number(receiverId));
@@ -48,7 +48,7 @@ export const rejectFriendRequestController = async (req: AuthRequest, res: Respo
 
 	const request = await rejectFriendRequest(req.user!.id, requestId);
 
-	return res.status(201).json(request);
+	return res.status(200).json(request);
 };
 
 export const deleteFriendController = async (req: AuthRequest, res: Response) => {
