@@ -92,7 +92,6 @@ export interface TeamData {
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  loginTestUser: () => void;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
   toggle2FA: () => void;

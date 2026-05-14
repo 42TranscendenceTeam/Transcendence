@@ -51,25 +51,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loadUser();
   }, []);
 
-  const loginTestUser = async () => {
-    const result = await api.login({ 
-      email: 'testuser@student.42', 
-      password: 'pass12345' 
-    });
-    localStorage.setItem('authToken', result.token);
-    setUser({
-      id: Number(result.user.id),
-      username: result.user.username,
-      email: result.user.email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${result.user.username}`,
-      description: '',
-      twoFactorEnabled: false,
-      friends: [],
-      teams: [],
-      globalChat: [],
-    });
-  };
-
   const logout = () => {
     localStorage.removeItem('authToken');
     setUser(null);
@@ -316,7 +297,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     <AuthContext.Provider value={{
       user,
       loading,
-      loginTestUser,
       logout,
       updateUser,
       toggle2FA,

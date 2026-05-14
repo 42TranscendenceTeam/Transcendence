@@ -35,8 +35,6 @@
       "noAccount": "Não tem uma conta?",
       "register": "Registar",
       "forgotPassword": "Esqueceu a palavra-passe?",
-      "justTesting": "Só a testar?",
-      "useTestLogin": "Usar TestLogin",
       "twoFactorTitle": "Autenticação de Dois Fatores",
       "twoFactorDesc": "Introduza o código de 6 dígitos da sua aplicação autenticadora",
       "verificationCode": "Código de Verificação",
