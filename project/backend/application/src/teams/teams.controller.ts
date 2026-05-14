@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import { AppError } from '../utils/AppError.js';
-import { getTeamsList, createTeam } from './teams.services.js';
+import { getTeamsList, createTeam, getTeam } from './teams.services.js';
 
 export const getTeamsListController = async (req: AuthRequest, res: Response) => {
 	const teamList = await getTeamsList();
@@ -17,4 +17,14 @@ export const createTeamController = async (req: AuthRequest, res: Response) => {
 	const team = await createTeam(req.user!.id, { name, max_users: Number(max_users), about, tags });
 
 	return res.status(201).json(team);
+};
+
+export const getTeamController = async (req: AuthRequest, res: Response) => {
+	const teamId = Number(req.params.id);
+
+	if (Number.isNaN(teamId))
+		throw new AppError("Mandatory valid team ID.", 400);
+
+	const info = await getTeam(teamId);
+	return res.json(info);
 };

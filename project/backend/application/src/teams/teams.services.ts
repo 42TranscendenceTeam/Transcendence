@@ -38,3 +38,43 @@ export const createTeam = async (userId: number, info: CreateTeamDTO) => {
 		},
 	});
 };
+
+// Return one team info with team id
+export const getTeam = async (teamId: number) => {
+
+	const team = await prisma.team.findUnique({
+		where: {
+			id: teamId,
+		},
+		select: {
+			id: true,
+			name: true,
+			owner_id: true,
+			max_users: true,
+			about: true,
+			tags: true,
+			status_ongoing: true,
+			created_at: true,
+			_count: {
+				select: {
+					team_users: true,
+				},
+			},
+		},
+	});
+
+	if (!team)
+		throw new AppError("Team not found.", 404);
+
+	return {
+		id: team.id,
+		name: team.name,
+		owner_id: team.owner_id,
+		max_users: team.max_users,
+		member_count: team._count.team_users,
+		about: team.about,
+		tags: team.tags,
+		status_ongoing: team.status_ongoing,
+		created_at: team.created_at,
+	};
+};
