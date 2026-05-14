@@ -35,6 +35,13 @@ export interface Friend {
   isOnline?: boolean;
 }
 
+export interface FriendRequest {
+  request_id: number;
+  status: 'pending' | 'accepted' | 'rejected';
+  sent_at: string;
+  user: { id: number; username: string; avatar_url: string };
+}
+
 export interface Team {
   id: number;
   name: string;
@@ -104,4 +111,10 @@ export interface AuthContextType {
   removeTeamMember: (teamId: number, memberId: number) => void;
   createTeam: (teamData: TeamData) => void;
   updateTeamStatus: (teamId: number, status: string) => void;
+  friendRequests: FriendRequest[];
+  sentRequests: FriendRequest[];
+  fetchFriendRequests: () => void;
+  acceptFriendRequest: (requestId: number) => void;
+  rejectFriendRequest: (requestId: number) => void;
+  fetchSentRequests: () => void;
 }

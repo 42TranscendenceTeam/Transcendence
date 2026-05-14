@@ -229,7 +229,9 @@
     "remove": "Remove",
     "block": "Block",
     "unfriend": "Unfriend",
-    "chat": "Chat"
+    "chat": "Chat",
+    "noReceivedRequests": "No pending requests",
+    "noSentRequests": "No pending sent requests"
   },
   "chat": {
     "title": "Chat",

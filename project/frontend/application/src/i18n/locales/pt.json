@@ -221,7 +221,9 @@
     "remove": "Remover",
     "block": "Bloquear",
     "unfriend": "Deixar de ser amigo",
-    "chat": "Conversar"
+    "chat": "Conversar",
+    "noReceivedRequests": "Sem pedidos pendentes",
+    "noSentRequests": "Sem pedidos enviados pendentes"
   },
   "chat": {
     "title": "Chat",

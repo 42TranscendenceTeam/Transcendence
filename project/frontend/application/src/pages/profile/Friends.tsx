@@ -19,7 +19,7 @@ interface SearchUser {
 
 function Friends() {
   const { t } = useTranslation();
-  const { user, removeFriend, addFriend, findUserByUsername } = useContext(AuthContext);
+  const { user, removeFriend, addFriend, friendRequests, sentRequests, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests, fetchSentRequests } = useContext(AuthContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [friendToRemove, setFriendToRemove] = useState<Friend | null>(null);
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
@@ -28,6 +28,11 @@ function Friends() {
   const [allUsers, setAllUsers] = useState<SearchUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [errorUsers, setErrorUsers] = useState('');
+
+  useEffect(() => {
+    fetchFriendRequests();
+    fetchSentRequests();
+  }, []);
 
   useEffect(() => {
     if (showAddFriendModal && allUsers.length === 0) {
@@ -68,21 +73,32 @@ function Friends() {
     setShowRemoveModal(true);
   };
 
-  const handleConfirmRemove = () => {
+  const handleConfirmRemove = async () => {
     if (friendToRemove) {
-      removeFriend(friendToRemove.id);
+      try {
+        await api.removeFriend(friendToRemove.id);
+        removeFriend(friendToRemove.id);
+      } catch (err) {
+        console.error('Failed to remove friend:', err);
+      }
       setShowRemoveModal(false);
       setFriendToRemove(null);
     }
   };
 
-  const handleAddFromDropdown = () => {
+  const handleAddFromDropdown = async () => {
     if (!selectedUser) return;
     const userToAdd = availableUsers.find((u) => u.username === selectedUser);
     if (userToAdd) {
-      addFriend(userToAdd as Friend);
-      setSelectedUser('');
-      setShowAddFriendModal(false);
+      try {
+        await api.addFriend(userToAdd.id);
+        fetchSentRequests();
+        setSelectedUser('');
+        setShowAddFriendModal(false);
+      } catch (err) {
+        setErrorUsers('Failed to send friend request');
+        console.error(err);
+      }
     }
   };
 
@@ -95,20 +111,16 @@ function Friends() {
       const foundUser = users.find(
         (u) => u.username.toLowerCase() === manualUsername.trim().toLowerCase()
       );
-      if (foundUser && !user.friends.some((f) => f.id === foundUser.id)) {
-        addFriend({
-          id: foundUser.id,
-          username: foundUser.username,
-          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${foundUser.username}`,
-          chat: [],
-        });
+      if (foundUser) {
+        await api.addFriend(foundUser.id);
+        fetchSentRequests();
         setManualUsername('');
         setShowAddFriendModal(false);
       } else {
         setErrorUsers('User not found');
       }
     } catch (err) {
-      setErrorUsers('Failed to find user');
+      setErrorUsers('Failed to send friend request');
       console.error(err);
     } finally {
       setLoadingUsers(false);
@@ -123,40 +135,145 @@ function Friends() {
           + {t('friends.addFriend')}
         </button>
       </div>
-      <p className="profile-page-subtitle">{t('friends.youHave')} {user.friends.length} {t('friends.title').toLowerCase()}</p>
 
-      <div className="friends-list">
-        {user.friends.map((friend) => (
-          <div key={friend.id} className="friend-card">
-            <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
-            <div className="friend-info">
-              <span className="friend-name">{friend.username}</span>
-              <span className={`friend-status ${friend.isOnline ? 'online' : 'offline'}`}>
-                {friend.isOnline ? t('common.online') : t('common.offline')}
-              </span>
-            </div>
-            <Link
-              to={`/profile/friends/${friend.id}`}
-              className="btn btn-secondary btn-small"
-            >
-              {t('friends.chat')}
-            </Link>
-            <button
-              className="btn btn-secondary btn-small"
-              onClick={() => handleRemoveClick(friend)}
-            >
-              {t('friends.remove')}
-            </button>
+      <div className="friend-requests-section">
+        <h2 className="section-title">{t('friends.receivedRequests')}</h2>
+        {friendRequests.length === 0 ? (
+          <p className="empty-hint">{t('friends.noReceivedRequests')}</p>
+        ) : (
+          <div className="requests-list">
+            {friendRequests.map((request) => (
+              <div key={request.request_id} className="request-card">
+                <img
+                  src={request.user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${request.user.username}`}
+                  alt={request.user.username}
+                  className="friend-avatar"
+                />
+                <span className="request-username">{request.user.username}</span>
+                <button
+                  className="btn btn-primary btn-small"
+                  onClick={() => acceptFriendRequest(request.request_id)}
+                >
+                  {t('friends.accept')}
+                </button>
+                <button
+                  className="btn btn-secondary btn-small"
+                  onClick={() => rejectFriendRequest(request.request_id)}
+                >
+                  {t('friends.reject')}
+                </button>
+              </div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
 
-      {user.friends.length === 0 && (
-        <div className="empty-state">
-          <p>{t('friends.noFriends')}</p>
-          <p className="empty-hint">{t('teams.findCollaborators')}</p>
-        </div>
-      )}
+      <div className="sent-requests-section">
+        <h2 className="section-title">{t('friends.sentRequests')}</h2>
+        {sentRequests.length === 0 ? (
+          <p className="empty-hint">{t('friends.noSentRequests')}</p>
+        ) : (
+          <div className="requests-list">
+            {sentRequests.map((request) => (
+              <div key={request.request_id} className="request-card">
+                <img
+                  src={request.user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${request.user.username}`}
+                  alt={request.user.username}
+                  className="friend-avatar"
+                />
+                <span className="request-username">{request.user.username}</span>
+                <span className="request-status">{t('friends.pending')}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="friend-requests-section">
+        <h2 className="section-title">{t('friends.receivedRequests') || 'Received Friend Requests'}</h2>
+        {friendRequests.length === 0 ? (
+          <p className="empty-hint">{t('friends.noReceivedRequests') || 'No pending requests'}</p>
+        ) : (
+          <div className="requests-list">
+            {friendRequests.map((request) => (
+              <div key={request.id} className="request-card">
+                <img src={request.from.avatar} alt={request.from.username} className="friend-avatar" />
+                <span className="request-username">{request.from.username}</span>
+                <button
+                  className="btn btn-primary btn-small"
+                  onClick={() => acceptFriendRequest(request.id)}
+                >
+                  {t('friends.accept') || 'Accept'}
+                </button>
+                <button
+                  className="btn btn-secondary btn-small"
+                  onClick={() => rejectFriendRequest(request.id)}
+                >
+                  {t('friends.reject') || 'Reject'}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="sent-requests-section">
+        <h2 className="section-title">{t('friends.sentRequests') || 'Sent Friend Requests'}</h2>
+        {sentRequests.length === 0 ? (
+          <p className="empty-hint">{t('friends.noSentRequests') || 'No pending sent requests'}</p>
+        ) : (
+          <div className="requests-list">
+            {sentRequests.map((request) => (
+              <div key={request.id} className="request-card">
+                <img src={request.to.avatar} alt={request.to.username} className="friend-avatar" />
+                <span className="request-username">{request.to.username}</span>
+                <button
+                  className="btn btn-secondary btn-small"
+                  onClick={() => cancelSentRequest(request.id)}
+                >
+                  {t('friends.cancel') || 'Cancel'}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="profile-section">
+        <h2 className="profile-section-title">{t('friends.myFriends')}</h2>
+        {user.friends.length === 0 ? (
+          <div className="empty-state">
+            <p>{t('friends.noFriends')}</p>
+            <p className="empty-hint">{t('teams.findCollaborators')}</p>
+          </div>
+        ) : (
+          <div className="friends-list">
+            {user.friends.map((friend) => (
+              <div key={friend.id} className="friend-card">
+                <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
+                <div className="friend-info">
+                  <span className="friend-name">{friend.username}</span>
+                  <span className={`friend-status ${friend.isOnline ? 'online' : 'offline'}`}>
+                    {friend.isOnline ? t('common.online') : t('common.offline')}
+                  </span>
+                </div>
+                <Link
+                  to={`/profile/friends/${friend.id}`}
+                  className="btn btn-secondary btn-small"
+                >
+                  {t('friends.chat')}
+                </Link>
+                <button
+                  className="btn btn-secondary btn-small"
+                  onClick={() => handleRemoveClick(friend)}
+                >
+                  {t('friends.remove')}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {showRemoveModal && (
         <div className="modal-overlay" onClick={() => setShowRemoveModal(false)}>
@@ -222,7 +339,7 @@ function Friends() {
                     onChange={(e) => setManualUsername(e.target.value)}
                   />
                   <button className="btn btn-primary" onClick={handleAddManual} disabled={loadingUsers}>
-                    {loadingUsers ? '...' : t('common.add')}
+                    {loadingUsers ? '...' : t('friends.addFriend')}
                   </button>
                 </div>
               </div>

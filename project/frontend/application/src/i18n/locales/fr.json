@@ -222,7 +222,9 @@
     "remove": "Supprimer",
     "block": "Bloquer",
     "unfriend": "Retirer des amis",
-    "chat": "Discuter"
+    "chat": "Discuter",
+    "noReceivedRequests": "Aucune demande en attente",
+    "noSentRequests": "Aucune demande envoyée en attente"
   },
   "chat": {
     "title": "Discussion",

@@ -8,7 +8,7 @@
  */
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData } from '../types';
+import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest } from '../types';
 import { api } from '../services/api';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -20,6 +20,8 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -257,6 +259,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser({ ...user, teams: updatedTeams });
   };
 
+  const fetchFriendRequests = () => {
+    api.getFriendRequests().then((requests) => {
+      setFriendRequests(requests);
+    }).catch((err) => {
+      console.error('Failed to fetch friend requests:', err);
+    });
+  };
+
+  const acceptFriendRequest = (requestId: number) => {
+    api.acceptFriendRequest(requestId).then(() => {
+      setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
+      fetchFriendRequests();
+    }).catch((err) => {
+      console.error('Failed to accept friend request:', err);
+    });
+  };
+
+  const rejectFriendRequest = (requestId: number) => {
+    api.rejectFriendRequest(requestId).then(() => {
+      setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
+      fetchFriendRequests();
+    }).catch((err) => {
+      console.error('Failed to reject friend request:', err);
+    });
+  };
+
+  const fetchSentRequests = () => {
+    api.getSentFriendRequests().then((requests) => {
+      setSentRequests(requests);
+    }).catch((err) => {
+      console.error('Failed to fetch sent requests:', err);
+    });
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -280,6 +316,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       removeTeamMember,
       createTeam,
       updateTeamStatus,
+      friendRequests,
+      sentRequests,
+      fetchFriendRequests,
+      acceptFriendRequest,
+      rejectFriendRequest,
+      fetchSentRequests,
     }}>
       {children}
     </AuthContext.Provider>

@@ -142,10 +142,89 @@
 }
 
 /*
- * Hover effect for friend action buttons
+ * Friend action button hover effect
  */
 .friend-action-btn:hover {
   opacity: 0.8;
+}
+
+/*
+ * Friend requests section container
+ */
+.friend-requests-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/*
+ * Sent requests section container
+ */
+.sent-requests-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+/*
+ * Section title for requests
+ */
+.section-title {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+/*
+ * Requests list container
+ */
+.requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/*
+ * Request card component
+ */
+.request-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  transition: border-color 0.2s ease;
+}
+
+.request-card:hover {
+  border-color: var(--accent);
+}
+
+/*
+ * Request username
+ */
+.request-username {
+  flex: 1;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/*
+ * Request status (for sent requests)
+ */
+.request-status {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-input);
+  border-radius: 0.25rem;
 }
 
 /*
