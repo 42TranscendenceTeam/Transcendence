@@ -22,6 +22,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
   const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -82,12 +83,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const toggle2FA = () => {
     if (!user) return;
     setUser({ ...user, twoFactorEnabled: !user.twoFactorEnabled });
-  };
-
-  const removeFriend = (friendId: number) => {
-    if (!user) return;
-    const updatedFriends = user.friends.filter((f) => f.id !== friendId);
-    setUser({ ...user, friends: updatedFriends });
   };
 
   const leaveTeam = (teamId: number) => {
@@ -271,6 +266,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     api.acceptFriendRequest(requestId).then(() => {
       setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
       fetchFriendRequests();
+      fetchFriends();
     }).catch((err) => {
       console.error('Failed to accept friend request:', err);
     });
@@ -280,6 +276,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     api.rejectFriendRequest(requestId).then(() => {
       setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
       fetchFriendRequests();
+      fetchSentRequests();
     }).catch((err) => {
       console.error('Failed to reject friend request:', err);
     });
@@ -290,6 +287,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setSentRequests(requests);
     }).catch((err) => {
       console.error('Failed to fetch sent requests:', err);
+    });
+  };
+
+  const fetchFriends = () => {
+    api.getFriends().then((friendList) => {
+      setFriends(friendList);
+      if (user) {
+        setUser({ ...user, friends: friendList });
+      }
+    }).catch((err) => {
+      console.error('Failed to fetch friends:', err);
+    });
+  };
+
+  const removeFriend = (friendId: number) => {
+    api.removeFriend(friendId).then(() => {
+      setFriends(friends.filter((f) => f.id !== friendId));
+      if (user) {
+        setUser({ ...user, friends: user.friends.filter((f) => f.id !== friendId) });
+      }
+    }).catch((err) => {
+      console.error('Failed to remove friend:', err);
     });
   };
 
@@ -318,10 +337,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       updateTeamStatus,
       friendRequests,
       sentRequests,
+      friends,
       fetchFriendRequests,
+      fetchSentRequests,
+      fetchFriends,
       acceptFriendRequest,
       rejectFriendRequest,
-      fetchSentRequests,
     }}>
       {children}
     </AuthContext.Provider>

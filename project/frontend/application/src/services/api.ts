@@ -287,20 +287,26 @@ export const api = {
       if (!response.ok) {
         throw new Error('Failed to get friends');
       }
-      return response.json();
+      return response.json().then((data) =>
+        data.map((friend: { id: number; username: string; avatar_url: string }) => ({
+          id: friend.id,
+          username: friend.username,
+          avatar: friend.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`,
+        }))
+      );
     });
   },
 
-  // POST /friends/requests - Creates a new friend request with user ID
-  // Body: { userId: number }
-  addFriend(userId: number): Promise<void> {
+  // POST /friends/requests - Creates a new friend request with receiver ID
+  // Body: { receiverId: number }
+  addFriend(receiverId: number): Promise<void> {
     return fetch(`${API_URL}/friends/requests`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         ...api.getAuthHeaders(),
       },
-      body: JSON.stringify({ userId }),
+      body: JSON.stringify({ receiverId }),
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {

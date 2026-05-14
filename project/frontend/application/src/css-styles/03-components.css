@@ -59,6 +59,13 @@
 }
 
 /*
+ * Smaller outline danger button variant
+ */
+.btn-outline-danger.btn-small {
+  padding: 0.5rem 1rem;
+}
+
+/*
  * Card container (used across UI blocks)
  */
 .card {

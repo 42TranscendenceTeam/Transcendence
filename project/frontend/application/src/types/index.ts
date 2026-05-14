@@ -113,8 +113,10 @@ export interface AuthContextType {
   updateTeamStatus: (teamId: number, status: string) => void;
   friendRequests: FriendRequest[];
   sentRequests: FriendRequest[];
+  friends: Friend[];
   fetchFriendRequests: () => void;
+  fetchSentRequests: () => void;
+  fetchFriends: () => void;
   acceptFriendRequest: (requestId: number) => void;
   rejectFriendRequest: (requestId: number) => void;
-  fetchSentRequests: () => void;
 }
