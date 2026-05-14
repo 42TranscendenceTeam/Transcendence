@@ -1,6 +1,6 @@
 import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
-import type { CreateTeamDTO } from './teams.types.js';
+import type { CreateTeamDTO, UpdateTeamDTO } from './teams.types.js';
 
 // Return all teams info
 export const getTeamsList = async () => {
@@ -77,4 +77,36 @@ export const getTeam = async (teamId: number) => {
 		status_ongoing: team.status_ongoing,
 		created_at: team.created_at,
 	};
+};
+
+// Update team info with team id
+export const updateTeam = async (userId: number, teamId: number, info: UpdateTeamDTO) => {
+
+	const team = await prisma.team.findUnique({
+		where: {
+			id: teamId,
+		},
+		select: {
+			owner_id: true,
+		},
+	});
+
+	if (!team)
+		throw new AppError("Team not found.", 404);
+
+	if (userId !== team.owner_id)
+		throw new AppError("Only the owner of the team can update it.", 403);
+
+	return prisma.team.update({
+		where: {
+			id: teamId,
+		},
+		data: {
+			name: info.name,
+			about: info.about ?? null,
+			tags: info.tags ?? null,
+			status_ongoing: info.status_ongoing,
+			edited_at: new Date(),
+		},
+	});
 };

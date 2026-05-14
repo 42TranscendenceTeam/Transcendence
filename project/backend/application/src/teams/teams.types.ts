@@ -4,3 +4,10 @@ export type CreateTeamDTO = {
 	about?: string;
 	tags?: string;
 };
+
+export type UpdateTeamDTO = {
+	name: string;
+	about?: string;
+	tags?: string;
+	status_ongoing: boolean;
+};
