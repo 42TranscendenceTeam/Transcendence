@@ -110,3 +110,28 @@ export const updateTeam = async (userId: number, teamId: number, info: UpdateTea
 		},
 	});
 };
+
+// Delete team with team id
+export const deleteTeam = async (userId: number, teamId: number) => {
+
+	const team = await prisma.team.findUnique({
+		where: {
+			id: teamId,
+		},
+		select: {
+			owner_id: true,
+		},
+	});
+
+	if (!team)
+		throw new AppError("Team not found.", 404);
+
+	if (userId !== team.owner_id)
+		throw new AppError("Only the owner of the team can delete it.", 403);
+
+	return prisma.team.delete({
+		where: {
+			id: teamId,
+		}
+	});
+};

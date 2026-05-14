@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import { AppError } from '../utils/AppError.js';
-import { getTeamsList, createTeam, getTeam, updateTeam } from './teams.services.js';
+import { getTeamsList, createTeam, getTeam, updateTeam, deleteTeam } from './teams.services.js';
 
 export const getTeamsListController = async (req: AuthRequest, res: Response) => {
 	const teamList = await getTeamsList();
@@ -41,4 +41,14 @@ export const updateTeamController = async (req: AuthRequest, res: Response) => {
 
 	const info = await updateTeam(req.user!.id, teamId, { name, about, tags, status_ongoing });
 	return res.json(info);
+};
+
+export const deleteTeamController = async (req: AuthRequest, res: Response) => {
+	const teamId = Number(req.params.id);
+
+	if (Number.isNaN(teamId))
+		throw new AppError("Mandatory valid team ID.", 400);
+
+	const team = await deleteTeam(req.user!.id, teamId);
+	return res.status(200).json(team);
 };
