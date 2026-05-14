@@ -4,6 +4,7 @@ import express from 'express';
 import type { Request, Response } from 'express';
 import authRoutes from './auth/auth.routes.js';
 import userRoutes from './users/users.routes.js';
+import teamsRoutes from './teams/teams.routes.js';
 
 const app = express();
 const PORT = 5000;
@@ -11,6 +12,7 @@ const PORT = 5000;
 app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
+app.use('/teams', teamsRoutes);
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });
