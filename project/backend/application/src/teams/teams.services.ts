@@ -295,3 +295,59 @@ export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
 		},
 	});
 };
+
+// Accept join request to team with team id and request id
+export const acceptJoinRequest = async (userId: number, teamId: number, requestId: number) => {
+
+	const request = await prisma.teamJoinRequest.findFirst({
+		where: {
+			id: requestId,
+			team_id: teamId,
+			status: 'pending',
+		},
+		select: {
+			id: true,
+			user_id: true,
+			team_id: true,
+			team: {
+				select: {
+					owner_id: true,
+				}
+			}
+		}
+	});
+
+	if (!request)
+		throw new AppError("Team join request not found.", 404);
+
+	if (userId !== request.team.owner_id)
+		throw new AppError("Only the team owner can accept join requests.", 403);
+
+	const userInTeam = await prisma.teamUser.findFirst({
+		where: {
+			user_id: request.user_id,
+			team_id: request.team_id,
+		}
+	});
+
+	if (userInTeam)
+		throw new AppError("User is already in that team.", 400);
+
+	const newUser = await prisma.teamUser.create({
+		data: {
+			user_id: request.user_id,
+			team_id: request.team_id,
+		},
+	});
+
+	await prisma.teamJoinRequest.update({
+		where: {
+			id: request.id,
+		},
+		data: {
+			status: 'accepted',
+		}
+	});
+
+	return newUser;
+};
