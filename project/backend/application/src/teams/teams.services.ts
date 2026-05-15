@@ -28,7 +28,7 @@ export const createTeam = async (userId: number, info: CreateTeamDTO) => {
 	if (teamExists)
 		throw new AppError("Team name already exists.", 400);
 
-	return prisma.team.create({
+	const team = await prisma.team.create({
 		data: {
 			owner_id: userId,
 			name: info.name,
@@ -37,6 +37,15 @@ export const createTeam = async (userId: number, info: CreateTeamDTO) => {
 			tags: info.tags ?? null,
 		},
 	});
+
+	await prisma.teamUser.create({
+		data: {
+			user_id: userId,
+			team_id: team.id,
+		},
+	});
+
+	return team;
 };
 
 // Return one team info with team id
