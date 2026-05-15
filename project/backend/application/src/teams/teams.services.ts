@@ -135,3 +135,47 @@ export const deleteTeam = async (userId: number, teamId: number) => {
 		}
 	});
 };
+
+// Get list of team members with team id
+export const getTeamMembers = async (teamId: number) => {
+
+	const team = await prisma.team.findUnique({
+		where: {
+			id: teamId,
+		},
+		select: {
+			team_users: {
+				select: {
+					joined_at: true,
+					user: {
+						select: {
+							id: true,
+							username: true,
+							avatar_url: true,
+						}
+					}
+				},
+			},
+			_count: {
+				select: {
+					team_users: true,
+				},
+			},
+		},
+	});
+
+	if (!team)
+		throw new AppError("Team not found.", 404);
+
+	const member_list = team.team_users.map((teamUser) => ({
+		id: teamUser.user.id,
+		username: teamUser.user.username,
+		avatar_url: teamUser.user.avatar_url,
+		joined_at: teamUser.joined_at,
+	}));
+
+	return {
+		member_list,
+		member_count: team._count.team_users,
+	};
+};
