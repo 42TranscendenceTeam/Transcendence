@@ -77,7 +77,7 @@ model TeamInvite {
   id         Int      @id @default(autoincrement())
   team_id    Int
   user_id    Int
-  status     String
+  status     String   @default("pending")
   created_at DateTime @default(now())
 
   team Team @relation(fields: [team_id], references: [id])
@@ -88,7 +88,7 @@ model TeamJoinRequest {
   id         Int      @id @default(autoincrement())
   user_id    Int
   team_id    Int
-  status     String
+  status     String   @default("pending")
   created_at DateTime @default(now())
 
   user User @relation(fields: [user_id], references: [id])
