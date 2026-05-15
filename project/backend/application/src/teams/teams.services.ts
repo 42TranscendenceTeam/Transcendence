@@ -179,3 +179,34 @@ export const getTeamMembers = async (teamId: number) => {
 		member_count: team._count.team_users,
 	};
 };
+
+// Remove a member from a team with team id and member id
+export const removeTeamMember = async (userId: number, teamId: number, memberId: number) => {
+
+	const team = await prisma.team.findUnique({
+		where: {
+			id: teamId,
+		},
+		select: {
+			owner_id: true,
+		},
+	});
+
+	if (!team)
+		throw new AppError("Team not found.", 404);
+
+	if (userId !== team.owner_id)
+		throw new AppError("Only the owner of the team can remove a user.", 403);
+
+	if (memberId === team.owner_id)
+		throw new AppError("Team owner cannot remove himself.", 400);
+
+	return prisma.teamUser.delete({
+		where: {
+			user_id_team_id: {
+				user_id: memberId,
+				team_id: teamId,
+			},
+		},
+	});
+};
