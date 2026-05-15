@@ -351,3 +351,40 @@ export const acceptJoinRequest = async (userId: number, teamId: number, requestI
 
 	return newUser;
 };
+
+// Reject join request to team with team id and request id
+export const rejectJoinRequest = async (userId: number, teamId: number, requestId: number) => {
+
+	const request = await prisma.teamJoinRequest.findFirst({
+		where: {
+			id: requestId,
+			team_id: teamId,
+			status: 'pending',
+		},
+		select: {
+			id: true,
+			user_id: true,
+			team_id: true,
+			team: {
+				select: {
+					owner_id: true,
+				}
+			}
+		}
+	});
+
+	if (!request)
+		throw new AppError("Team join request not found.", 404);
+
+	if (userId !== request.team.owner_id)
+		throw new AppError("Only the team owner can reject join requests.", 403);
+
+	return prisma.teamJoinRequest.update({
+		where: {
+			id: request.id,
+		},
+		data: {
+			status: 'rejected',
+		}
+	});
+};
