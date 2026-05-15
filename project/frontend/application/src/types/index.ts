@@ -35,6 +35,13 @@ export interface Friend {
   isOnline?: boolean;
 }
 
+export interface FriendRequest {
+  request_id: number;
+  status: 'pending' | 'accepted' | 'rejected';
+  sent_at: string;
+  user: { id: number; username: string; avatar_url: string };
+}
+
 export interface Team {
   id: number;
   name: string;
@@ -85,7 +92,6 @@ export interface TeamData {
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  loginTestUser: () => void;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
   toggle2FA: () => void;
@@ -104,4 +110,12 @@ export interface AuthContextType {
   removeTeamMember: (teamId: number, memberId: number) => void;
   createTeam: (teamData: TeamData) => void;
   updateTeamStatus: (teamId: number, status: string) => void;
+  friendRequests: FriendRequest[];
+  sentRequests: FriendRequest[];
+  friends: Friend[];
+  fetchFriendRequests: () => void;
+  fetchSentRequests: () => void;
+  fetchFriends: () => void;
+  acceptFriendRequest: (requestId: number) => void;
+  rejectFriendRequest: (requestId: number) => void;
 }

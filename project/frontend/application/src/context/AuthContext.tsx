@@ -8,7 +8,7 @@
  */
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData } from '../types';
+import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest } from '../types';
 import { api } from '../services/api';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -20,6 +20,9 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -48,25 +51,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loadUser();
   }, []);
 
-  const loginTestUser = async () => {
-    const result = await api.login({ 
-      email: 'testuser@student.42', 
-      password: 'pass12345' 
-    });
-    localStorage.setItem('authToken', result.token);
-    setUser({
-      id: Number(result.user.id),
-      username: result.user.username,
-      email: result.user.email,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${result.user.username}`,
-      description: '',
-      twoFactorEnabled: false,
-      friends: [],
-      teams: [],
-      globalChat: [],
-    });
-  };
-
   const logout = () => {
     localStorage.removeItem('authToken');
     setUser(null);
@@ -80,12 +64,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const toggle2FA = () => {
     if (!user) return;
     setUser({ ...user, twoFactorEnabled: !user.twoFactorEnabled });
-  };
-
-  const removeFriend = (friendId: number) => {
-    if (!user) return;
-    const updatedFriends = user.friends.filter((f) => f.id !== friendId);
-    setUser({ ...user, friends: updatedFriends });
   };
 
   const leaveTeam = (teamId: number) => {
@@ -257,11 +235,68 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser({ ...user, teams: updatedTeams });
   };
 
+  const fetchFriendRequests = () => {
+    api.getFriendRequests().then((requests) => {
+      setFriendRequests(requests);
+    }).catch((err) => {
+      console.error('Failed to fetch friend requests:', err);
+    });
+  };
+
+  const acceptFriendRequest = (requestId: number) => {
+    api.acceptFriendRequest(requestId).then(() => {
+      setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
+      fetchFriendRequests();
+      fetchFriends();
+    }).catch((err) => {
+      console.error('Failed to accept friend request:', err);
+    });
+  };
+
+  const rejectFriendRequest = (requestId: number) => {
+    api.rejectFriendRequest(requestId).then(() => {
+      setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
+      fetchFriendRequests();
+      fetchSentRequests();
+    }).catch((err) => {
+      console.error('Failed to reject friend request:', err);
+    });
+  };
+
+  const fetchSentRequests = () => {
+    api.getSentFriendRequests().then((requests) => {
+      setSentRequests(requests);
+    }).catch((err) => {
+      console.error('Failed to fetch sent requests:', err);
+    });
+  };
+
+  const fetchFriends = () => {
+    api.getFriends().then((friendList) => {
+      setFriends(friendList);
+      if (user) {
+        setUser({ ...user, friends: friendList });
+      }
+    }).catch((err) => {
+      console.error('Failed to fetch friends:', err);
+    });
+  };
+
+  const removeFriend = (friendId: number) => {
+    api.removeFriend(friendId).then(() => {
+      setFriends(friends.filter((f) => f.id !== friendId));
+      if (user) {
+        setUser({ ...user, friends: user.friends.filter((f) => f.id !== friendId) });
+      }
+    }).catch((err) => {
+      console.error('Failed to remove friend:', err);
+    });
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
       loading,
-      loginTestUser,
       logout,
       updateUser,
       toggle2FA,
@@ -280,6 +315,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       removeTeamMember,
       createTeam,
       updateTeamStatus,
+      friendRequests,
+      sentRequests,
+      friends,
+      fetchFriendRequests,
+      fetchSentRequests,
+      fetchFriends,
+      acceptFriendRequest,
+      rejectFriendRequest,
     }}>
       {children}
     </AuthContext.Provider>

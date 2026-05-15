@@ -76,9 +76,16 @@ export interface Task {
 }
 
 export interface Friend {
-  id: string;
+  id: number;
   username: string;
-  avatar: string;
+  avatar_url: string;
+}
+
+export interface FriendRequest {
+  request_id: number;
+  status: 'pending' | 'accepted' | 'rejected';
+  sent_at: string;
+  user: { id: number; username: string; avatar_url: string };
 }
 
 /*
@@ -267,32 +274,126 @@ export const api = {
   },
 
   // ========== FRIENDS ==========
-  // TODO: Implement - Backend needs to provide GET /friends
+  // GET /friends - Returns current user's friends
+  // Response: { id, username, avatar_url, friends_since }
   getFriends(): Promise<Friend[]> {
-    // Frontend sends: nothing
-    // Backend returns: Array of { id, username, avatar }
-    throw new Error('TODO: Implement GET /friends');
+    return fetch(`${API_URL}/friends`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get friends');
+      }
+      return response.json().then((data) =>
+        data.map((friend: { id: number; username: string; avatar_url: string }) => ({
+          id: friend.id,
+          username: friend.username,
+          avatar: friend.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`,
+        }))
+      );
+    });
   },
 
-  // TODO: Implement - Backend needs to provide POST /friends
-  addFriend(username: string): Promise<Friend> {
-    // Frontend sends: { username }
-    // Backend returns: { id, username, avatar }
-    throw new Error('TODO: Implement POST /friends');
+  // POST /friends/requests - Creates a new friend request with receiver ID
+  // Body: { receiverId: number }
+  addFriend(receiverId: number): Promise<void> {
+    return fetch(`${API_URL}/friends/requests`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+      body: JSON.stringify({ receiverId }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to send friend request');
+        });
+      }
+      return response.json();
+    });
   },
 
-  // TODO: Implement - Backend needs to provide DELETE /friends/:id
-  removeFriend(friendId: string): Promise<void> {
-    // Frontend sends: nothing
-    // Backend returns: nothing
-    throw new Error('TODO: Implement DELETE /friends/:id');
+  // DELETE /friends/:friendId - Removes a friend using the friend user ID
+  removeFriend(friendId: number): Promise<void> {
+    return fetch(`${API_URL}/friends/${friendId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to remove friend');
+      }
+    });
   },
 
-  // TODO: Implement - Backend needs to provide GET /friends/requests
-  getFriendRequests(): Promise<Friend[]> {
-    // Frontend sends: nothing
-    // Backend returns: Array of incoming friend requests { id, username, avatar }
-    throw new Error('TODO: Implement GET /friends/requests');
+  // GET /friends/requests/received - Returns pending friend requests received
+  // Response: { request_id, status, sent_at, user: {id, username, avatar_url} }
+  getFriendRequests(): Promise<FriendRequest[]> {
+    return fetch(`${API_URL}/friends/requests/received`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get friend requests');
+      }
+      return response.json();
+    });
+  },
+
+  // POST /friends/requests/:id/accept - Accepts a pending friend request
+  acceptFriendRequest(requestId: number): Promise<void> {
+    return fetch(`${API_URL}/friends/requests/${requestId}/accept`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to accept friend request');
+      }
+    });
+  },
+
+  // POST /friends/requests/:id/reject - Rejects a pending friend request
+  rejectFriendRequest(requestId: number): Promise<void> {
+    return fetch(`${API_URL}/friends/requests/${requestId}/reject`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to reject friend request');
+      }
+    });
+  },
+
+  // GET /friends/requests/sent - Returns pending friend requests sent
+  // Response: { request_id, status, sent_at, user: {id, username, avatar_url} }
+  getSentFriendRequests(): Promise<FriendRequest[]> {
+    return fetch(`${API_URL}/friends/requests/sent`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get sent friend requests');
+      }
+      return response.json();
+    });
   },
 
   // ========== MESSAGES ==========

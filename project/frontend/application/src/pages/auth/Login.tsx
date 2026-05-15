@@ -12,10 +12,9 @@
  * - Stores auth token on successful login
  */
 
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../../context/AuthContext';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import { api } from '../../services/api';
 
@@ -23,7 +22,6 @@ const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function Login() {
   const { t } = useTranslation();
-  const { loginTestUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -125,28 +123,6 @@ function Login() {
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
             <span style={{ color: 'var(--text-secondary)' }}>{t('auth.login.noAccount')} </span>
             <Link to="/register" style={{ color: 'var(--accent)' }}>{t('auth.login.register')}</Link>
-          </div>
-          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
-            <span style={{ color: 'var(--text-secondary)', fontSize: '0.8rem' }}>{t('auth.login.justTesting') || 'Just testing?'} </span>
-            <button
-              type="button"
-              onClick={() => {
-                loginTestUser();
-                window.location.href = '/';
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--accent)',
-                cursor: 'pointer',
-                fontSize: '0.8rem',
-                textDecoration: 'underline',
-                padding: 0,
-                marginLeft: '0.25rem',
-              }}
-            >
-              {t('auth.login.useTestLogin') || 'Use TestLogin'}
-            </button>
           </div>
         </form>
       ) : (

@@ -59,6 +59,7 @@
 .toggle-text {
   font-weight: 500;
   color: var(--text-primary);
+  margin-left: 0.5rem;
 }
 
 /*
