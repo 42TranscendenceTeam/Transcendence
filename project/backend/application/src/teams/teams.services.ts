@@ -254,3 +254,44 @@ export const getTeamJoinRequests = async (teamId: number) => {
 		request_count: request_list.length,
 	};
 };
+
+// Send join request to team with team id
+export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
+
+	const team = await prisma.team.findUnique({
+		where: {
+			id: teamId,
+		},
+	});
+
+	if (!team)
+		throw new AppError("Team not found.", 404);
+
+	const requestExists = await prisma.teamJoinRequest.findFirst({
+		where: {
+			status: 'pending',
+			team_id: teamId,
+			user_id: userId,
+		},
+	});
+
+	if (requestExists)
+		throw new AppError("That join request already exists.", 400);
+
+	const userInTeam = await prisma.teamUser.findFirst({
+		where: {
+			team_id: teamId,
+			user_id: userId,
+		},
+	});
+
+	if (userInTeam)
+		throw new AppError("You are already in that team.", 400);
+
+	return prisma.teamJoinRequest.create({
+		data: {
+			user_id: userId,
+			team_id: teamId,
+		},
+	});
+};
