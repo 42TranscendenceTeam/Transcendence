@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import { AppError } from '../utils/AppError.js';
-import { getTeamsList, createTeam, getTeam, updateTeam, deleteTeam, getTeamMembers, removeTeamMember, getTeamJoinRequests, sendTeamJoinRequest, acceptJoinRequest, rejectJoinRequest } from './teams.services.js';
+import { getTeamsList, createTeam, getTeam, updateTeam, deleteTeam, getTeamMembers, removeTeamMember, getTeamJoinRequests, sendTeamJoinRequest, acceptJoinRequest, rejectJoinRequest, getTeamInvites, sendTeamInvite, acceptTeamInvite, rejectTeamInvite } from './teams.services.js';
 
 export const getTeamsListController = async (req: AuthRequest, res: Response) => {
 	const teamList = await getTeamsList();
@@ -50,7 +50,7 @@ export const deleteTeamController = async (req: AuthRequest, res: Response) => {
 		throw new AppError("Mandatory valid team ID.", 400);
 
 	const team = await deleteTeam(req.user!.id, teamId);
-	return res.status(200).json(team);
+	return res.json(team);
 };
 
 export const getTeamMembersController = async (req: AuthRequest, res: Response) => {
@@ -74,7 +74,7 @@ export const removeTeamMemberController = async (req: AuthRequest, res: Response
 		throw new AppError("Mandatory valid member ID.", 400);
 
 	const member = await removeTeamMember(req.user!.id, teamId, memberId);
-	return res.status(200).json(member);
+	return res.json(member);
 };
 
 export const getTeamJoinRequestsController = async (req: AuthRequest, res: Response) => {
@@ -124,5 +124,46 @@ export const rejectJoinRequestController = async (req: AuthRequest, res: Respons
 
 	const request = await rejectJoinRequest(req.user!.id, teamId, requestId);
 
-	return res.status(200).json(request);
+	return res.json(request);
+};
+
+export const getTeamInvitesController = async (req: AuthRequest, res: Response) => {
+	const invites = await getTeamInvites(req.user!.id);
+	return res.json(invites);
+};
+
+export const sendTeamInviteController = async (req: AuthRequest, res: Response) => {
+	const teamId = Number(req.params.id);
+	const { receiverId } = req.body;
+
+	if (Number.isNaN(teamId))
+		throw new AppError("Mandatory valid team ID.", 400);
+
+	if (!receiverId || Number.isNaN(Number(receiverId)))
+		throw new AppError("Mandatory receiver user ID.", 400);
+
+	const invite = await sendTeamInvite(req.user!.id, teamId, Number(receiverId));
+	return res.status(201).json(invite);
+};
+
+export const acceptTeamInviteController = async (req: AuthRequest, res: Response) => {
+	const inviteId = Number(req.params.inviteId);
+
+	if (Number.isNaN(inviteId))
+		throw new AppError("Mandatory valid invite ID.", 400);
+
+	const newMember = await acceptTeamInvite(req.user!.id, inviteId);
+
+	return res.status(201).json(newMember);
+};
+
+export const rejectTeamInviteController = async (req: AuthRequest, res: Response) => {
+	const inviteId = Number(req.params.inviteId);
+
+	if (Number.isNaN(inviteId))
+		throw new AppError("Mandatory valid invite ID.", 400);
+
+	const invite = await rejectTeamInvite(req.user!.id, inviteId);
+
+	return res.json(invite);
 };

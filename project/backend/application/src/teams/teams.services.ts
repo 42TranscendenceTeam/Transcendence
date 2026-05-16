@@ -397,3 +397,171 @@ export const rejectJoinRequest = async (userId: number, teamId: number, requestI
 		}
 	});
 };
+
+// Get list of team invites for current user
+export const getTeamInvites = async (userId: number) => {
+
+	const invites = await prisma.teamInvite.findMany({
+		where: {
+			user_id: userId,
+			status: 'pending',
+		},
+		select: {
+			id: true,
+			created_at: true,
+			team: {
+				select: {
+					id: true,
+					name: true,
+					about: true,
+					tags: true,
+					max_users: true,
+				}
+			}
+		}
+	});
+
+	const invite_list = invites.map((invite) => ({
+		invite_id: invite.id,
+		sent_at: invite.created_at,
+		team_id: invite.team.id,
+		team_name: invite.team.name,
+		team_about: invite.team.about,
+		team_tags: invite.team.tags,
+		team_max_users: invite.team.max_users,
+	}));
+
+	return invite_list;
+};
+
+// Send invite from team to user
+export const sendTeamInvite = async (userId: number, teamId: number, receiverId: number) => {
+
+	const team = await prisma.team.findUnique({
+		where: {
+			id: teamId,
+		},
+		select: {
+			owner_id: true,
+		}
+	});
+
+	if (!team)
+		throw new AppError("Team not found.", 404);
+
+	if (userId !== team.owner_id)
+		throw new AppError("Only the team owner can send invites.", 403);
+
+	const inviteExists = await prisma.teamInvite.findFirst({
+		where: {
+			status: 'pending',
+			team_id: teamId,
+			user_id: receiverId,
+		},
+	});
+
+	if (inviteExists)
+		throw new AppError("That team invite already exists.", 400);
+
+	const receiverExists = await prisma.user.findUnique({
+		where: {
+			id: receiverId,
+		},
+	});
+
+	if (!receiverExists)
+		throw new AppError("That user does not exist.", 404);
+
+	const userInTeam = await prisma.teamUser.findFirst({
+		where: {
+			team_id: teamId,
+			user_id: receiverId,
+		},
+	});
+
+	if (userInTeam)
+		throw new AppError("That user is already on your team.", 400);
+
+	return prisma.teamInvite.create({
+		data: {
+			user_id: receiverId,
+			team_id: teamId,
+		},
+	});
+};
+
+// Accept invite to team
+export const acceptTeamInvite = async (userId: number, inviteId: number) => {
+
+	const invite = await prisma.teamInvite.findFirst({
+		where: {
+			id: inviteId,
+			status: 'pending',
+		},
+		select: {
+			id: true,
+			user_id: true,
+			team_id: true,
+		}
+	});
+
+	if (!invite)
+		throw new AppError("Team invite not found.", 404);
+
+	if (userId !== invite.user_id)
+		throw new AppError("Only the invited user can accept this invite.", 403);
+
+	const userInTeam = await prisma.teamUser.findFirst({
+		where: {
+			user_id: invite.user_id,
+			team_id: invite.team_id,
+		}
+	});
+
+	if (userInTeam)
+		throw new AppError("User is already in that team.", 400);
+
+	const newUser = await prisma.teamUser.create({
+		data: {
+			user_id: invite.user_id,
+			team_id: invite.team_id,
+		},
+	});
+
+	await prisma.teamInvite.update({
+		where: {
+			id: invite.id,
+		},
+		data: {
+			status: 'accepted',
+		}
+	});
+
+	return newUser;
+};
+
+// Reject invite to team
+export const rejectTeamInvite = async (userId: number, inviteId: number) => {
+
+	const invite = await prisma.teamInvite.findFirst({
+		where: {
+			id: inviteId,
+			status: 'pending',
+		},
+	});
+
+	if (!invite)
+		throw new AppError("Team invite not found.", 404);
+
+	if (userId !== invite.user_id)
+		throw new AppError("Only the invited user can reject this invite.", 403);
+
+	return prisma.teamInvite.update({
+		where: {
+			id: invite.id,
+		},
+		data: {
+			status: 'rejected',
+		}
+	});
+};
