@@ -75,3 +75,17 @@ export const readNotification = async (userId: number, notificationId: number) =
 		}
 	});
 };
+
+// Reads all notifications for logged-in user
+export const readAllNotifications = async (userId: number) => {
+
+	return prisma.notification.updateMany({
+		where: {
+			user_id_receiver: userId,
+			status_read: false,
+		},
+		data: {
+			status_read: true,
+		}
+	});
+};
