@@ -89,3 +89,24 @@ export const readAllNotifications = async (userId: number) => {
 		}
 	});
 };
+
+// Deletes a specific notification with id
+export const deleteNotification = async (userId: number, notificationId: number) => {
+
+
+	const notification = await prisma.notification.findFirst({
+		where: {
+			id: notificationId,
+			user_id_receiver: userId,
+		},
+	});
+
+	if (!notification)
+		throw new AppError("Notification not found.", 404);
+
+	return prisma.notification.delete({
+		where: {
+			id: notification.id,
+		}
+	});
+};
