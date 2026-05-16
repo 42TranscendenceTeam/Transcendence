@@ -94,7 +94,7 @@ export const sendTeamJoinRequestController = async (req: AuthRequest, res: Respo
 		throw new AppError("Mandatory valid team ID.", 400);
 
 	const requests = await sendTeamJoinRequest(req.user!.id, teamId);
-	return res.json(requests);
+	return res.status(201).json(requests);
 };
 
 export const acceptJoinRequestController = async (req: AuthRequest, res: Response) => {
