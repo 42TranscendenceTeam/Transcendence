@@ -13,6 +13,7 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/friends', friendsRoutes);
+app.use('/uploads', express.static('/app/application/uploads'));
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });

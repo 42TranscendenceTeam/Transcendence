@@ -30,6 +30,8 @@ services:
     #vafernan - 11.05 - port 5555 for Prisma Studio only
     ports:
       - "5555:5555"
+    volumes:
+      - ${HOME}/data/uploads:/app/application/uploads
     env_file:
       - backend/.env
     networks:
