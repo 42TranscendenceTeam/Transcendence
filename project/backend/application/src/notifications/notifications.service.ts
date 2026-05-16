@@ -51,3 +51,27 @@ export const getUnreadNotifications = async (userId: number) => {
 
 	return notifications;
 };
+
+// Reads a specific notification with id
+export const readNotification = async (userId: number, notificationId: number) => {
+
+	const notification = await prisma.notification.findFirst({
+		where: {
+			id: notificationId,
+			user_id_receiver: userId,
+			status_read: false,
+		},
+	});
+
+	if (!notification)
+		throw new AppError("Notification not found.", 404);
+
+	return prisma.notification.update({
+		where: {
+			id: notification.id,
+		},
+		data: {
+			status_read: true,
+		}
+	});
+};
