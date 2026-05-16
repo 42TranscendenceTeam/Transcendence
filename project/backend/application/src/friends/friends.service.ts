@@ -1,6 +1,5 @@
 import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
-import type { } from './friends.types.js';
 
 // Returns friends list of logged-in user
 export const getFriends = async (userId: number) => {
