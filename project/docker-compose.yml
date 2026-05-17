@@ -31,7 +31,7 @@ services:
     ports:
       - "5555:5555"
     volumes:
-      - ${HOME}/data/uploads:/app/application/uploads
+      - ${HOME}/data/uploads:/app/uploads
     env_file:
       - backend/.env
     networks:

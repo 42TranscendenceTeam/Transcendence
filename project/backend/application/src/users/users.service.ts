@@ -3,14 +3,21 @@ import { AppError } from '../utils/AppError.js';
 import type { UpdateUserDTO } from './users.types.js';
 
 export const getMe = async (userId: number) => {
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
       email: true,
       username: true,
+      bio: true,
+      avatar_url: true,
     },
   });
+
+  return {
+    ...user,
+    avatar_url: user?.avatar_url ?? "/api/public/avatars/default.png",
+  };
 };
 
 export const updateMe = async (userId: number, data: UpdateUserDTO) => {

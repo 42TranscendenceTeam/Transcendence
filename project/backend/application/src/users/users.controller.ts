@@ -13,7 +13,7 @@ export const updateMeController = async (req: AuthRequest, res: Response) => {
   const data: UpdateUserDTO = { username, email, bio };
 
   if (req.file) {
-    data.avatar_url = `/uploads/avatars/${req.file.filename}`;
+    data.avatar_url = `/api/uploads/avatars/${req.file.filename}`;
   }
 
   const updated = await updateMe(req.user!.id, data);
