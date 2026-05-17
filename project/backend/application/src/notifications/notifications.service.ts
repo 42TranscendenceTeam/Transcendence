@@ -110,3 +110,25 @@ export const deleteNotification = async (userId: number, notificationId: number)
 		}
 	});
 };
+
+// Create notifications helper function for all services
+export const createNotification = async (
+	userIdReceiver: number,
+	type: string,
+	entityId?: number,
+	entityType?: string,
+	userIdTrigger?: number,
+	content?: string,
+
+) => {
+	return prisma.notification.create({
+		data: {
+			user_id_receiver: userIdReceiver,
+			user_id_trigger: userIdTrigger ?? null,
+			type: type,
+			content: content ?? null,
+			entity_id: entityId ?? null,
+			entity_type: entityType ?? null,
+		},
+	});
+};
