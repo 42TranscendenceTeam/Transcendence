@@ -6,8 +6,8 @@ export type CreateTeamDTO = {
 };
 
 export type UpdateTeamDTO = {
-	name: string;
+	name?: string;
 	about?: string;
 	tags?: string;
-	status_ongoing: boolean;
+	status_ongoing?: boolean;
 };

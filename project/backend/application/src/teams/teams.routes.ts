@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { asyncHandler } from "../utils/AppError.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
-import { getTeamsListController, createTeamController, getTeamController, updateTeamController, deleteTeamController, getTeamMembersController, removeTeamMemberController, getTeamJoinRequestsController, sendTeamJoinRequestController, acceptJoinRequestController, rejectJoinRequestController, getTeamInvitesController, sendTeamInviteController, acceptTeamInviteController, rejectTeamInviteController } from "./teams.controller.js";
+import { getTeamsListController, createTeamController, getTeamController, updateTeamController, deleteTeamController, getTeamMembersController, removeTeamMemberController, getTeamJoinRequestsController, sendTeamJoinRequestController, acceptJoinRequestController, rejectJoinRequestController, getTeamInvitesController, sendTeamInviteController, acceptTeamInviteController, rejectTeamInviteController, leaveTeamController } from "./teams.controller.js";
 
 const router = Router();
 
@@ -21,6 +21,7 @@ router.get('/:id/join-requests', authMiddleware, asyncHandler(getTeamJoinRequest
 router.post('/:id/join-requests', authMiddleware, asyncHandler(sendTeamJoinRequestController));
 
 router.post('/:id/invites', authMiddleware, asyncHandler(sendTeamInviteController));
+router.delete('/:id/leave', authMiddleware, asyncHandler(leaveTeamController));
 
 router.get('/:id', authMiddleware, asyncHandler(getTeamController));
 router.put('/:id', authMiddleware, asyncHandler(updateTeamController));

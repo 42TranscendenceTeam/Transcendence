@@ -111,10 +111,7 @@ export const updateTeam = async (userId: number, teamId: number, info: UpdateTea
 			id: teamId,
 		},
 		data: {
-			name: info.name,
-			about: info.about ?? null,
-			tags: info.tags ?? null,
-			status_ongoing: info.status_ongoing,
+			...info,
 			edited_at: new Date(),
 		},
 	});
@@ -563,5 +560,43 @@ export const rejectTeamInvite = async (userId: number, inviteId: number) => {
 		data: {
 			status: 'rejected',
 		}
+	});
+};
+
+// Leave team with logged-in user
+export const leaveTeam = async (userId: number, teamId: number) => {
+
+	const team = await prisma.team.findUnique({
+		where: {
+			id: teamId,
+		},
+		select: {
+			owner_id: true,
+		},
+	});
+
+	if (!team)
+		throw new AppError("Team not found.", 404);
+
+	if (userId === team.owner_id)
+		throw new AppError("Team owner cannot leave the team. Delete the team instead.", 400);
+
+	const member = await prisma.teamUser.findFirst({
+		where: {
+			user_id: userId,
+			team_id: teamId,
+		},
+	});
+
+	if (!member)
+		throw new AppError("You are not a member of this team.", 400);
+
+	return prisma.teamUser.delete({
+		where: {
+			user_id_team_id: {
+				user_id: userId,
+				team_id: teamId,
+			},
+		},
 	});
 };

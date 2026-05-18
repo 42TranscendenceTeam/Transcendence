@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import { AppError } from '../utils/AppError.js';
-import { getTeamsList, createTeam, getTeam, updateTeam, deleteTeam, getTeamMembers, removeTeamMember, getTeamJoinRequests, sendTeamJoinRequest, acceptJoinRequest, rejectJoinRequest, getTeamInvites, sendTeamInvite, acceptTeamInvite, rejectTeamInvite } from './teams.services.js';
+import { getTeamsList, createTeam, getTeam, updateTeam, deleteTeam, getTeamMembers, removeTeamMember, getTeamJoinRequests, sendTeamJoinRequest, acceptJoinRequest, rejectJoinRequest, getTeamInvites, sendTeamInvite, acceptTeamInvite, rejectTeamInvite, leaveTeam } from './teams.services.js';
 
 export const getTeamsListController = async (req: AuthRequest, res: Response) => {
 	const teamList = await getTeamsList();
@@ -36,7 +36,10 @@ export const updateTeamController = async (req: AuthRequest, res: Response) => {
 	if (Number.isNaN(teamId))
 		throw new AppError("Mandatory valid team ID.", 400);
 
-	if (!name)
+	if ( name === undefined && about === undefined && tags === undefined && status_ongoing === undefined )
+		throw new AppError("At least one field is required.", 400);
+
+	if (name !== undefined && !name)
 		throw new AppError("Valid team name is required.", 400);
 
 	const info = await updateTeam(req.user!.id, teamId, { name, about, tags, status_ongoing });
@@ -166,4 +169,15 @@ export const rejectTeamInviteController = async (req: AuthRequest, res: Response
 	const invite = await rejectTeamInvite(req.user!.id, inviteId);
 
 	return res.json(invite);
+};
+
+export const leaveTeamController = async (req: AuthRequest, res: Response) => {
+	const teamId = Number(req.params.id);
+
+	if (Number.isNaN(teamId))
+		throw new AppError("Mandatory valid team ID.", 400);
+
+	const member = await leaveTeam(req.user!.id, teamId);
+
+	return res.status(200).json(member);
 };
