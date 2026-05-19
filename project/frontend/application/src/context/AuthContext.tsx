@@ -66,10 +66,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser({ ...user, twoFactorEnabled: !user.twoFactorEnabled });
   };
 
-  const leaveTeam = (teamId: number) => {
+  const leaveTeam = async (teamId: number) => {
     if (!user) return;
-    const updatedTeams = user.teams.filter((t) => t.id !== teamId);
-    setUser({ ...user, teams: updatedTeams });
+    try {
+      await api.leaveTeam(teamId);
+      const updatedTeams = user.teams.filter((t) => t.id !== teamId);
+      setUser({ ...user, teams: updatedTeams });
+    } catch (err) {
+      console.error('Failed to leave team:', err);
+      throw err;
+    }
   };
 
   const addChatMessage = (teamId: number, message: Message) => {
@@ -210,29 +216,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser({ ...user, teams: updatedTeams });
   };
 
-  const createTeam = (teamData: TeamData) => {
+  const createTeam = async (teamData: TeamData) => {
     if (!user) return;
-    const newTeam: Team = {
-      id: Date.now(),
-      name: teamData.name,
-      objective: teamData.description,
-      owner: user,
-      role: 'Leader',
-      status: 'active',
-      members: [{ id: user.id, username: user.username, avatar: user.avatar, role: 'Leader' }],
-      tasks: [],
-      chat: [],
-    };
-    setUser({ ...user, teams: [...user.teams, newTeam] });
+    try {
+      const createdTeam = await api.createTeam({
+        name: teamData.name,
+        objective: teamData.description,
+        maxUsers: teamData.lookingFor || 10,
+        tags: teamData.details || [],
+      });
+      setUser({
+        ...user,
+        teams: [...user.teams, { ...createdTeam, role: 'Leader', isMember: true }],
+      });
+    } catch (err) {
+      console.error('Failed to create team:', err);
+      throw err;
+    }
   };
 
-  const updateTeamStatus = (teamId: number, status: string) => {
+  const updateTeamStatus = async (teamId: number, status: string) => {
     if (!user) return;
-    const updatedTeams = user.teams.map((team) => {
-      if (team.id === teamId) return { ...team, status };
-      return team;
-    });
-    setUser({ ...user, teams: updatedTeams });
+    try {
+      await api.updateTeam(teamId, { status });
+      const updatedTeams = user.teams.map((team) => {
+        if (team.id === teamId) return { ...team, status };
+        return team;
+      });
+      setUser({ ...user, teams: updatedTeams });
+    } catch (err) {
+      console.error('Failed to update team status:', err);
+      throw err;
+    }
   };
 
   const fetchFriendRequests = () => {

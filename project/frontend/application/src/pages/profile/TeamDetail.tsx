@@ -28,6 +28,7 @@ function TeamDetail() {
   const navigate = useNavigate();
   const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const [showTaskForm, setShowTaskForm] = useState(false);
   const [newTask, setNewTask] = useState({ title: '', description: '', assignedTo: '', status: 'to_do' as Task['status'] });
@@ -45,6 +46,41 @@ function TeamDetail() {
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [errorUsers, setErrorUsers] = useState('');
   const fileInputRefs = useRef<Record<number, HTMLInputElement>>({});
+  const [team, setTeam] = useState<any>(null);
+  const [loadingTeam, setLoadingTeam] = useState(true);
+  const [teamError, setTeamError] = useState('');
+  const [tasks, setTasks] = useState<any[]>([]);
+  const [joinRequests, setJoinRequests] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchTeam = async () => {
+      if (!id) return;
+      try {
+        setLoadingTeam(true);
+        const teamData = await api.getTeam(parseInt(id));
+        setTeam(teamData);
+      } catch (err) {
+        console.error('Failed to fetch team:', err);
+        setTeamError('Failed to load team');
+      } finally {
+        setLoadingTeam(false);
+      }
+    };
+    fetchTeam();
+  }, [id]);
+
+  useEffect(() => {
+    const fetchJoinRequests = async () => {
+      if (!id || team?.role !== 'Leader') return;
+      try {
+        const data = await api.getJoinRequests(parseInt(id));
+        setJoinRequests(data.request_list || []);
+      } catch (err) {
+        console.error('Failed to fetch join requests:', err);
+      }
+    };
+    fetchJoinRequests();
+  }, [id, team?.role]);
 
   useEffect(() => {
     if (showAddMemberModal && allUsers.length === 0) {
@@ -66,20 +102,36 @@ function TeamDetail() {
     }
   };
 
-  const team = user?.teams.find((t) => t.id === parseInt(id || '0'));
   const isLeader = team?.role === 'Leader';
   const isActive = team?.status === 'active';
   const canEdit = team && isActive;
   const canChangeStatus = isLeader;
 
   const taskCounts = {
-    total: team?.tasks.length || 0,
-    to_do: team?.tasks.filter((t) => t.status === 'to_do').length || 0,
-    in_progress: team?.tasks.filter((t) => t.status === 'in_progress').length || 0,
-    done: team?.tasks.filter((t) => t.status === 'done').length || 0,
+    total: tasks.length || 0,
+    to_do: tasks.filter((t) => t.status === 'to_do').length || 0,
+    in_progress: tasks.filter((t) => t.status === 'in_progress').length || 0,
+    done: tasks.filter((t) => t.status === 'done').length || 0,
   };
 
-  if (!team || !user) {
+  if (loadingTeam) {
+    return (
+      <div className="team-detail-page">
+        <div className="loading">{t('common.loading')}</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="team-detail-page">
+        <h1>{t('teams.notFound')}</h1>
+        <p>{t('teams.notFoundDesc')}</p>
+      </div>
+    );
+  }
+
+  if (teamError || !team) {
     return (
       <div className="team-detail-page">
         <h1>{t('teams.notFound') || 'Team not found'}</h1>
@@ -97,15 +149,32 @@ function TeamDetail() {
       avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`,
     }));
 
-  const filteredTasks = team.tasks.filter((task) => {
+  const filteredTasks = (tasks || []).filter((task: any) => {
     const statusMatch = statusFilter === 'all' || task.status === statusFilter;
     const assigneeMatch = assigneeFilter === 'all' || task.assignedTo?.username === assigneeFilter;
     return statusMatch && assigneeMatch;
   });
 
   const handleLeaveTeam = () => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.assignedTo?.id === user.id
+          ? { ...task, assignedTo: null }
+          : task
+      )
+    );
     leaveTeam(team.id);
     navigate('/profile/teams');
+  };
+
+  const handleDeleteTeam = async () => {
+    try {
+      await api.deleteTeam(team.id);
+      navigate('/profile/teams');
+    } catch (err) {
+      console.error('Failed to delete team:', err);
+      alert('Failed to delete team');
+    }
   };
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -132,17 +201,40 @@ function TeamDetail() {
     setNewStatus('');
   };
 
+  const handleAcceptJoinRequest = async (requestId: number) => {
+    try {
+      await api.acceptJoinRequest(team.id, requestId);
+      setJoinRequests(prev => prev.filter(r => r.request_id !== requestId));
+      const updatedTeam = await api.getTeam(parseInt(id));
+      setTeam(updatedTeam);
+    } catch (err) {
+      console.error('Failed to accept join request:', err);
+      alert('Failed to accept join request');
+    }
+  };
+
+  const handleRejectJoinRequest = async (requestId: number) => {
+    try {
+      await api.rejectJoinRequest(team.id, requestId);
+      setJoinRequests(prev => prev.filter(r => r.request_id !== requestId));
+    } catch (err) {
+      console.error('Failed to reject join request:', err);
+      alert('Failed to reject join request');
+    }
+  };
+
   const handleAddTask = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTask.title.trim() || !canEdit) return;
-    const assignedMember = team.members.find(m => m.username === newTask.assignedTo);
-    addTask(team.id, {
+    const newTaskItem = {
+      id: Date.now(),
       title: newTask.title,
       description: newTask.description,
-      status: newTask.status,
-      assignedTo: assignedMember ? { id: assignedMember.id, username: assignedMember.username } : null,
-      files: [],
-    });
+      status: 'to_do',
+      assignedTo: null,
+      files: [] as any[],
+    };
+    setTasks([...tasks, newTaskItem]);
     setNewTask({ title: '', description: '', assignedTo: '', status: 'to_do' });
     setShowTaskForm(false);
   };
@@ -220,6 +312,13 @@ function TeamDetail() {
   const handleConfirmRemove = () => {
     if (!isLeader || !memberToRemove) return;
     removeTeamMember(team.id, memberToRemove.id);
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        task.assignedTo?.id === memberToRemove.id
+          ? { ...task, assignedTo: null }
+          : task
+      )
+    );
     setShowRemoveMemberModal(false);
     setMemberToRemove(null);
   };
@@ -259,7 +358,7 @@ function TeamDetail() {
             <option value="finished">{t('teams.finished') || 'Finished'}</option>
           </select>
           <span className="team-members-count">
-            {team.members.length}/{team.lookingFor || '∞'}
+            {team.members.length}/{team.maxUsers || '∞'}
           </span>
         </div>
       </div>
@@ -290,6 +389,41 @@ function TeamDetail() {
           ))}
         </div>
       </div>
+
+      {isLeader && joinRequests.length > 0 && (
+        <div className="team-section">
+          <div className="section-header">
+            <h2 className="team-section-title">{t('teams.joinRequests')} ({joinRequests.length})</h2>
+          </div>
+          <div className="members-list">
+            {joinRequests.map((request) => (
+              <div key={request.request_id} className="member-card">
+                <img
+                  src={request.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${request.username}`}
+                  alt={request.username}
+                  className="member-avatar"
+                />
+                <span className="member-name">{request.username}</span>
+                <span className="member-role pending">{t('teams.pending')}</span>
+                <div className="member-actions">
+                  <button
+                    className="btn btn-primary btn-small"
+                    onClick={() => handleAcceptJoinRequest(request.request_id)}
+                  >
+                    {t('teams.accept')}
+                  </button>
+                  <button
+                    className="btn btn-secondary btn-small"
+                    onClick={() => handleRejectJoinRequest(request.request_id)}
+                  >
+                    {t('teams.reject')}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="team-section">
         <div className="section-header">
@@ -344,7 +478,7 @@ function TeamDetail() {
                 <option value="in_progress">{t('tasks.inProgress')}</option>
                 <option value="done">{t('tasks.done')}</option>
               </select>
-              <button type="submit" className="btn btn-primary">{t('common.add') || 'Add'}</button>
+              <button type="submit" className="btn btn-primary">{t('teams.addTask')}</button>
             </div>
           </form>
         )}
@@ -513,10 +647,10 @@ function TeamDetail() {
             </div>
             <div className="modal-body">
               <div className="add-member-method">
-                <label className="input-label">{t('friends.selectFromUsers') || 'Select from Users'}</label>
+                <label className="input-label">{t('teams.selectUser')}</label>
                 <div className="add-member-row">
                   {loadingUsers && allUsers.length === 0 ? (
-                    <span className="loading-text">Loading users...</span>
+                    <span className="loading-text">{t('common.loading')}</span>
                   ) : (
                     <>
                       <select
@@ -524,7 +658,7 @@ function TeamDetail() {
                         value={selectedFriend}
                         onChange={(e) => setSelectedFriend(e.target.value)}
                       >
-                        <option value="">{t('teams.selectFriend')}</option>
+                        <option value="">{t('teams.selectUser')}</option>
                         {availableUsers.map((u) => (
                           <option key={u.id} value={u.username}>{u.username}</option>
                         ))}
@@ -546,7 +680,7 @@ function TeamDetail() {
                     onChange={(e) => setManualUsername(e.target.value)}
                   />
                   <button className="btn btn-primary" onClick={handleAddMemberManual} disabled={loadingUsers}>
-                    {loadingUsers ? '...' : t('common.add')}
+                    {loadingUsers ? '...' : t('teams.addUser')}
                   </button>
                 </div>
               </div>
@@ -588,16 +722,31 @@ function TeamDetail() {
       )}
 
       <div className="team-actions">
-        {showLeaveConfirm ? (
-          <div className="leave-confirm">
-            <p>{t('teams.confirmLeave')}</p>
-            <div className="leave-confirm-buttons">
-              <button className="btn btn-secondary" onClick={() => setShowLeaveConfirm(false)}>{t('common.cancel')}</button>
-              <button className="btn btn-danger" onClick={handleLeaveTeam}>{t('teams.leaveTeam')}</button>
+        {!isLeader && (
+          showLeaveConfirm ? (
+            <div className="leave-confirm">
+              <p>{t('teams.confirmLeave')}</p>
+              <div className="leave-confirm-buttons">
+                <button className="btn btn-secondary" onClick={() => setShowLeaveConfirm(false)}>{t('common.cancel')}</button>
+                <button className="btn btn-danger" onClick={handleLeaveTeam}>{t('teams.leave')}</button>
+              </div>
             </div>
-          </div>
-        ) : (
-          <button className="btn btn-outline-danger" onClick={() => setShowLeaveConfirm(true)}>{t('teams.leaveTeam')}</button>
+          ) : (
+            <button className="btn btn-outline-danger" onClick={() => setShowLeaveConfirm(true)}>{t('teams.leaveTeam')}</button>
+          )
+        )}
+        {isLeader && (
+          showDeleteConfirm ? (
+            <div className="leave-confirm">
+              <p>{t('teams.confirmDelete') || 'Are you sure you want to delete this team? This action cannot be undone.'}</p>
+              <div className="leave-confirm-buttons">
+                <button className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>{t('common.cancel')}</button>
+                <button className="btn btn-danger" onClick={handleDeleteTeam}>{t('common.delete')}</button>
+              </div>
+            </div>
+          ) : (
+            <button className="btn btn-danger" onClick={() => setShowDeleteConfirm(true)}>{t('teams.deleteTeam')}</button>
+          )
         )}
       </div>
     </div>
