@@ -1,6 +1,8 @@
 import { prisma } from '../prisma.js';
 import { AppError } from '../utils/AppError.js';
 import type { UpdateUserDTO } from './users.types.js';
+import fs from 'fs';
+import path from 'path';
 
 export const getMe = async (userId: number) => {
   const user = await prisma.user.findUnique({
@@ -46,6 +48,22 @@ export const updateMe = async (userId: number, data: UpdateUserDTO) => {
 
     if (existingUsername) {
       throw new AppError('Username already in use', 400);
+    }
+  }
+
+  if (data.avatar_url) {
+    const currentUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { avatar_url: true },
+    });
+
+    if (currentUser?.avatar_url) {
+      const filename = path.basename(currentUser.avatar_url);
+
+      const oldAvatarPath = path.join('/app/uploads/avatars', filename);
+
+      if (fs.existsSync(oldAvatarPath))
+        fs.unlinkSync(oldAvatarPath);
     }
   }
 
