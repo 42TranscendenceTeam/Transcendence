@@ -1,16 +1,25 @@
 import { prisma } from '../prisma.js';
 import { AppError } from '../utils/AppError.js';
 import type { UpdateUserDTO } from './users.types.js';
+import fs from 'fs';
+import path from 'path';
 
 export const getMe = async (userId: number) => {
-  return prisma.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
     select: {
       id: true,
       email: true,
       username: true,
+      bio: true,
+      avatar_url: true,
     },
   });
+
+  return {
+    ...user,
+    avatar_url: user?.avatar_url ?? "/api/public/avatars/default.png",
+  };
 };
 
 export const updateMe = async (userId: number, data: UpdateUserDTO) => {
@@ -42,6 +51,22 @@ export const updateMe = async (userId: number, data: UpdateUserDTO) => {
     }
   }
 
+  if (data.avatar_url) {
+    const currentUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { avatar_url: true },
+    });
+
+    if (currentUser?.avatar_url) {
+      const filename = path.basename(currentUser.avatar_url);
+
+      const oldAvatarPath = path.join('/app/uploads/avatars', filename);
+
+      if (fs.existsSync(oldAvatarPath))
+        fs.unlinkSync(oldAvatarPath);
+    }
+  }
+
   return prisma.user.update({
     where: { id: userId },
     data: {
@@ -59,7 +84,7 @@ export const updateMe = async (userId: number, data: UpdateUserDTO) => {
 };
 
 export const searchUsers = async (query: string) => {
-  return prisma.user.findMany({
+  const users = await prisma.user.findMany({
     where: {
       username: {
         contains: query,
@@ -69,6 +94,12 @@ export const searchUsers = async (query: string) => {
     select: {
       id: true,
       username: true,
+      avatar_url: true,
     },
   });
+
+  return users.map((user) => ({
+    ...user,
+    avatar_url: user.avatar_url || "/api/public/avatars/default.png",
+  }));
 };
