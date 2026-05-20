@@ -84,7 +84,7 @@ export const updateMe = async (userId: number, data: UpdateUserDTO) => {
 };
 
 export const searchUsers = async (query: string) => {
-  return prisma.user.findMany({
+  const users = await prisma.user.findMany({
     where: {
       username: {
         contains: query,
@@ -94,6 +94,12 @@ export const searchUsers = async (query: string) => {
     select: {
       id: true,
       username: true,
+      avatar_url: true,
     },
   });
+
+  return users.map((user) => ({
+    ...user,
+    avatar_url: user.avatar_url || "/api/public/avatars/default.png",
+  }));
 };
