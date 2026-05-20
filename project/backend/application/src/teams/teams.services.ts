@@ -596,10 +596,17 @@ export const acceptTeamInvite = async (userId: number, inviteId: number) => {
 		select: {
 			id: true,
 			user_id: true,
+			user: {
+				select: {
+					username: true,
+				},
+			},
 			team_id: true,
 			team: {
 				select: {
 					status_ongoing: true,
+					owner_id: true,
+					name: true,
 				},
 			},
 		},
@@ -639,6 +646,15 @@ export const acceptTeamInvite = async (userId: number, inviteId: number) => {
 			status: 'accepted',
 		}
 	});
+
+	await createNotification(
+		invite.team.owner_id,
+		'team_invite_accepted',
+		invite.id,
+		'team_invite',
+		invite.user_id,
+		`${invite.user.username} accepted to join the ${invite.team.name} team.`,
+	);
 
 	return newUser;
 };
