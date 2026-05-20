@@ -15,6 +15,8 @@ app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/teams', teamsRoutes);
 app.use('/friends', friendsRoutes);
+app.use('/uploads', express.static('/app/uploads'));
+app.use('/public', express.static('/app/public'));
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });

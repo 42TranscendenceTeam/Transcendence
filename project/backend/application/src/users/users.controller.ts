@@ -9,8 +9,12 @@ export const getMeController = async (req: AuthRequest, res: Response) => {
 };
 
 export const updateMeController = async (req: AuthRequest, res: Response) => {
-  const { username, email, bio, avatar_url } = req.body;
-  const data: UpdateUserDTO = { username, email, bio, avatar_url };
+  const { username, email, bio } = req.body;
+  const data: UpdateUserDTO = { username, email, bio };
+
+  if (req.file) {
+    data.avatar_url = `/api/uploads/avatars/${req.file.filename}`;
+  }
 
   const updated = await updateMe(req.user!.id, data);
 
