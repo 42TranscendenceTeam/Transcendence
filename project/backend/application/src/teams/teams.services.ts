@@ -2,6 +2,7 @@ import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
 import type { CreateTeamDTO, UpdateTeamDTO } from './teams.types.js';
 import { createNotification } from '../notifications/notifications.service.js';
+import { getTeamJoinRequestsController } from './teams.controller.js';
 
 // Return all teams info
 export const getTeamsList = async () => {
@@ -720,6 +721,7 @@ export const leaveTeam = async (userId: number, teamId: number) => {
 		},
 		select: {
 			owner_id: true,
+			name: true,
 		},
 	});
 
@@ -739,7 +741,7 @@ export const leaveTeam = async (userId: number, teamId: number) => {
 	if (!member)
 		throw new AppError("You are not a member of this team.", 400);
 
-	return prisma.teamUser.delete({
+	const teamUser = await prisma.teamUser.delete({
 		where: {
 			user_id_team_id: {
 				user_id: userId,
@@ -747,4 +749,24 @@ export const leaveTeam = async (userId: number, teamId: number) => {
 			},
 		},
 	});
+
+	const userName = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		select: {
+			username: true,
+		},
+	});
+
+	await createNotification(
+		team.owner_id,
+		'team_user_left',
+		teamId,
+		'team',
+		userId,
+		`${userName?.username ?? 'Someone'} left ${team.name}.`,
+	);
+
+	return teamUser;
 };
