@@ -8,7 +8,7 @@
  */
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest } from '../types';
+import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest, TeamInvite } from '../types';
 import { api } from '../services/api';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -23,6 +23,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
   const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [teamInvites, setTeamInvites] = useState<TeamInvite[]>([]);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -41,6 +43,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             teams: [],
             globalChat: [],
           });
+          fetchTeamInvites();
         }
       } catch {
         localStorage.removeItem('authToken');
@@ -308,6 +311,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
   };
 
+  const fetchTeamInvites = () => {
+    api.getTeamInvites().then((invites) => {
+      setTeamInvites(invites);
+      setUnreadNotifications(invites.length);
+    }).catch((err) => {
+      console.error('Failed to fetch team invites:', err);
+    });
+  };
+
+  const acceptTeamInvite = (inviteId: number) => {
+    api.acceptTeamInvite(inviteId).then(() => {
+      setTeamInvites(teamInvites.filter((i) => i.invite_id !== inviteId));
+      setUnreadNotifications((prev) => Math.max(0, prev - 1));
+    }).catch((err) => {
+      console.error('Failed to accept team invite:', err);
+    });
+  };
+
+  const rejectTeamInvite = (inviteId: number) => {
+    api.rejectTeamInvite(inviteId).then(() => {
+      setTeamInvites(teamInvites.filter((i) => i.invite_id !== inviteId));
+      setUnreadNotifications((prev) => Math.max(0, prev - 1));
+    }).catch((err) => {
+      console.error('Failed to reject team invite:', err);
+    });
+  };
+
+  const markNotificationsRead = () => {
+    setUnreadNotifications(0);
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -333,11 +367,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       friendRequests,
       sentRequests,
       friends,
+      teamInvites,
+      unreadNotifications,
       fetchFriendRequests,
       fetchSentRequests,
       fetchFriends,
+      fetchTeamInvites,
       acceptFriendRequest,
       rejectFriendRequest,
+      acceptTeamInvite,
+      rejectTeamInvite,
+      markNotificationsRead,
     }}>
       {children}
     </AuthContext.Provider>

@@ -156,6 +156,7 @@
     "confirmLeave": "Are you sure you want to leave this team?",
     "fromTeam": "from the team",
     "joinRequests": "Join Requests",
+    "pendingInvites": "Pending Invitations",
     "accept": "Accept",
     "reject": "Reject",
     "loginRequired": "Please log in to join a team",
@@ -276,7 +277,13 @@
     "newFriendRequest": "New friend request",
     "teamInvite": "Team invitation",
     "taskAssigned": "Task assigned to you",
-    "newMessage": "New message"
+    "newMessage": "New message",
+    "teamInvites": "Team Invites",
+    "friendInvites": "Friend Invites",
+    "noTeamInvites": "No pending team invitations",
+    "noFriendInvites": "No pending friend invitations",
+    "pendingTeamInvites": "Pending team invites",
+    "pendingFriendInvites": "Pending friend invites"
   },
   "legal": {
     "privacy": {

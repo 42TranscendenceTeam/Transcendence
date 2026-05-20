@@ -26,7 +26,7 @@ const TEAM_DETAILS = [
 
 function Teams() {
   const { t } = useTranslation();
-  const { user, createTeam } = useContext(AuthContext);
+  const { user, createTeam, teamInvites, fetchTeamInvites, acceptTeamInvite, rejectTeamInvite } = useContext(AuthContext);
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -53,6 +53,7 @@ function Teams() {
       }
     };
     fetchTeams();
+    fetchTeamInvites();
   }, []);
 
   if (!user) {
@@ -90,6 +91,8 @@ function Teams() {
     }));
   };
 
+  const pendingInvites = teamInvites;
+
   return (
     <div className="teams-page">
       <div className="teams-header">
@@ -106,6 +109,32 @@ function Teams() {
 
       {!loading && !error && (
         <div className="teams-content">
+          {pendingInvites.length > 0 && (
+            <div className="profile-section">
+              <h2 className="profile-section-title">{t('teams.pendingInvites')}</h2>
+              <div className="requests-list">
+                {pendingInvites.map((invite) => (
+                  <div key={invite.invite_id} className="request-card">
+                    <span className="request-username">{invite.team_name}</span>
+                    <span className="request-status">{invite.team_about}</span>
+                    <button
+                      className="btn btn-primary btn-small"
+                      onClick={() => acceptTeamInvite(invite.invite_id)}
+                    >
+                      {t('teams.accept')}
+                    </button>
+                    <button
+                      className="btn btn-outline-danger btn-small"
+                      onClick={() => rejectTeamInvite(invite.invite_id)}
+                    >
+                      {t('teams.reject')}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <p className="profile-page-subtitle">{t('teams.youAreIn') || 'You are in'} {userTeams.length} {t('teams.activeTeams') || 'active teams'}</p>
 
           <div className="teams-list">

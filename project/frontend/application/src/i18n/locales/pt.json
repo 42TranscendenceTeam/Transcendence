@@ -155,6 +155,7 @@
     "confirmLeave": "Tem a certeza que deseja sair desta equipa?",
     "fromTeam": "da equipa",
     "joinRequests": "Pedidos de Entrada",
+    "pendingInvites": "Convites pendentes",
     "accept": "Aceitar",
     "reject": "Rejeitar",
     "loginRequired": "Por favor, inicie sessão para entrar numa equipa",
@@ -268,7 +269,13 @@
     "newFriendRequest": "Novo pedido de amizade",
     "teamInvite": "Convite de equipa",
     "taskAssigned": "Tarefa atribuída a si",
-    "newMessage": "Nova mensagem"
+    "newMessage": "Nova mensagem",
+    "teamInvites": "Convites de equipa",
+    "friendInvites": "Convites de amigos",
+    "noTeamInvites": "Sem convites de equipa pendentes",
+    "noFriendInvites": "Sem convites de amigos pendentes",
+    "pendingTeamInvites": "Convites de equipa pendentes",
+    "pendingFriendInvites": "Convites de amigos pendentes"
   },
   "legal": {
     "privacy": {

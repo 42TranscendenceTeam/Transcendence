@@ -262,10 +262,16 @@ function TeamDetail() {
     }
   };
 
-  const handleAddMemberFromDropdown = () => {
+  const handleAddMemberFromDropdown = async () => {
     if (!selectedFriend || !canEdit || !user) return;
     const userToAdd = availableUsers.find((u) => u.username === selectedFriend);
     if (userToAdd) {
+      try {
+        await api.sendTeamInvite(team.id, userToAdd.id);
+      } catch {
+        setErrorUsers('Failed to send invite');
+        return;
+      }
       addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: memberRole }, memberRole);
       setSelectedFriend('');
       setMemberRole('Member');
@@ -283,6 +289,12 @@ function TeamDetail() {
         (u) => u.username.toLowerCase() === manualUsername.trim().toLowerCase()
       );
       if (foundUser && !team.members.some((m) => m.id === foundUser.id)) {
+        try {
+          await api.sendTeamInvite(team.id, foundUser.id);
+        } catch {
+          setErrorUsers('Failed to send invite');
+          return;
+        }
         addTeamMember(team.id, {
           id: foundUser.id,
           username: foundUser.username,
