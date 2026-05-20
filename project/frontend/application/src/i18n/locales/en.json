@@ -90,7 +90,11 @@
       "confirmMessage": "Are you sure you want to save these changes?",
       "noChangesMessage": "No changes have been made to your profile.",
       "changesToSave": "Changes to be saved:",
-      "success": "Profile updated successfully!"
+      "success": "Profile updated successfully!",
+      "uploading": "Uploading...",
+      "uploadTooLarge": "Image must be under 4.5MB",
+      "uploadInvalidType": "Only JPG, PNG, GIF, and WebP allowed",
+      "uploadFailed": "Failed to upload avatar"
     },
     "security": {
       "title": "Security",

@@ -167,7 +167,9 @@ export const api = {
       body: formData,
     }).then((response) => {
       if (!response.ok) {
-        throw new Error('Failed to upload avatar');
+        return response.json().then((data) => {
+          throw new Error(data.error || 'Failed to upload avatar');
+        });
       }
       return response.json();
     });

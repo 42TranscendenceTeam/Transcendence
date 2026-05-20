@@ -28,16 +28,33 @@ function ProfileEdit() {
   const [language, setLanguage] = useState(i18n.language);
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+
+  const MAX_SIZE = 4.5 * 1024 * 1024;
+  const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    setUploadError('');
+    if (file.size > MAX_SIZE) {
+      setUploadError(t('profile.edit.uploadTooLarge'));
+      return;
+    }
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setUploadError(t('profile.edit.uploadInvalidType'));
+      return;
+    }
+    setIsUploading(true);
     try {
       const result = await api.uploadAvatar(file);
       setAvatarUrl(result.avatar_url);
       updateUser({ avatar: result.avatar_url });
-    } catch {
-      alert('Failed to upload avatar');
+    } catch (err: any) {
+      setUploadError(err.message || t('profile.edit.uploadFailed'));
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -106,18 +123,31 @@ function ProfileEdit() {
             <img src={avatarUrl || user.avatar} alt="Avatar preview" />
           </div>
           <div className="avatar-upload">
-            <label className="upload-label">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 16V4M12 4l4 4M12 4l-4 4M20 21H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-              </svg>
-              {t('profile.edit.uploadAvatar')}
+            <label className={`upload-label ${isUploading ? 'uploading' : ''}`}>
+              {isUploading ? (
+                <>
+                  <svg className="upload-spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                  </svg>
+                  {t('profile.edit.uploading')}
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                  </svg>
+                  {t('profile.edit.uploadAvatar')}
+                </>
+              )}
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleAvatarUpload}
+                disabled={isUploading}
                 style={{ display: 'none' }}
               />
             </label>
+            {uploadError && <p className="avatar-upload-error">{uploadError}</p>}
           </div>
         </div>
 

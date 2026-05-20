@@ -89,7 +89,11 @@
       "confirmMessage": "Êtes-vous sûr de vouloir enregistrer ces modifications ?",
       "noChangesMessage": "Aucune modification n'a été apportée à votre profil.",
       "changesToSave": "Modifications à enregistrer :",
-      "success": "Profil mis à jour avec succès !"
+      "success": "Profil mis à jour avec succès !",
+      "uploading": "Téléchargement...",
+      "uploadTooLarge": "L'image doit faire moins de 4,5 Mo",
+      "uploadInvalidType": "Seuls JPG, PNG, GIF et WebP autorisés",
+      "uploadFailed": "Échec du téléchargement de l'avatar"
     },
     "security": {
       "title": "Sécurité",

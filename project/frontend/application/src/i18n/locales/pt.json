@@ -89,7 +89,11 @@
       "confirmMessage": "Tem a certeza que deseja guardar estas alterações?",
       "noChangesMessage": "Não foram feitas alterações ao seu perfil.",
       "changesToSave": "Alterações a guardar:",
-      "success": "Perfil atualizado com sucesso!"
+      "success": "Perfil atualizado com sucesso!",
+      "uploading": "A carregar...",
+      "uploadTooLarge": "A imagem deve ter menos de 4,5 MB",
+      "uploadInvalidType": "Apenas JPG, PNG, GIF e WebP são permitidos",
+      "uploadFailed": "Falha ao carregar avatar"
     },
     "security": {
       "title": "Segurança",
