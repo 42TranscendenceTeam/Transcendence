@@ -1,6 +1,7 @@
 import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
 import type { CreateTeamDTO, UpdateTeamDTO } from './teams.types.js';
+import { createNotification } from '../notifications/notifications.service.js';
 
 // Return all teams info
 export const getTeamsList = async () => {
@@ -287,6 +288,8 @@ export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
 		},
 		select: {
 			status_ongoing: true,
+			owner_id: true,
+			name :true,
 		},
 	});
 
@@ -317,12 +320,32 @@ export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
 	if (userInTeam)
 		throw new AppError("You are already in that team.", 400);
 
-	return prisma.teamJoinRequest.create({
+	const request = await prisma.teamJoinRequest.create({
 		data: {
 			user_id: userId,
 			team_id: teamId,
 		},
 	});
+
+	const user = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		select: {
+			username: true,
+		},
+	});
+
+	await createNotification(
+		team.owner_id,
+		'team_join_request',
+		request.id,
+		'team_join_request',
+		userId,
+		`${user?.username ?? 'Someone'} requested to join ${team.name}.`,
+	);
+
+	return request;
 };
 
 // Accept join request to team with team id and request id
@@ -412,7 +435,7 @@ export const rejectJoinRequest = async (userId: number, teamId: number, requestI
 	if (userId !== request.team.owner_id)
 		throw new AppError("Only the team owner can reject join requests.", 403);
 
-	return prisma.teamJoinRequest.update({
+	const status = await prisma.teamJoinRequest.update({
 		where: {
 			id: request.id,
 		},
@@ -420,6 +443,8 @@ export const rejectJoinRequest = async (userId: number, teamId: number, requestI
 			status: 'rejected',
 		}
 	});
+
+	return status;
 };
 
 // Get list of team invites for current user
