@@ -5,7 +5,7 @@ import { getTeamsListController, createTeamController, getTeamController, update
 
 const router = Router();
 
-router.get('/', authMiddleware, asyncHandler(getTeamsListController));
+router.get('/', asyncHandler(getTeamsListController));
 router.post('/', authMiddleware, asyncHandler(createTeamController));
 
 router.get('/invites', authMiddleware, asyncHandler(getTeamInvitesController));

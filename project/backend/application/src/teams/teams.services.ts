@@ -97,6 +97,7 @@ export const updateTeam = async (userId: number, teamId: number, info: UpdateTea
 		},
 		select: {
 			owner_id: true,
+			status_ongoing: true,
 		},
 	});
 
@@ -105,6 +106,9 @@ export const updateTeam = async (userId: number, teamId: number, info: UpdateTea
 
 	if (userId !== team.owner_id)
 		throw new AppError("Only the owner of the team can update it.", 403);
+
+	if(team.status_ongoing === false)
+		throw new AppError("Closed teams cannot be updated.", 400);
 
 	return prisma.team.update({
 		where: {
