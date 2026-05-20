@@ -667,6 +667,21 @@ export const rejectTeamInvite = async (userId: number, inviteId: number) => {
 			id: inviteId,
 			status: 'pending',
 		},
+		select: {
+			id: true,
+			user_id: true,
+			user: {
+				select: {
+					username: true,
+				},
+			},
+			team: {
+				select: {
+					owner_id: true,
+					name: true,
+				},
+			},
+		},
 	});
 
 	if (!invite)
@@ -675,14 +690,25 @@ export const rejectTeamInvite = async (userId: number, inviteId: number) => {
 	if (userId !== invite.user_id)
 		throw new AppError("Only the invited user can reject this invite.", 403);
 
-	return prisma.teamInvite.update({
+	const teamInvite = await prisma.teamInvite.update({
 		where: {
 			id: invite.id,
 		},
 		data: {
 			status: 'rejected',
-		}
+		},
 	});
+
+	await createNotification(
+		invite.team.owner_id,
+		'team_invite_rejected',
+		invite.id,
+		'team_invite',
+		userId,
+		`${invite.user.username} declined your invite to join ${invite.team.name}.`,
+	);
+
+	return teamInvite;
 };
 
 // Leave team with logged-in user
