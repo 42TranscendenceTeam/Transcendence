@@ -155,6 +155,22 @@ export const api = {
     });
   },
 
+  // ========== AVATAR UPLOAD ==========
+  uploadAvatar(file: File): Promise<{ avatar_url: string }> {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    return fetch(`${API_URL}/users/me`, {
+      method: 'PUT',
+      headers: api.getAuthHeaders(),
+      body: formData,
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to upload avatar');
+      }
+      return response.json();
+    });
+  },
+
   // ========== USER SEARCH ==========
   searchUsers(query: string): Promise<{id: number, username: string}[]> {
     return fetch(`${API_URL}/users/search?q=${encodeURIComponent(query)}`, {
@@ -189,7 +205,7 @@ export const api = {
       id: data.id,
       username: data.username,
       email: data.email,
-      avatar: data.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`,
+      avatar: data.avatar_url || '/api/public/avatars/default.png',
       description: data.bio || '',
       twoFactorEnabled: false,
       friends: [],
@@ -259,7 +275,7 @@ export const api = {
               members: memberList.map((m: { id: number; username: string; avatar_url: string }) => ({
                 id: m.id,
                 username: m.username,
-                avatar: m.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.username}`,
+                avatar: m.avatar_url || '/api/public/avatars/default.png',
                 role: m.id === ownerData.owner_id ? 'Leader' : 'Member',
               })),
               tags: team.tags ? team.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
@@ -605,7 +621,7 @@ export const api = {
         data.map((friend: { id: number; username: string; avatar_url: string }) => ({
           id: friend.id,
           username: friend.username,
-          avatar: friend.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${friend.username}`,
+          avatar: friend.avatar_url || '/api/public/avatars/default.png',
         }))
       );
     });

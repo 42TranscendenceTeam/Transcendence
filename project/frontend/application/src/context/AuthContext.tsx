@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             id: Number(userData.id),
             username: userData.username,
             email: userData.email,
-            avatar: userData.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`,
+            avatar: userData.avatar || '/api/public/avatars/default.png',
             description: userData.description || '',
             twoFactorEnabled: userData.twoFactorEnabled || false,
             friends: [],

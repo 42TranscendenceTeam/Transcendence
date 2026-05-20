@@ -493,6 +493,35 @@
 }
 
 /*
+ * Avatar upload label (styled as a solid-box button)
+ */
+.upload-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--bg-input);
+  border: 2px solid var(--border);
+  border-radius: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-label:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--bg-card-hover);
+}
+
+.upload-label svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/*
  * Nav icon wrapper (for badge positioning)
  */
 .nav-icon-wrapper {

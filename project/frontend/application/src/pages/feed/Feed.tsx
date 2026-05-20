@@ -41,7 +41,7 @@ const MOCK_AVAILABLE_TEAMS: Team[] = [
     id: 1,
     name: 'Mobile App Project',
     objective: 'Building a cross-platform mobile application for campus events',
-    owner: { id: 1, username: 'Felix', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' },
+    owner: { id: 1, username: 'Felix', avatar: '/api/public/avatars/default.png' },
     role: 'Leader',
     status: 'active',
     members: [],
@@ -55,7 +55,7 @@ const MOCK_AVAILABLE_TEAMS: Team[] = [
     id: 2,
     name: 'AI Chatbot',
     objective: 'Creating an AI-powered chatbot for student support',
-    owner: { id: 2, username: 'Luna', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Luna' },
+    owner: { id: 2, username: 'Luna', avatar: '/api/public/avatars/default.png' },
     role: 'Leader',
     status: 'active',
     members: [],
@@ -69,7 +69,7 @@ const MOCK_AVAILABLE_TEAMS: Team[] = [
     id: 3,
     name: 'E-commerce Platform',
     objective: 'Developing a full-stack e-commerce solution for local vendors',
-    owner: { id: 3, username: 'Alex', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex' },
+    owner: { id: 3, username: 'Alex', avatar: '/api/public/avatars/default.png' },
     role: 'Leader',
     status: 'active',
     members: [],
@@ -83,7 +83,7 @@ const MOCK_AVAILABLE_TEAMS: Team[] = [
     id: 4,
     name: 'Data Analytics Dashboard',
     objective: 'Building a real-time analytics dashboard for university metrics',
-    owner: { id: 4, username: 'Sam', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sam' },
+    owner: { id: 4, username: 'Sam', avatar: '/api/public/avatars/default.png' },
     role: 'Leader',
     status: 'active',
     members: [],
@@ -197,7 +197,7 @@ function Feed() {
           <div key={team.id} className="task-card">
             <div className="task-header">
               <img
-                src={team.owner.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${team.owner.username}`}
+                src={team.owner.avatar || '/api/public/avatars/default.png'}
                 alt={team.owner.username}
                 className="task-avatar"
               />

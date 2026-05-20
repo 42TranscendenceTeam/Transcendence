@@ -146,7 +146,7 @@ function TeamDetail() {
     .map((u) => ({
       id: u.id,
       username: u.username,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`,
+      avatar: '/api/public/avatars/default.png',
     }));
 
   const filteredTasks = (tasks || []).filter((task: any) => {
@@ -298,7 +298,7 @@ function TeamDetail() {
         addTeamMember(team.id, {
           id: foundUser.id,
           username: foundUser.username,
-          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${foundUser.username}`,
+          avatar: '/api/public/avatars/default.png',
           role: memberRole,
         }, memberRole);
         setManualUsername('');
@@ -411,7 +411,7 @@ function TeamDetail() {
             {joinRequests.map((request) => (
               <div key={request.request_id} className="member-card">
                 <img
-                  src={request.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${request.username}`}
+                  src={request.avatar_url || '/api/public/avatars/default.png'}
                   alt={request.username}
                   className="member-avatar"
                 />

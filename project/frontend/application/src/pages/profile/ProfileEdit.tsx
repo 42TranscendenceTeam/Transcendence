@@ -1,18 +1,15 @@
 /**
  * Profile Edit Page Component
- * 
+ *
  * Allows user to edit their profile including:
- * - Avatar selection
- * - Username
- * - Email
- * - Description
- * 
- * TODO: Connect to real API when backend is ready
+ * - Avatar upload
+ * - Language
  */
 
 import { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { api } from '../../services/api';
 import LanguageSelector from '../../components/LanguageSelector';
 
 function ProfileEdit() {
@@ -30,75 +27,30 @@ function ProfileEdit() {
   const [avatarUrl, setAvatarUrl] = useState(initialAvatar);
   const [language, setLanguage] = useState(i18n.language);
 
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
-  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      alert('Avatar upload is not yet implemented.');
+    if (!file) return;
+    try {
+      const result = await api.uploadAvatar(file);
+      setAvatarUrl(result.avatar_url);
+      updateUser({ avatar: result.avatar_url });
+    } catch {
+      alert('Failed to upload avatar');
     }
-  };
-
-  const avatarSeeds = ['Felix', 'Luna', 'Alex', 'Max', 'Nina', 'Sam', 'Kate', 'John'];
-  const avatarOptions = avatarSeeds.map((seed) => ({
-    seed,
-    url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`,
-  }));
-
-  const hasChanges = 
-    username !== initialUsername ||
-    email !== initialEmail ||
-    description !== initialDescription ||
-    avatarUrl !== initialAvatar ||
-    language !== i18n.language;
-
-  const getChangesSummary = () => {
-    const changes: string[] = [];
-    if (username !== initialUsername) {
-      changes.push(`${t('profile.edit.username')}: ${initialUsername} → ${username}`);
-    }
-    if (email !== initialEmail) {
-      changes.push(`${t('profile.edit.email')}: ${initialEmail} → ${email}`);
-    }
-    if (description !== initialDescription) {
-      changes.push(`${t('profile.edit.description')} updated`);
-    }
-    if (avatarUrl !== initialAvatar) {
-      changes.push(`${t('profile.edit.avatar')} changed`);
-    }
-    if (language !== i18n.language) {
-      const langNames: Record<string, string> = { en: 'English', fr: 'Français', pt: 'Português' };
-      changes.push(`${t('profile.edit.language')}: ${langNames[i18n.language] || i18n.language} → ${langNames[language] || language}`);
-    }
-    return changes;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setShowConfirmModal(true);
-  };
-
-  const handleConfirm = () => {
-    if (language !== i18n.language) {
-      i18n.changeLanguage(language);
-    }
-    updateUser({ username, email, description, avatar: avatarUrl });
-    setShowConfirmModal(false);
-    setShowSuccessModal(true);
-  };
-
-  const handleCancel = () => {
-    setLanguage(i18n.language);
-    setShowConfirmModal(false);
   };
 
   const handleSuccessClose = () => {
     setShowSuccessModal(false);
   };
 
-  const selectPresetAvatar = (url: string) => {
-    setAvatarUrl(url);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (language !== i18n.language) {
+      i18n.changeLanguage(language);
+    }
+    setShowSuccessModal(true);
   };
 
   if (!user) {
@@ -153,25 +105,15 @@ function ProfileEdit() {
           <div className="avatar-preview">
             <img src={avatarUrl || user.avatar} alt="Avatar preview" />
           </div>
-          <p className="label-small">{t('profile.edit.selectDefaultAvatar')}</p>
-          <div className="avatar-options">
-            {avatarOptions.map((option) => (
-              <button
-                key={option.seed}
-                type="button"
-                className={`avatar-option ${avatarUrl === option.url ? 'selected' : ''}`}
-                onClick={() => selectPresetAvatar(option.url)}
-              >
-                <img src={option.url} alt={option.seed} />
-              </button>
-            ))}
-          </div>
           <div className="avatar-upload">
             <label className="upload-label">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 16V4M12 4l4 4M12 4l-4 4M20 21H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
+              </svg>
               {t('profile.edit.uploadAvatar')}
-              <input 
-                type="file" 
-                accept="image/*" 
+              <input
+                type="file"
+                accept="image/*"
                 onChange={handleAvatarUpload}
                 style={{ display: 'none' }}
               />
@@ -181,49 +123,6 @@ function ProfileEdit() {
 
         <button type="submit" className="btn btn-primary">{t('profile.edit.saveChanges')}</button>
       </form>
-
-      {/* Confirmation Modal */}
-      {showConfirmModal && (
-        <div className="modal-overlay" onClick={handleCancel}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>{hasChanges ? t('profile.edit.confirmChanges') : t('profile.edit.noChanges')}</h2>
-              <button className="modal-close" onClick={handleCancel}>&times;</button>
-            </div>
-            <div className="modal-body">
-              {hasChanges ? (
-                <>
-                  <p className="confirm-message">
-                    {t('profile.edit.confirmMessage')}
-                  </p>
-                  <div className="changes-summary">
-                    <p className="changes-label">{t('profile.edit.changesToSave')}</p>
-                    <ul className="changes-list">
-                      {getChangesSummary().map((change, index) => (
-                        <li key={index}>{change}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
-              ) : (
-                <p className="confirm-message">
-                  {t('profile.edit.noChangesMessage')}
-                </p>
-              )}
-            </div>
-            <div className="modal-actions">
-              <button className="btn btn-secondary" onClick={handleCancel}>
-                {hasChanges ? t('common.cancel') : t('common.close')}
-              </button>
-              {hasChanges && (
-                <button className="btn btn-primary" onClick={handleConfirm}>
-                  {t('common.confirm')}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Success Modal */}
       {showSuccessModal && (

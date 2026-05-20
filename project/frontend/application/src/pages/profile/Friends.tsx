@@ -65,7 +65,7 @@ function Friends() {
     .map((u) => ({
       id: u.id,
       username: u.username,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`,
+      avatar: '/api/public/avatars/default.png',
       chat: [],
     }));
 
@@ -188,7 +188,7 @@ function Friends() {
               {sentRequests.map((request) => (
                 <div key={request.request_id} className="request-card">
                   <img
-                    src={request.user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${request.user.username}`}
+                    src={request.user.avatar_url || '/api/public/avatars/default.png'}
                     alt={request.user.username}
                     className="friend-avatar"
                   />
@@ -209,7 +209,7 @@ function Friends() {
               {friendRequests.map((request) => (
                 <div key={request.request_id} className="request-card">
                   <img
-                    src={request.user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${request.user.username}`}
+                    src={request.user.avatar_url || '/api/public/avatars/default.png'}
                     alt={request.user.username}
                     className="friend-avatar"
                   />
