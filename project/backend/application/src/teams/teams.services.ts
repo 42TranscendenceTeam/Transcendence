@@ -4,14 +4,26 @@ import type { CreateTeamDTO, UpdateTeamDTO } from './teams.types.js';
 
 // Return all teams info
 export const getTeamsList = async () => {
-
 	return prisma.team.findMany({
 		select: {
 			id: true,
 			name: true,
 			about: true,
 			tags: true,
+			max_users: true,
 			created_at: true,
+			owner: {
+				select: {
+					id: true,
+					username: true,
+					avatar_url: true,
+				},
+			},
+			_count: {
+				select: {
+					team_users: true,
+				},
+			},
 		},
 	});
 };
