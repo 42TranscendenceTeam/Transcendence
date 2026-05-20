@@ -15,6 +15,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
+import { getAvatarUrl } from '../../utils/avatar';
 import type { Task, Member } from '../../types';
 
 interface SearchUser {
@@ -122,15 +123,6 @@ function TeamDetail() {
     );
   }
 
-  if (!user) {
-    return (
-      <div className="team-detail-page">
-        <h1>{t('teams.notFound')}</h1>
-        <p>{t('teams.notFoundDesc')}</p>
-      </div>
-    );
-  }
-
   if (teamError || !team) {
     return (
       <div className="team-detail-page">
@@ -146,7 +138,7 @@ function TeamDetail() {
     .map((u) => ({
       id: u.id,
       username: u.username,
-      avatar: '/api/public/avatars/default.png',
+      avatar: getAvatarUrl(u.avatar_url),
     }));
 
   const filteredTasks = (tasks || []).filter((task: any) => {
@@ -191,6 +183,10 @@ function TeamDetail() {
   };
 
   const handleStatusChangeClick = (status: string) => {
+    if (status === '__delete__') {
+      setShowDeleteConfirm(true);
+      return;
+    }
     setNewStatus(status);
     setShowStatusModal(true);
   };
@@ -298,7 +294,7 @@ function TeamDetail() {
         addTeamMember(team.id, {
           id: foundUser.id,
           username: foundUser.username,
-          avatar: '/api/public/avatars/default.png',
+          avatar: getAvatarUrl(u.avatar_url),
           role: memberRole,
         }, memberRole);
         setManualUsername('');
@@ -368,6 +364,7 @@ function TeamDetail() {
           >
             <option value="active">{t('teams.active') || 'Active'}</option>
             <option value="finished">{t('teams.finished') || 'Finished'}</option>
+            {isLeader && <option value="__delete__">{t('teams.deleteTeam')}</option>}
           </select>
           <span className="team-members-count">
             {team.members.length}/{team.maxUsers || '∞'}
@@ -391,7 +388,14 @@ function TeamDetail() {
               <span className="member-name">{member.username}</span>
               <span className={`member-role ${member.role.toLowerCase()}`}>{member.role}</span>
               {isLeader && member.id !== user.id && (
-                <button className="btn-remove-member" onClick={() => handleRemoveMember(member)} title="Remove member">
+                <button className="btn-remove-member" onClick={() => handleRemoveMember(member)} title={t('teams.removeMember') || 'Remove member'}>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              )}
+              {member.id === user.id && !isLeader && (
+                <button className="btn-remove-member" onClick={() => setShowLeaveConfirm(true)} title={t('teams.leaveTeam')}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clipRule="evenodd" />
                   </svg>
@@ -411,7 +415,7 @@ function TeamDetail() {
             {joinRequests.map((request) => (
               <div key={request.request_id} className="member-card">
                 <img
-                  src={request.avatar_url || '/api/public/avatars/default.png'}
+                  src={getAvatarUrl(request.avatar_url)}
                   alt={request.username}
                   className="member-avatar"
                 />
@@ -638,12 +642,46 @@ function TeamDetail() {
               <button className="modal-close" onClick={() => setShowStatusModal(false)}>&times;</button>
             </div>
             <div className="modal-body">
-              <p className="remove-member-message">
-                {t('teams.confirmStatus')} {newStatus}?
-              </p>
-              <div className="remove-member-actions">
+              <p className="modal-message">{t('teams.confirmStatus')} {newStatus === 'active' ? t('teams.active') : t('teams.finished')}?</p>
+              <div className="modal-actions">
                 <button className="btn btn-secondary" onClick={() => setShowStatusModal(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-primary" onClick={handleConfirmStatusChange}>{t('common.confirm')}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLeaveConfirm && (
+        <div className="modal-overlay" onClick={() => setShowLeaveConfirm(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t('teams.leaveTeam')}</h2>
+              <button className="modal-close" onClick={() => setShowLeaveConfirm(false)}>&times;</button>
+            </div>
+            <div className="modal-body">
+              <p className="modal-message">{t('teams.confirmLeave')}</p>
+              <div className="modal-actions">
+                <button className="btn btn-secondary" onClick={() => setShowLeaveConfirm(false)}>{t('common.cancel')}</button>
+                <button className="btn btn-danger" onClick={handleLeaveTeam}>{t('teams.leave')}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteConfirm && (
+        <div className="modal-overlay" onClick={() => setShowDeleteConfirm(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t('teams.deleteTeam')}</h2>
+              <button className="modal-close" onClick={() => setShowDeleteConfirm(false)}>&times;</button>
+            </div>
+            <div className="modal-body">
+              <p className="modal-message">{t('teams.confirmDelete') || 'Are you sure you want to delete this team? This action cannot be undone.'}</p>
+              <div className="modal-actions">
+                <button className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>{t('common.cancel')}</button>
+                <button className="btn btn-danger" onClick={handleDeleteTeam}>{t('common.delete')}</button>
               </div>
             </div>
           </div>
@@ -665,15 +703,9 @@ function TeamDetail() {
                     <span className="loading-text">{t('common.loading')}</span>
                   ) : (
                     <>
-                      <select
-                        className="input"
-                        value={selectedFriend}
-                        onChange={(e) => setSelectedFriend(e.target.value)}
-                      >
+                      <select className="input" value={selectedFriend} onChange={(e) => setSelectedFriend(e.target.value)}>
                         <option value="">{t('teams.selectUser')}</option>
-                        {availableUsers.map((u) => (
-                          <option key={u.id} value={u.username}>{u.username}</option>
-                        ))}
+                        {availableUsers.map((u) => (<option key={u.id} value={u.username}>{u.username}</option>))}
                       </select>
                       <button className="btn btn-primary" onClick={handleAddMemberFromDropdown}>{t('teams.addMember')}</button>
                     </>
@@ -684,26 +716,14 @@ function TeamDetail() {
               <div className="add-member-method">
                 <label className="input-label">{t('teams.addByUsername')}</label>
                 <div className="add-member-row">
-                  <input
-                    type="text"
-                    placeholder={t('teams.enterUsername')}
-                    className="input"
-                    value={manualUsername}
-                    onChange={(e) => setManualUsername(e.target.value)}
-                  />
-                  <button className="btn btn-primary" onClick={handleAddMemberManual} disabled={loadingUsers}>
-                    {loadingUsers ? '...' : t('teams.addUser')}
-                  </button>
+                  <input type="text" placeholder={t('teams.enterUsername')} className="input" value={manualUsername} onChange={(e) => setManualUsername(e.target.value)} />
+                  <button className="btn btn-primary" onClick={handleAddMemberManual} disabled={loadingUsers}>{loadingUsers ? '...' : t('teams.addUser')}</button>
                 </div>
               </div>
               {errorUsers && <p className="error-text">{errorUsers}</p>}
               <div className="add-member-role">
                 <label className="input-label">{t('teams.role')}:</label>
-                <select
-                  className="input"
-                  value={memberRole}
-                  onChange={(e) => setMemberRole(e.target.value)}
-                >
+                <select className="input" value={memberRole} onChange={(e) => setMemberRole(e.target.value)}>
                   <option value="Member">{t('teams.member')}</option>
                   <option value="Leader">{t('teams.owner')}</option>
                 </select>
@@ -721,10 +741,8 @@ function TeamDetail() {
               <button className="modal-close" onClick={() => setShowRemoveMemberModal(false)}>&times;</button>
             </div>
             <div className="modal-body">
-              <p className="remove-member-message">
-                {t('teams.confirmRemove')} {memberToRemove?.username} {t('teams.fromTeam') || 'from the team'}?
-              </p>
-              <div className="remove-member-actions">
+              <p className="modal-message">{t('teams.confirmRemove')} {memberToRemove?.username} {t('teams.fromTeam') || 'from the team'}?</p>
+              <div className="modal-actions">
                 <button className="btn btn-secondary" onClick={() => setShowRemoveMemberModal(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleConfirmRemove}>{t('teams.remove')}</button>
               </div>
@@ -732,35 +750,6 @@ function TeamDetail() {
           </div>
         </div>
       )}
-
-      <div className="team-actions">
-        {!isLeader && (
-          showLeaveConfirm ? (
-            <div className="leave-confirm">
-              <p>{t('teams.confirmLeave')}</p>
-              <div className="leave-confirm-buttons">
-                <button className="btn btn-secondary" onClick={() => setShowLeaveConfirm(false)}>{t('common.cancel')}</button>
-                <button className="btn btn-danger" onClick={handleLeaveTeam}>{t('teams.leave')}</button>
-              </div>
-            </div>
-          ) : (
-            <button className="btn btn-outline-danger" onClick={() => setShowLeaveConfirm(true)}>{t('teams.leaveTeam')}</button>
-          )
-        )}
-        {isLeader && (
-          showDeleteConfirm ? (
-            <div className="leave-confirm">
-              <p>{t('teams.confirmDelete') || 'Are you sure you want to delete this team? This action cannot be undone.'}</p>
-              <div className="leave-confirm-buttons">
-                <button className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>{t('common.cancel')}</button>
-                <button className="btn btn-danger" onClick={handleDeleteTeam}>{t('common.delete')}</button>
-              </div>
-            </div>
-          ) : (
-            <button className="btn btn-danger" onClick={() => setShowDeleteConfirm(true)}>{t('teams.deleteTeam')}</button>
-          )
-        )}
-      </div>
     </div>
   );
 }

@@ -27,53 +27,44 @@ const TEAM_DETAILS = [
 function Teams() {
   const { t } = useTranslation();
   const { user, createTeam, teamInvites, fetchTeamInvites, acceptTeamInvite, rejectTeamInvite } = useContext(AuthContext);
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [newTeam, setNewTeam] = useState({
     name: '',
     description: '',
     lookingFor: 2,
     details: [] as string[],
   });
-  
+
 
   useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        setLoading(true);
-        const teamsData = await api.getTeams();
-        setTeams(teamsData);
-      } catch (err) {
-        console.error('Failed to fetch teams:', err);
-        setError('Failed to load teams');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTeams();
+    setLoading(true);
     fetchTeamInvites();
+    api.getMyTeams().then((myTeams) => {
+      setTeams(myTeams);
+      setLoading(false);
+    }).catch(() => {
+      setLoading(false);
+    });
   }, []);
 
   if (!user) {
     return null;
   }
 
-  const userTeams = teams.filter((t) => t.isMember);
-
   const handleCreateTeam = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTeam.name.trim() || !newTeam.description.trim()) return;
     try {
-      const createdTeam = await api.createTeam({
+      await createTeam({
         name: newTeam.name,
-        objective: newTeam.description,
-        maxUsers: newTeam.lookingFor,
-        tags: newTeam.details,
+        description: newTeam.description,
+        lookingFor: newTeam.lookingFor,
+        details: newTeam.details,
       });
-      const teamsData = await api.getTeams();
-      setTeams(teamsData);
+      api.getMyTeams().then((myTeams) => setTeams(myTeams)).catch(() => {});
     } catch (err) {
       console.error('Failed to create team:', err);
       alert('Failed to create team');
@@ -135,10 +126,10 @@ function Teams() {
             </div>
           )}
 
-          <p className="profile-page-subtitle">{t('teams.youAreIn') || 'You are in'} {userTeams.length} {t('teams.activeTeams') || 'active teams'}</p>
+          <p className="profile-page-subtitle">{t('teams.youAreIn') || 'You are in'} {teams.length} {t('teams.activeTeams') || 'active teams'}</p>
 
           <div className="teams-list">
-            {userTeams.map((team) => (
+            {teams.map((team) => (
               <Link key={team.id} to={`/teams/${team.id}`} className="team-card">
                 <div className="team-info">
                   <span className="team-name">{team.name}</span>
@@ -151,7 +142,7 @@ function Teams() {
             ))}
           </div>
 
-          {userTeams.length === 0 && (
+          {teams.length === 0 && (
             <div className="empty-state">
               <p>{t('teams.noTeams')}</p>
               <p className="empty-hint">{t('teams.findCollaborators') || 'Find collaborators on the home page!'}</p>

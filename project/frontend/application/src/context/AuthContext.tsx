@@ -10,6 +10,7 @@
 import { createContext, useState, useEffect, ReactNode } from 'react';
 import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest, TeamInvite } from '../types';
 import { api } from '../services/api';
+import { getAvatarUrl } from '../utils/avatar';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -32,11 +33,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const token = localStorage.getItem('authToken');
         if (token) {
           const userData = await api.getCurrentUser();
+          const userId = Number(userData.id);
+          const userAvatar = getAvatarUrl(userData.avatar);
           setUser({
-            id: Number(userData.id),
+            id: userId,
             username: userData.username,
             email: userData.email,
-            avatar: userData.avatar || '/api/public/avatars/default.png',
+            avatar: userAvatar,
             description: userData.description || '',
             twoFactorEnabled: userData.twoFactorEnabled || false,
             friends: [],
@@ -44,6 +47,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             globalChat: [],
           });
           fetchTeamInvites();
+          api.getTeams().then((teams) => {
+            const myTeams = teams.filter((t) => t.owner?.id === userId);
+            setUser((prev) => prev ? { ...prev, teams: myTeams } : prev);
+          }).catch(() => {});
         }
       } catch {
         localStorage.removeItem('authToken');
@@ -228,9 +235,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         maxUsers: teamData.lookingFor || 10,
         tags: teamData.details || [],
       });
+      const team = {
+        id: createdTeam.id,
+        name: createdTeam.name,
+        objective: createdTeam.about || '',
+        owner: {
+          id: user.id,
+          username: user.username,
+          avatar: user.avatar,
+        },
+        role: 'Leader',
+        status: createdTeam.status_ongoing ? 'active' : 'finished',
+        members: [],
+        tasks: [],
+        chat: [],
+      };
       setUser({
         ...user,
-        teams: [...user.teams, { ...createdTeam, role: 'Leader', isMember: true }],
+        teams: [...user.teams, team],
       });
     } catch (err) {
       console.error('Failed to create team:', err);

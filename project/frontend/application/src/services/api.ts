@@ -29,6 +29,8 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
  *  Exports to define what shape data must have.
  *  Example, "LoginRequest" must have email and password strings.
  */
+import { getAvatarUrl } from '../utils/avatar';
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -205,7 +207,7 @@ export const api = {
       id: data.id,
       username: data.username,
       email: data.email,
-      avatar: data.avatar_url || '/api/public/avatars/default.png',
+      avatar: getAvatarUrl(data.avatar_url),
       description: data.bio || '',
       twoFactorEnabled: false,
       friends: [],
@@ -237,21 +239,69 @@ export const api = {
 
   // ========== TEAMS ==========
   getTeams(): Promise<Team[]> {
+    const token = localStorage.getItem('authToken');
+    const headers: HeadersInit = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
     return fetch(`${API_URL}/teams`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...api.getAuthHeaders(),
-      },
+      headers,
     }).then((response) => {
       if (!response.ok) {
         throw new Error('Failed to get teams');
       }
       return response.json();
-    }).then(async (teams) => {
-      const currentUser = await api.getCurrentUser();
-      const teamsWithMembers = await Promise.all(
-        teams.map(async (team: { id: number; name: string; about: string | null; tags: string | null; max_users: number }) => {
+    }).then(async (teams: any[]) => {
+      const token = localStorage.getItem('authToken');
+      let currentUserId: number | null = null;
+      if (token) {
+        try {
+          const me = await api.getCurrentUser();
+          currentUserId = Number(me.id);
+        } catch { /* ignore */ }
+      }
+
+      return teams.map((team) => ({
+        id: team.id,
+        name: team.name,
+        objective: team.about || '',
+        owner: {
+          id: team.owner?.id ?? 0,
+          username: team.owner?.username ?? '',
+          avatar: getAvatarUrl(team.owner?.avatar_url),
+        },
+        role: team.owner?.id === currentUserId ? 'Leader' : '',
+        status: 'active',
+        members: [],
+        tasks: [],
+        chat: [],
+        tags: team.tags ? team.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
+        maxUsers: team.max_users || 10,
+        memberCount: team._count?.team_users ?? 0,
+        isMember: team.owner?.id === currentUserId,
+        created_at: team.created_at,
+      }));
+    })
+    .catch(() => []);
+  },
+
+  getMyTeams(): Promise<Team[]> {
+    const token = localStorage.getItem('authToken');
+    if (!token) return Promise.resolve([]);
+
+    return fetch(`${API_URL}/teams`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    }).then((response) => {
+      if (!response.ok) throw new Error('Failed to get teams');
+      return response.json();
+    }).then(async (teams: any[]) => {
+      const me = await api.getCurrentUser().catch(() => null);
+      if (!me) return [];
+
+      const myTeams = await Promise.all(
+        teams.map(async (team) => {
+          const isOwner = team.owner?.id === Number(me.id);
           try {
             const membersRes = await fetch(`${API_URL}/teams/${team.id}/members`, {
               method: 'GET',
@@ -259,51 +309,64 @@ export const api = {
             });
             const membersData = await membersRes.json();
             const memberList = membersData.member_list || [];
-            const isMember = memberList.some((m: { id: number }) => m.id === currentUser.id);
-            const ownerRes = await fetch(`${API_URL}/teams/${team.id}`, {
-              method: 'GET',
-              headers: api.getAuthHeaders(),
-            });
-            const ownerData = await ownerRes.json();
+            const isMember = isOwner || memberList.some((m: { id: number }) => m.id === Number(me.id));
+
+            if (!isMember) return null;
+
             return {
               id: team.id,
               name: team.name,
               objective: team.about || '',
-              owner: { id: ownerData.owner_id, username: '', avatar: '' },
-              role: ownerData.owner_id === currentUser.id ? 'Leader' : (isMember ? 'Member' : ''),
-              status: ownerData.status_ongoing ? 'active' : 'finished',
+              owner: {
+                id: team.owner?.id ?? 0,
+                username: team.owner?.username ?? '',
+                avatar: getAvatarUrl(team.owner?.avatar_url),
+              },
+              role: isOwner ? 'Leader' : 'Member',
+              status: 'active',
               members: memberList.map((m: { id: number; username: string; avatar_url: string }) => ({
                 id: m.id,
                 username: m.username,
-                avatar: m.avatar_url || '/api/public/avatars/default.png',
-                role: m.id === ownerData.owner_id ? 'Leader' : 'Member',
+                avatar: getAvatarUrl(m.avatar_url),
+                role: m.id === team.owner?.id ? 'Leader' : 'Member',
               })),
+              tasks: [],
+              chat: [],
               tags: team.tags ? team.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
-              maxUsers: team.max_users,
+              maxUsers: team.max_users || 10,
               memberCount: membersData.member_count || 0,
-              isMember,
+              isMember: true,
               created_at: team.created_at,
             };
           } catch {
+            if (!isOwner) return null;
             return {
               id: team.id,
               name: team.name,
               objective: team.about || '',
-              owner: { id: 0, username: '', avatar: '' },
-              role: '',
+              owner: {
+                id: team.owner?.id ?? 0,
+                username: team.owner?.username ?? '',
+                avatar: getAvatarUrl(team.owner?.avatar_url),
+              },
+              role: 'Leader',
               status: 'active',
               members: [],
+              tasks: [],
+              chat: [],
               tags: team.tags ? team.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
-              maxUsers: team.max_users,
+              maxUsers: team.max_users || 10,
               memberCount: 0,
-              isMember: false,
+              isMember: true,
               created_at: team.created_at,
             };
           }
         })
       );
-      return teamsWithMembers;
-    });
+
+      return myTeams.filter(Boolean);
+    })
+    .catch(() => []);
   },
 
   createTeam(data: { name: string; objective: string; maxUsers: number; tags: string[] }): Promise<Team> {
@@ -359,7 +422,7 @@ export const api = {
         members: memberList.map((m: { id: number; username: string; avatar_url: string }) => ({
           id: m.id,
           username: m.username,
-          avatar: m.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${m.username}`,
+          avatar: getAvatarUrl(m.avatar_url),
           role: m.id === team.owner_id ? 'Leader' : 'Member',
         })),
         tags: team.tags ? team.tags.split(',').map((t: string) => t.trim()).filter(Boolean) : [],
@@ -621,7 +684,7 @@ export const api = {
         data.map((friend: { id: number; username: string; avatar_url: string }) => ({
           id: friend.id,
           username: friend.username,
-          avatar: friend.avatar_url || '/api/public/avatars/default.png',
+          avatar: getAvatarUrl(friend.avatar_url),
         }))
       );
     });

@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import { api, Team } from '../../services/api';
+import { getAvatarUrl } from '../../utils/avatar';
 import FeedLayout from '../../components/layouts/FeedLayout';
 
 function RotatingText() {
@@ -197,7 +198,7 @@ function Feed() {
           <div key={team.id} className="task-card">
             <div className="task-header">
               <img
-                src={team.owner.avatar || '/api/public/avatars/default.png'}
+                src={getAvatarUrl(team.owner.avatar)}
                 alt={team.owner.username}
                 className="task-avatar"
               />
