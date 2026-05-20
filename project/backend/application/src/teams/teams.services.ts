@@ -4,7 +4,7 @@ import type { CreateTeamDTO, UpdateTeamDTO } from './teams.types.js';
 
 // Return all teams info
 export const getTeamsList = async () => {
-	
+
 	return prisma.team.findMany({
 		select: {
 			id: true,
@@ -120,7 +120,7 @@ export const updateTeam = async (userId: number, teamId: number, info: UpdateTea
 	if (userId !== team.owner_id)
 		throw new AppError("Only the owner of the team can update it.", 403);
 
-	if(team.status_ongoing === false)
+	if (team.status_ongoing === false)
 		throw new AppError("Closed teams cannot be updated.", 400);
 
 	return prisma.team.update({
@@ -285,10 +285,16 @@ export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
 		where: {
 			id: teamId,
 		},
+		select: {
+			status_ongoing: true,
+		},
 	});
 
 	if (!team)
 		throw new AppError("Team not found.", 404);
+
+	if (team.status_ongoing === false)
+		throw new AppError("Closed teams cannot receive join requests.", 400);
 
 	const requestExists = await prisma.teamJoinRequest.findFirst({
 		where: {
@@ -335,6 +341,7 @@ export const acceptJoinRequest = async (userId: number, teamId: number, requestI
 			team: {
 				select: {
 					owner_id: true,
+					status_ongoing: true,
 				}
 			}
 		}
@@ -345,6 +352,9 @@ export const acceptJoinRequest = async (userId: number, teamId: number, requestI
 
 	if (userId !== request.team.owner_id)
 		throw new AppError("Only the team owner can accept join requests.", 403);
+
+	if (request.team.status_ongoing === false)
+		throw new AppError("Closed teams cannot accept join requests.", 400);
 
 	const userInTeam = await prisma.teamUser.findFirst({
 		where: {
@@ -430,6 +440,7 @@ export const getTeamInvites = async (userId: number) => {
 					about: true,
 					tags: true,
 					max_users: true,
+					status_ongoing: true,
 				}
 			}
 		}
@@ -443,6 +454,7 @@ export const getTeamInvites = async (userId: number) => {
 		team_about: invite.team.about,
 		team_tags: invite.team.tags,
 		team_max_users: invite.team.max_users,
+		team_status_ongoing: invite.team.status_ongoing,
 	}));
 
 	return invite_list;
@@ -457,6 +469,7 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 		},
 		select: {
 			owner_id: true,
+			status_ongoing: true,
 		}
 	});
 
@@ -465,6 +478,9 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 
 	if (userId !== team.owner_id)
 		throw new AppError("Only the team owner can send invites.", 403);
+
+	if (team.status_ongoing === false)
+		throw new AppError("Closed teams cannot send invites.", 400);
 
 	const inviteExists = await prisma.teamInvite.findFirst({
 		where: {
@@ -516,7 +532,12 @@ export const acceptTeamInvite = async (userId: number, inviteId: number) => {
 			id: true,
 			user_id: true,
 			team_id: true,
-		}
+			team: {
+				select: {
+					status_ongoing: true,
+				},
+			},
+		},
 	});
 
 	if (!invite)
@@ -524,6 +545,9 @@ export const acceptTeamInvite = async (userId: number, inviteId: number) => {
 
 	if (userId !== invite.user_id)
 		throw new AppError("Only the invited user can accept this invite.", 403);
+
+	if (invite.team.status_ongoing === false)
+		throw new AppError("Closed teams cannot accept new members.", 400);
 
 	const userInTeam = await prisma.teamUser.findFirst({
 		where: {
