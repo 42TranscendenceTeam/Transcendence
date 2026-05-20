@@ -4,14 +4,27 @@ import type { CreateTeamDTO, UpdateTeamDTO } from './teams.types.js';
 
 // Return all teams info
 export const getTeamsList = async () => {
-
+	
 	return prisma.team.findMany({
 		select: {
 			id: true,
 			name: true,
 			about: true,
 			tags: true,
+			max_users: true,
 			created_at: true,
+			owner: {
+				select: {
+					id: true,
+					username: true,
+					avatar_url: true,
+				},
+			},
+			_count: {
+				select: {
+					team_users: true,
+				},
+			},
 		},
 	});
 };
@@ -97,6 +110,7 @@ export const updateTeam = async (userId: number, teamId: number, info: UpdateTea
 		},
 		select: {
 			owner_id: true,
+			status_ongoing: true,
 		},
 	});
 
@@ -105,6 +119,9 @@ export const updateTeam = async (userId: number, teamId: number, info: UpdateTea
 
 	if (userId !== team.owner_id)
 		throw new AppError("Only the owner of the team can update it.", 403);
+
+	if(team.status_ongoing === false)
+		throw new AppError("Closed teams cannot be updated.", 400);
 
 	return prisma.team.update({
 		where: {
