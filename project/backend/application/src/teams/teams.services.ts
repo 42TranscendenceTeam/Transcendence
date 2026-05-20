@@ -515,6 +515,12 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 		select: {
 			owner_id: true,
 			status_ongoing: true,
+			name: true,
+			owner: {
+				select: {
+					username: true,
+				}
+			}
 		}
 	});
 
@@ -542,6 +548,9 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 		where: {
 			id: receiverId,
 		},
+		select: {
+			id: true,
+		}
 	});
 
 	if (!receiverExists)
@@ -557,12 +566,23 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 	if (userInTeam)
 		throw new AppError("That user is already on your team.", 400);
 
-	return prisma.teamInvite.create({
+	const invite = await prisma.teamInvite.create({
 		data: {
 			user_id: receiverId,
 			team_id: teamId,
 		},
 	});
+
+	await createNotification(
+		receiverId,
+		'team_invite',
+		invite.id,
+		'team_invite',
+		team.owner_id,
+		`${team.owner.username ?? 'Someone'} invited you to join their ${team.name} team.`,
+	);
+
+	return invite;
 };
 
 // Accept invite to team
