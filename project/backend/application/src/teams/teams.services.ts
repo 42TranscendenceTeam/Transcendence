@@ -365,6 +365,7 @@ export const acceptJoinRequest = async (userId: number, teamId: number, requestI
 				select: {
 					owner_id: true,
 					status_ongoing: true,
+					name: true,
 				}
 			}
 		}
@@ -404,6 +405,15 @@ export const acceptJoinRequest = async (userId: number, teamId: number, requestI
 			status: 'accepted',
 		}
 	});
+
+	await createNotification(
+		request.user_id,
+		'team_join_request_accepted',
+		request.id,
+		'team_join_request',
+		request.team.owner_id,
+		`You were accepted to join the ${request.team.name} team.`,
+	);
 
 	return newUser;
 };
