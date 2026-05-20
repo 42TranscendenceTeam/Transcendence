@@ -434,6 +434,7 @@ export const rejectJoinRequest = async (userId: number, teamId: number, requestI
 			team: {
 				select: {
 					owner_id: true,
+					name: true,
 				}
 			}
 		}
@@ -453,6 +454,15 @@ export const rejectJoinRequest = async (userId: number, teamId: number, requestI
 			status: 'rejected',
 		}
 	});
+
+	await createNotification(
+		request.user_id,
+		'team_join_request_rejected',
+		request.id,
+		'team_join_request',
+		request.team.owner_id,
+		`Your request to join ${request.team.name} was rejected.`,
+	);
 
 	return status;
 };
