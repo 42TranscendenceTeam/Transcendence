@@ -68,7 +68,7 @@ model TeamUser {
   joined_at DateTime @default(now())
 
   user User @relation(fields: [user_id], references: [id])
-  team Team @relation(fields: [team_id], references: [id])
+  team Team @relation(fields: [team_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, team_id])
 }
@@ -77,10 +77,10 @@ model TeamInvite {
   id         Int      @id @default(autoincrement())
   team_id    Int
   user_id    Int
-  status     String
+  status     String   @default("pending")
   created_at DateTime @default(now())
 
-  team Team @relation(fields: [team_id], references: [id])
+  team Team @relation(fields: [team_id], references: [id], onDelete: Cascade)
   user User @relation(fields: [user_id], references: [id])
 }
 
@@ -88,11 +88,11 @@ model TeamJoinRequest {
   id         Int      @id @default(autoincrement())
   user_id    Int
   team_id    Int
-  status     String
+  status     String   @default("pending")
   created_at DateTime @default(now())
 
   user User @relation(fields: [user_id], references: [id])
-  team Team @relation(fields: [team_id], references: [id])
+  team Team @relation(fields: [team_id], references: [id], onDelete: Cascade)
 }
 
 model FriendRequest {
@@ -139,7 +139,7 @@ model TeamMessage {
   sent_at   DateTime @default(now())
 
   sender User @relation(fields: [sender_id], references: [id])
-  team   Team @relation(fields: [team_id], references: [id])
+  team   Team @relation(fields: [team_id], references: [id], onDelete: Cascade)
 }
 
 model Task {
@@ -153,7 +153,7 @@ model Task {
   finished_at DateTime?
 
   creator    User       @relation(fields: [creator_id], references: [id])
-  team       Team       @relation(fields: [team_id], references: [id])
+  team       Team       @relation(fields: [team_id], references: [id], onDelete: Cascade)
   files      File[]
   task_users TaskUser[]
 }
@@ -165,7 +165,7 @@ model TaskUser {
   assigned_at DateTime @default(now())
 
   user User @relation(fields: [user_id], references: [id])
-  task Task @relation(fields: [task_id], references: [id])
+  task Task @relation(fields: [task_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, task_id])
 }
@@ -197,6 +197,6 @@ model File {
   created_at  DateTime @default(now())
 
   uploader User  @relation(fields: [uploader_id], references: [id])
-  team     Team? @relation(fields: [team_id], references: [id])
+  team     Team? @relation(fields: [team_id], references: [id], onDelete: Cascade)
   task     Task? @relation(fields: [task_id], references: [id])
 }
