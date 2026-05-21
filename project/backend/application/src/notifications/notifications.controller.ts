@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import { AppError } from '../utils/AppError.js';
-import { getNotifications, getUnreadNotifications, readNotification, readAllNotifications, deleteNotification } from './notifications.service.js';
+import { getNotifications, getUnreadNotifications, readNotification, readAllNotifications, deleteNotification, deleteAllNotifications } from './notifications.service.js';
 
 export const getNotificationsController = async (req: AuthRequest, res: Response) => {
 	const notifications = await getNotifications(req.user!.id);
@@ -36,4 +36,9 @@ export const deleteNotificationController = async (req: AuthRequest, res: Respon
 
 	const notification = await deleteNotification(req.user!.id, notificationId);
 	return res.json(notification);
+};
+
+export const deleteAllNotificationsController = async (req: AuthRequest, res: Response) => {
+	const notifications = await deleteAllNotifications(req.user!.id);
+	return res.json(notifications);
 };

@@ -93,7 +93,6 @@ export const readAllNotifications = async (userId: number) => {
 // Deletes a specific notification with id
 export const deleteNotification = async (userId: number, notificationId: number) => {
 
-
 	const notification = await prisma.notification.findFirst({
 		where: {
 			id: notificationId,
@@ -108,6 +107,16 @@ export const deleteNotification = async (userId: number, notificationId: number)
 		where: {
 			id: notification.id,
 		}
+	});
+};
+
+// Deletes all notifications for the user
+export const deleteAllNotifications = async (userId: number) => {
+
+	return prisma.notification.deleteMany({
+		where: {
+			user_id_receiver: userId,
+		},
 	});
 };
 
