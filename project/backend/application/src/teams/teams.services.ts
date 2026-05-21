@@ -214,6 +214,7 @@ export const removeTeamMember = async (userId: number, teamId: number, memberId:
 		},
 		select: {
 			owner_id: true,
+			name: true,
 		},
 	});
 
@@ -226,7 +227,17 @@ export const removeTeamMember = async (userId: number, teamId: number, memberId:
 	if (memberId === team.owner_id)
 		throw new AppError("Team owner cannot remove himself.", 400);
 
-	return prisma.teamUser.delete({
+	const member = await prisma.teamUser.findFirst({
+		where: {
+			user_id: memberId,
+			team_id: teamId,
+		},
+	});
+
+	if (!member)
+		throw new AppError("User is not a member of this team.", 404);
+
+	const teamUser = await prisma.teamUser.delete({
 		where: {
 			user_id_team_id: {
 				user_id: memberId,
@@ -234,6 +245,17 @@ export const removeTeamMember = async (userId: number, teamId: number, memberId:
 			},
 		},
 	});
+
+	await createNotification(
+		memberId,
+		'team_removed',
+		teamId,
+		'team',
+		userId,
+		`You were removed from the ${team.name} team.`,
+	);
+
+	return teamUser;
 };
 
 // Get list of team join requests with team id
@@ -290,7 +312,7 @@ export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
 		select: {
 			status_ongoing: true,
 			owner_id: true,
-			name :true,
+			name: true,
 		},
 	});
 
