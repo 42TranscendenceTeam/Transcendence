@@ -1,5 +1,6 @@
 import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
+import { getIO } from '../socket.js';
 
 // Returns all notifications of logged-in user
 export const getNotifications = async (userId: number) => {
@@ -121,7 +122,7 @@ export const createNotification = async (
 	content?: string,
 
 ) => {
-	return prisma.notification.create({
+	const notification = await prisma.notification.create({
 		data: {
 			user_id_receiver: userIdReceiver,
 			user_id_trigger: userIdTrigger ?? null,
@@ -131,4 +132,8 @@ export const createNotification = async (
 			entity_type: entityType ?? null,
 		},
 	});
+
+	const io = getIO();
+	io.emit('notification:new', notification);
+	return notification;
 };
