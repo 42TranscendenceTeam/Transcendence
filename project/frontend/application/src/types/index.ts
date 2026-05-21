@@ -114,11 +114,13 @@ export interface AuthContextType {
   sentRequests: FriendRequest[];
   friends: Friend[];
   teamInvites: TeamInvite[];
+  joinRequestNotifications: JoinRequestNotification[];
   unreadNotifications: number;
   fetchFriendRequests: () => void;
   fetchSentRequests: () => void;
   fetchFriends: () => void;
   fetchTeamInvites: () => void;
+  fetchJoinRequestNotifications: () => void;
   acceptFriendRequest: (requestId: number) => void;
   rejectFriendRequest: (requestId: number) => void;
   acceptTeamInvite: (inviteId: number) => void;
@@ -135,4 +137,14 @@ export interface TeamInvite {
   team_max_users: number;
   sent_at: string;
   status: 'pending' | 'accepted' | 'rejected';
+}
+
+export interface JoinRequestNotification {
+  request_id: number;
+  user_id: number;
+  username: string;
+  avatar_url: string;
+  requested_at: string;
+  team_id: number;
+  team_name: string;
 }

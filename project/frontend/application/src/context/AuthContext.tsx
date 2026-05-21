@@ -8,7 +8,7 @@
  */
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest, TeamInvite } from '../types';
+import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest, TeamInvite, JoinRequestNotification } from '../types';
 import { api } from '../services/api';
 import { getAvatarUrl } from '../utils/avatar';
 
@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [teamInvites, setTeamInvites] = useState<TeamInvite[]>([]);
+  const [joinRequestNotifications, setJoinRequestNotifications] = useState<JoinRequestNotification[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   useEffect(() => {
@@ -50,6 +51,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           api.getTeams().then((teams) => {
             const myTeams = teams.filter((t) => t.owner?.id === userId);
             setUser((prev) => prev ? { ...prev, teams: myTeams } : prev);
+            fetchJoinRequestNotifications(userId);
           }).catch(() => {});
         }
       } catch {
@@ -336,10 +338,43 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const fetchTeamInvites = () => {
     api.getTeamInvites().then((invites) => {
       setTeamInvites(invites);
-      setUnreadNotifications(invites.length);
+      setUnreadNotifications(invites.length + joinRequestNotifications.length);
     }).catch((err) => {
       console.error('Failed to fetch team invites:', err);
     });
+  };
+
+  const fetchJoinRequestNotifications = async (userId?: number) => {
+    try {
+      const currentUserId = userId ?? user?.id;
+      if (!currentUserId) return;
+      const teams = await api.getTeams();
+      const ownedTeams = teams.filter((t) => t.owner?.id === currentUserId);
+      const results = await Promise.all(
+        ownedTeams.map((team) =>
+          api.getJoinRequests(team.id).then((data) => ({
+            team_id: team.id,
+            team_name: team.name,
+            requests: data.request_list || [],
+          }))
+        )
+      );
+      const allRequests = results.flatMap(({ team_id, team_name, requests }) =>
+        requests.map((req) => ({
+          request_id: req.request_id,
+          user_id: req.user_id,
+          username: req.username,
+          avatar_url: req.avatar_url,
+          requested_at: req.requested_at,
+          team_id,
+          team_name,
+        }))
+      );
+      setJoinRequestNotifications(allRequests);
+      setUnreadNotifications(teamInvites.length + allRequests.length);
+    } catch (err) {
+      console.error('Failed to fetch join request notifications:', err);
+    }
   };
 
   const acceptTeamInvite = (inviteId: number) => {
@@ -390,11 +425,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       sentRequests,
       friends,
       teamInvites,
+      joinRequestNotifications,
       unreadNotifications,
       fetchFriendRequests,
       fetchSentRequests,
       fetchFriends,
       fetchTeamInvites,
+      fetchJoinRequestNotifications,
       acceptFriendRequest,
       rejectFriendRequest,
       acceptTeamInvite,

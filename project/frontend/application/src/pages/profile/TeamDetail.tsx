@@ -46,6 +46,7 @@ function TeamDetail() {
   const [allUsers, setAllUsers] = useState<SearchUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [errorUsers, setErrorUsers] = useState('');
+  const [showTeamFullModal, setShowTeamFullModal] = useState(false);
   const fileInputRefs = useRef<Record<number, HTMLInputElement>>({});
   const [team, setTeam] = useState<any>(null);
   const [loadingTeam, setLoadingTeam] = useState(true);
@@ -198,6 +199,10 @@ function TeamDetail() {
   };
 
   const handleAcceptJoinRequest = async (requestId: number) => {
+    if (team.members.length >= team.maxUsers) {
+      setShowTeamFullModal(true);
+      return;
+    }
     try {
       await api.acceptJoinRequest(team.id, requestId);
       setJoinRequests(prev => prev.filter(r => r.request_id !== requestId));
@@ -260,6 +265,10 @@ function TeamDetail() {
 
   const handleAddMemberFromDropdown = async () => {
     if (!selectedFriend || !canEdit || !user) return;
+    if (team.members.length >= team.maxUsers) {
+      setShowTeamFullModal(true);
+      return;
+    }
     const userToAdd = availableUsers.find((u) => u.username === selectedFriend);
     if (userToAdd) {
       try {
@@ -277,6 +286,10 @@ function TeamDetail() {
 
   const handleAddMemberManual = async () => {
     if (!manualUsername.trim() || !canEdit) return;
+    if (team.members.length >= team.maxUsers) {
+      setShowTeamFullModal(true);
+      return;
+    }
     setLoadingUsers(true);
     setErrorUsers('');
     try {
@@ -745,6 +758,23 @@ function TeamDetail() {
               <div className="modal-actions">
                 <button className="btn btn-secondary" onClick={() => setShowRemoveMemberModal(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleConfirmRemove}>{t('teams.remove')}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showTeamFullModal && (
+        <div className="modal-overlay" onClick={() => setShowTeamFullModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t('teams.teamFullTitle') || 'Team Full'}</h2>
+              <button className="modal-close" onClick={() => setShowTeamFullModal(false)}>&times;</button>
+            </div>
+            <div className="modal-body">
+              <p className="modal-message">{t('teams.teamFull') || 'Team is already full'}</p>
+              <div className="modal-actions">
+                <button className="btn btn-primary" onClick={() => setShowTeamFullModal(false)}>OK</button>
               </div>
             </div>
           </div>

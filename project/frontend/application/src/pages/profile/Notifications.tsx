@@ -11,16 +11,18 @@ import { AuthContext } from '../../context/AuthContext';
 
 function Notifications() {
   const { t } = useTranslation();
-  const { friendRequests, teamInvites, fetchFriendRequests, fetchTeamInvites, markNotificationsRead } = useContext(AuthContext);
+  const { friendRequests, teamInvites, joinRequestNotifications, fetchFriendRequests, fetchTeamInvites, fetchJoinRequestNotifications, markNotificationsRead } = useContext(AuthContext);
 
   useEffect(() => {
     fetchFriendRequests();
     fetchTeamInvites();
+    fetchJoinRequestNotifications();
     markNotificationsRead();
   }, []);
 
   const pendingTeamInvites = teamInvites.length;
   const pendingFriendInvites = friendRequests.filter((r) => r.status === 'pending').length;
+  const pendingTeamNotifications = teamInvites.length + joinRequestNotifications.length;
 
   return (
     <div className="notifications-page">
@@ -36,8 +38,8 @@ function Notifications() {
           <span className="notification-card-title">{t('notifications.teamInvitesCard')}</span>
           <span className="notification-card-desc">{t('notifications.teamInvitesDesc')}</span>
         </div>
-        {pendingTeamInvites > 0 && (
-          <span className="notification-card-badge">{pendingTeamInvites}</span>
+        {pendingTeamNotifications > 0 && (
+          <span className="notification-card-badge">{pendingTeamNotifications}</span>
         )}
         <div className="notification-card-arrow">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
