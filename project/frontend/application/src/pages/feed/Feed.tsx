@@ -112,7 +112,15 @@ function Feed() {
       try {
         setLoading(true);
         const teamsData = await api.getTeams();
-        setTeams(teamsData);
+
+        if (user) {
+          const myTeams = await api.getMyTeams();
+          const myTeamIds = new Set(myTeams.map(t => t.id));
+          setTeams(teamsData.filter(t => !myTeamIds.has(t.id)));
+        } else {
+          setTeams(teamsData);
+        }
+
         setIsUsingMockData(false);
       } catch (err) {
         console.error('Failed to fetch teams:', err);
@@ -129,9 +137,7 @@ function Feed() {
     fetchTeams();
   }, [user]);
 
-  const availableTeams = user
-    ? teams.filter(t => !t.isMember && (t.memberCount || 0) < (t.maxUsers || 10))
-    : teams.filter(t => (t.memberCount || 0) < (t.maxUsers || 10));
+  const availableTeams = teams.filter(t => (t.memberCount || 0) < (t.maxUsers || 10));
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
