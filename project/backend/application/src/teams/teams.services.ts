@@ -1,6 +1,8 @@
 import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
 import type { CreateTeamDTO, UpdateTeamDTO } from './teams.types.js';
+import { createNotification } from '../notifications/notifications.service.js';
+import { getTeamJoinRequestsController } from './teams.controller.js';
 
 // Return all teams info
 export const getTeamsList = async () => {
@@ -212,6 +214,7 @@ export const removeTeamMember = async (userId: number, teamId: number, memberId:
 		},
 		select: {
 			owner_id: true,
+			name: true,
 		},
 	});
 
@@ -224,7 +227,17 @@ export const removeTeamMember = async (userId: number, teamId: number, memberId:
 	if (memberId === team.owner_id)
 		throw new AppError("Team owner cannot remove himself.", 400);
 
-	return prisma.teamUser.delete({
+	const member = await prisma.teamUser.findFirst({
+		where: {
+			user_id: memberId,
+			team_id: teamId,
+		},
+	});
+
+	if (!member)
+		throw new AppError("User is not a member of this team.", 404);
+
+	const teamUser = await prisma.teamUser.delete({
 		where: {
 			user_id_team_id: {
 				user_id: memberId,
@@ -232,6 +245,17 @@ export const removeTeamMember = async (userId: number, teamId: number, memberId:
 			},
 		},
 	});
+
+	await createNotification(
+		memberId,
+		'team_removed',
+		teamId,
+		'team',
+		userId,
+		`You were removed from the ${team.name} team.`,
+	);
+
+	return teamUser;
 };
 
 // Get list of team join requests with team id
@@ -287,6 +311,8 @@ export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
 		},
 		select: {
 			status_ongoing: true,
+			owner_id: true,
+			name: true,
 		},
 	});
 
@@ -317,12 +343,32 @@ export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
 	if (userInTeam)
 		throw new AppError("You are already in that team.", 400);
 
-	return prisma.teamJoinRequest.create({
+	const request = await prisma.teamJoinRequest.create({
 		data: {
 			user_id: userId,
 			team_id: teamId,
 		},
 	});
+
+	const user = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		select: {
+			username: true,
+		},
+	});
+
+	await createNotification(
+		team.owner_id,
+		'team_join_request',
+		request.id,
+		'team_join_request',
+		userId,
+		`${user?.username ?? 'Someone'} requested to join ${team.name}.`,
+	);
+
+	return request;
 };
 
 // Accept join request to team with team id and request id
@@ -342,6 +388,7 @@ export const acceptJoinRequest = async (userId: number, teamId: number, requestI
 				select: {
 					owner_id: true,
 					status_ongoing: true,
+					name: true,
 				}
 			}
 		}
@@ -382,6 +429,15 @@ export const acceptJoinRequest = async (userId: number, teamId: number, requestI
 		}
 	});
 
+	await createNotification(
+		request.user_id,
+		'team_join_request_accepted',
+		request.id,
+		'team_join_request',
+		request.team.owner_id,
+		`You were accepted to join the ${request.team.name} team.`,
+	);
+
 	return newUser;
 };
 
@@ -401,6 +457,7 @@ export const rejectJoinRequest = async (userId: number, teamId: number, requestI
 			team: {
 				select: {
 					owner_id: true,
+					name: true,
 				}
 			}
 		}
@@ -412,7 +469,7 @@ export const rejectJoinRequest = async (userId: number, teamId: number, requestI
 	if (userId !== request.team.owner_id)
 		throw new AppError("Only the team owner can reject join requests.", 403);
 
-	return prisma.teamJoinRequest.update({
+	const status = await prisma.teamJoinRequest.update({
 		where: {
 			id: request.id,
 		},
@@ -420,6 +477,17 @@ export const rejectJoinRequest = async (userId: number, teamId: number, requestI
 			status: 'rejected',
 		}
 	});
+
+	await createNotification(
+		request.user_id,
+		'team_join_request_rejected',
+		request.id,
+		'team_join_request',
+		request.team.owner_id,
+		`Your request to join ${request.team.name} was rejected.`,
+	);
+
+	return status;
 };
 
 // Get list of team invites for current user
@@ -470,6 +538,12 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 		select: {
 			owner_id: true,
 			status_ongoing: true,
+			name: true,
+			owner: {
+				select: {
+					username: true,
+				}
+			}
 		}
 	});
 
@@ -497,6 +571,9 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 		where: {
 			id: receiverId,
 		},
+		select: {
+			id: true,
+		}
 	});
 
 	if (!receiverExists)
@@ -512,12 +589,23 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 	if (userInTeam)
 		throw new AppError("That user is already on your team.", 400);
 
-	return prisma.teamInvite.create({
+	const invite = await prisma.teamInvite.create({
 		data: {
 			user_id: receiverId,
 			team_id: teamId,
 		},
 	});
+
+	await createNotification(
+		receiverId,
+		'team_invite',
+		invite.id,
+		'team_invite',
+		team.owner_id,
+		`${team.owner.username ?? 'Someone'} invited you to join their ${team.name} team.`,
+	);
+
+	return invite;
 };
 
 // Accept invite to team
@@ -531,10 +619,17 @@ export const acceptTeamInvite = async (userId: number, inviteId: number) => {
 		select: {
 			id: true,
 			user_id: true,
+			user: {
+				select: {
+					username: true,
+				},
+			},
 			team_id: true,
 			team: {
 				select: {
 					status_ongoing: true,
+					owner_id: true,
+					name: true,
 				},
 			},
 		},
@@ -575,6 +670,15 @@ export const acceptTeamInvite = async (userId: number, inviteId: number) => {
 		}
 	});
 
+	await createNotification(
+		invite.team.owner_id,
+		'team_invite_accepted',
+		invite.id,
+		'team_invite',
+		invite.user_id,
+		`${invite.user.username} accepted to join the ${invite.team.name} team.`,
+	);
+
 	return newUser;
 };
 
@@ -586,6 +690,21 @@ export const rejectTeamInvite = async (userId: number, inviteId: number) => {
 			id: inviteId,
 			status: 'pending',
 		},
+		select: {
+			id: true,
+			user_id: true,
+			user: {
+				select: {
+					username: true,
+				},
+			},
+			team: {
+				select: {
+					owner_id: true,
+					name: true,
+				},
+			},
+		},
 	});
 
 	if (!invite)
@@ -594,14 +713,25 @@ export const rejectTeamInvite = async (userId: number, inviteId: number) => {
 	if (userId !== invite.user_id)
 		throw new AppError("Only the invited user can reject this invite.", 403);
 
-	return prisma.teamInvite.update({
+	const teamInvite = await prisma.teamInvite.update({
 		where: {
 			id: invite.id,
 		},
 		data: {
 			status: 'rejected',
-		}
+		},
 	});
+
+	await createNotification(
+		invite.team.owner_id,
+		'team_invite_rejected',
+		invite.id,
+		'team_invite',
+		userId,
+		`${invite.user.username} declined your invite to join ${invite.team.name}.`,
+	);
+
+	return teamInvite;
 };
 
 // Leave team with logged-in user
@@ -613,6 +743,7 @@ export const leaveTeam = async (userId: number, teamId: number) => {
 		},
 		select: {
 			owner_id: true,
+			name: true,
 		},
 	});
 
@@ -632,7 +763,7 @@ export const leaveTeam = async (userId: number, teamId: number) => {
 	if (!member)
 		throw new AppError("You are not a member of this team.", 400);
 
-	return prisma.teamUser.delete({
+	const teamUser = await prisma.teamUser.delete({
 		where: {
 			user_id_team_id: {
 				user_id: userId,
@@ -640,4 +771,24 @@ export const leaveTeam = async (userId: number, teamId: number) => {
 			},
 		},
 	});
+
+	const userName = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		select: {
+			username: true,
+		},
+	});
+
+	await createNotification(
+		team.owner_id,
+		'team_user_left',
+		teamId,
+		'team',
+		userId,
+		`${userName?.username ?? 'Someone'} left ${team.name}.`,
+	);
+
+	return teamUser;
 };
