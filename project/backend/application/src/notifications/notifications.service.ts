@@ -134,6 +134,6 @@ export const createNotification = async (
 	});
 
 	const io = getIO();
-	io.emit('notification:new', notification);
+	io.to(`user:${userIdReceiver}`).emit('notification:new', notification);
 	return notification;
 };
