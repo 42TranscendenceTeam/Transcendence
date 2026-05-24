@@ -38,7 +38,6 @@ function TeamDetail() {
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [selectedFriend, setSelectedFriend] = useState('');
   const [manualUsername, setManualUsername] = useState('');
-  const [memberRole, setMemberRole] = useState('Member');
   const [showRemoveMemberModal, setShowRemoveMemberModal] = useState(false);
   const [memberToRemove, setMemberToRemove] = useState<Member | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
@@ -47,6 +46,9 @@ function TeamDetail() {
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [errorUsers, setErrorUsers] = useState('');
   const [showTeamFullModal, setShowTeamFullModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [successReload, setSuccessReload] = useState(false);
   const fileInputRefs = useRef<Record<number, HTMLInputElement>>({});
   const [team, setTeam] = useState<any>(null);
   const [loadingTeam, setLoadingTeam] = useState(true);
@@ -277,10 +279,12 @@ function TeamDetail() {
         setErrorUsers('Failed to send invite');
         return;
       }
-      addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: memberRole }, memberRole);
+      addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: 'Member' }, 'Member');
       setSelectedFriend('');
-      setMemberRole('Member');
       setShowAddMemberModal(false);
+      setSuccessMessage(t('teams.inviteSentSuccess'));
+      setSuccessReload(false);
+      setShowSuccessModal(true);
     }
   };
 
@@ -308,11 +312,13 @@ function TeamDetail() {
           id: foundUser.id,
           username: foundUser.username,
           avatar: getAvatarUrl(u.avatar_url),
-          role: memberRole,
-        }, memberRole);
+          role: 'Member',
+        }, 'Member');
         setManualUsername('');
-        setMemberRole('Member');
         setShowAddMemberModal(false);
+        setSuccessMessage(t('teams.inviteSentSuccess'));
+        setSuccessReload(false);
+        setShowSuccessModal(true);
       } else {
         setErrorUsers('User not found or already a member');
       }
@@ -330,18 +336,17 @@ function TeamDetail() {
     setShowRemoveMemberModal(true);
   };
 
-  const handleConfirmRemove = () => {
+  const handleConfirmRemove = async () => {
     if (!isLeader || !memberToRemove) return;
-    removeTeamMember(team.id, memberToRemove.id);
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
-        task.assignedTo?.id === memberToRemove.id
-          ? { ...task, assignedTo: null }
-          : task
-      )
-    );
-    setShowRemoveMemberModal(false);
-    setMemberToRemove(null);
+    try {
+      await removeTeamMember(team.id, memberToRemove.id);
+      setSuccessMessage(t('teams.memberRemovedSuccess'));
+      setSuccessReload(true);
+      setShowSuccessModal(true);
+    } catch (err) {
+      console.error('Failed to remove member:', err);
+      alert(t('teams.failedToRemove') || 'Failed to remove member');
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -734,13 +739,6 @@ function TeamDetail() {
                 </div>
               </div>
               {errorUsers && <p className="error-text">{errorUsers}</p>}
-              <div className="add-member-role">
-                <label className="input-label">{t('teams.role')}:</label>
-                <select className="input" value={memberRole} onChange={(e) => setMemberRole(e.target.value)}>
-                  <option value="Member">{t('teams.member')}</option>
-                  <option value="Leader">{t('teams.owner')}</option>
-                </select>
-              </div>
             </div>
           </div>
         </div>
@@ -775,6 +773,22 @@ function TeamDetail() {
               <p className="modal-message">{t('teams.teamFull') || 'Team is already full'}</p>
               <div className="modal-actions">
                 <button className="btn btn-primary" onClick={() => setShowTeamFullModal(false)}>OK</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showSuccessModal && (
+        <div className="modal-overlay" onClick={() => setShowSuccessModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t('common.success')}</h2>
+              <button className="modal-close" onClick={() => setShowSuccessModal(false)}>&times;</button>
+            </div>
+            <div className="modal-body">
+              <p className="modal-message">{successMessage}</p>
+              <div className="modal-actions">
+                <button className="btn btn-primary" onClick={() => { setShowSuccessModal(false); if (successReload) window.location.reload(); }}>OK</button>
               </div>
             </div>
           </div>

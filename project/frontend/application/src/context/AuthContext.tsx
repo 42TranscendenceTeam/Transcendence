@@ -210,22 +210,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const removeTeamMember = (teamId: number, memberId: number) => {
+  const removeTeamMember = async (teamId: number, memberId: number) => {
     if (!user) return;
-    const updatedTeams = user.teams.map((team) => {
-      if (team.id === teamId) {
-        return {
-          ...team,
-          members: team.members.filter((m) => m.id !== memberId),
-          tasks: team.tasks.map((task) => {
-            if (task.assignedTo?.id === memberId) return { ...task, assignedTo: null };
-            return task;
-          }),
-        };
-      }
-      return team;
-    });
-    setUser({ ...user, teams: updatedTeams });
+    try {
+      await api.removeTeamMember(teamId, memberId);
+      const updatedTeams = user.teams.map((team) => {
+        if (team.id === teamId) {
+          return {
+            ...team,
+            members: team.members.filter((m) => m.id !== memberId),
+            tasks: team.tasks.map((task) => {
+              if (task.assignedTo?.id === memberId) return { ...task, assignedTo: null };
+              return task;
+            }),
+          };
+        }
+        return team;
+      });
+      setUser({ ...user, teams: updatedTeams });
+    } catch (err) {
+      console.error('Failed to remove team member:', err);
+      throw err;
+    }
   };
 
   const createTeam = async (teamData: TeamData) => {

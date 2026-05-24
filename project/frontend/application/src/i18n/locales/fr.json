@@ -196,7 +196,10 @@
     "settings": "Paramètres de l'équipe",
     "deleteTeam": "Supprimer l'équipe",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette équipe ? Cette action est irréversible.",
-    "addTask": "Ajouter une tâche"
+    "addTask": "Ajouter une tâche",
+    "memberRemovedSuccess": "Membre supprimé avec succès",
+    "inviteSentSuccess": "Invitation envoyée avec succès",
+    "failedToRemove": "Échec de la suppression du membre"
   },
   "tasks": {
     "title": "Tâches",

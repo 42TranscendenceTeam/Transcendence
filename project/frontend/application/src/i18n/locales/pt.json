@@ -196,7 +196,10 @@
     "settings": "Definições da Equipa",
     "deleteTeam": "Eliminar Equipa",
     "confirmDelete": "Tem a certeza que deseja eliminar esta equipa? Esta ação não pode ser desfeita.",
-    "addTask": "Adicionar Tarefa"
+    "addTask": "Adicionar Tarefa",
+    "memberRemovedSuccess": "Membro removido com sucesso",
+    "inviteSentSuccess": "Convite enviado com sucesso",
+    "failedToRemove": "Falha ao remover membro"
   },
   "tasks": {
     "title": "Tarefas",
