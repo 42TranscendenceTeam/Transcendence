@@ -1,6 +1,8 @@
 import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import { AppError } from '../utils/AppError.js';
+import { emitWithRetries } from '../utils/WebSocketUtils.js';
+import { getIO } from '../server.js';
 import { getSentMessages, getReceivedMessages, getAllMessages, sendMessage, updateReadStatus, deleteMessage } from './message.service.js';
 
 export const getSentMessagesController = async (req: AuthRequest, res: Response) => {
@@ -37,17 +39,25 @@ export const getAllMessagesController = async (req: AuthRequest, res: Response) 
 };
 
 export const sendMessageController = async (req: AuthRequest, res: Response) => {
-	const { friendId, content } = req.body;
+	try {
+		const { friendId, content } = req.body;
 
-	if (!friendId || Number.isNaN(Number(friendId)))
-		throw new AppError("Mandatory valid receiver ID.", 400);
+		if (!friendId || Number.isNaN(Number(friendId)))
+			throw new AppError("Mandatory valid receiver ID.", 400);
 
-	if (!content)
-		throw new AppError("Message contents cannot be empty", 400);
+		if (!content)
+			throw new AppError("Message contents cannot be empty", 400);
 
-	const request = await sendMessage(req.user!.id, Number(friendId), content);
+		const request = await sendMessage(req.user!.id, Number(friendId), content);
 
-	return res.status(201).json(request);
+		const chatId = String(req.user!.id) + friendId;
+
+		await emitWithRetries(getIO(), 'chat message', chatId, content);
+
+		return res.status(201).json(request);
+	} catch (err) {
+		res.status(500).send();
+	}
 };
 
 export const updateReadStatusController = async (req: AuthRequest, res: Response) => {
@@ -61,6 +71,8 @@ export const updateReadStatusController = async (req: AuthRequest, res: Response
 	return res.status(201).json(request);
 };
 
+// NOTE: Not sure if delete should also communicate with websockets
+// TODO: Check if deleting messages is allowed
 export const deleteMessageController = async (req: AuthRequest, res: Response) => {
 	const messageId = Number(req.params.id);
 

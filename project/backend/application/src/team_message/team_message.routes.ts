@@ -8,7 +8,7 @@ const router = Router();
 router.get('/team/:id/message', authMiddleware, asyncHandler(getAllMessagesController));
 router.get('/team/:id/message/sent', authMiddleware, asyncHandler(getTeamSentMessagesController));
 router.get('/team/:id/message/received', authMiddleware, asyncHandler(getTeamReceivedMessagesController));
-router.post('/team/:id/message/:id', authMiddleware, asyncHandler(sendTeamMessageController));
+router.post('/team/:id/message', authMiddleware, asyncHandler(sendTeamMessageController));
 router.delete('/team/:id/message/:id', authMiddleware, asyncHandler(deleteTeamMessageController));
 
 export default router;
