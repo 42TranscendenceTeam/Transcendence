@@ -1,0 +1,73 @@
+import type { Response } from 'express';
+import type { AuthRequest } from '../middleware/auth.middleware.js';
+import { AppError } from '../utils/AppError.js';
+import { getSentMessages, getReceivedMessages, getAllMessages, sendMessage, updateReadStatus, deleteMessage } from './message.service.js';
+
+export const getSentMessagesController = async (req: AuthRequest, res: Response) => {
+	const friendId = Number(req.params.receiver_id);
+
+	if (!friendId || Number.isNaN(friendId))
+		throw new AppError("Mandatory valid receiver ID.", 400);
+
+	const messagesSentList = await getSentMessages(req.user!.id, friendId);
+
+	return res.json(messagesSentList);
+};
+
+export const getReceivedMessagesController = async (req: AuthRequest, res: Response) => {
+	const friendId = Number(req.params.receiver_id);
+
+	if (!friendId || Number.isNaN(friendId))
+		throw new AppError("Mandatory valid receiver ID.", 400);
+
+	const messagesReceivedList = await getReceivedMessages(req.user!.id, friendId);
+
+	return res.json(messagesReceivedList);
+};
+
+export const getAllMessagesController = async (req: AuthRequest, res: Response) => {
+	const friendId = Number(req.params.receiver_id);
+
+	if (!friendId || Number.isNaN(friendId))
+		throw new AppError("Mandatory valid receiver ID.", 400);
+
+	const messagesList = await getAllMessages(req.user!.id, friendId);
+
+	return res.json(messagesList);
+};
+
+export const sendMessageController = async (req: AuthRequest, res: Response) => {
+	const { friendId, content } = req.body;
+
+	if (!friendId || Number.isNaN(Number(friendId)))
+		throw new AppError("Mandatory valid receiver ID.", 400);
+
+	if (!content)
+		throw new AppError("Message contents cannot be empty", 400);
+
+	const request = await sendMessage(req.user!.id, Number(friendId), content);
+
+	return res.status(201).json(request);
+};
+
+export const updateReadStatusController = async (req: AuthRequest, res: Response) => {
+	const friendId = Number(req.params.receiver_id);
+
+	if (Number.isNaN(friendId))
+		throw new AppError("Mandatory valid friend ID.", 400);
+
+	const request = await updateReadStatus(req.user!.id, friendId);
+
+	return res.status(201).json(request);
+};
+
+export const deleteMessageController = async (req: AuthRequest, res: Response) => {
+	const messageId = Number(req.params.id);
+
+	if (Number.isNaN(messageId))
+		throw new AppError("Mandatory valid message ID.", 400);
+
+	const message = await deleteMessage(messageId);
+
+	return res.status(200).json(message);
+};
