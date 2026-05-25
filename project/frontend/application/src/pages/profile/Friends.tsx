@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
+import { getAvatarUrl } from '../../utils/avatar';
 import type { Friend } from '../../types';
 
 interface SearchUser {
@@ -65,7 +66,7 @@ function Friends() {
     .map((u) => ({
       id: u.id,
       username: u.username,
-      avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${u.username}`,
+      avatar: getAvatarUrl(u.avatar_url),
       chat: [],
     }));
 
@@ -188,7 +189,7 @@ function Friends() {
               {sentRequests.map((request) => (
                 <div key={request.request_id} className="request-card">
                   <img
-                    src={request.user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${request.user.username}`}
+                    src={getAvatarUrl(request.user.avatar_url)}
                     alt={request.user.username}
                     className="friend-avatar"
                   />
@@ -209,7 +210,7 @@ function Friends() {
               {friendRequests.map((request) => (
                 <div key={request.request_id} className="request-card">
                   <img
-                    src={request.user.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${request.user.username}`}
+                    src={getAvatarUrl(request.user.avatar_url)}
                     alt={request.user.username}
                     className="friend-avatar"
                   />

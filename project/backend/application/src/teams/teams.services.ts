@@ -15,6 +15,7 @@ export const getTeamsList = async () => {
 			tags: true,
 			max_users: true,
 			created_at: true,
+			status_ongoing: true,
 			owner: {
 				select: {
 					id: true,
@@ -333,6 +334,17 @@ export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
 	if (requestExists)
 		throw new AppError("That join request already exists.", 400);
 
+	const pendingInvite = await prisma.teamInvite.findFirst({
+		where: {
+			status: 'pending',
+			team_id: teamId,
+			user_id: userId,
+		},
+	});
+
+	if (pendingInvite)
+		throw new AppError("You already have a pending invite to join this team. Accept or reject it first.", 400);
+
 	const userInTeam = await prisma.teamUser.findFirst({
 		where: {
 			team_id: teamId,
@@ -566,6 +578,17 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 
 	if (inviteExists)
 		throw new AppError("That team invite already exists.", 400);
+
+	const pendingRequest = await prisma.teamJoinRequest.findFirst({
+		where: {
+			status: 'pending',
+			team_id: teamId,
+			user_id: receiverId,
+		},
+	});
+
+	if (pendingRequest)
+		throw new AppError("That user already has a pending join request for this team. Accept or reject it first.", 400);
 
 	const receiverExists = await prisma.user.findUnique({
 		where: {

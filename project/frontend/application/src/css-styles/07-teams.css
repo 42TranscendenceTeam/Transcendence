@@ -850,6 +850,11 @@
   opacity: 0.7;
 }
 
+.team-status-select option[value="__delete__"] {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
 /* ========================================
    Team Details Select
    ======================================== */

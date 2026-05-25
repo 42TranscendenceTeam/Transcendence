@@ -17,7 +17,8 @@ function LanguageSelector({ value, onChange }: LanguageSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const currentLang = languages.find(l => l.code === (value || i18n.language)) || languages[0];
+  const normalizedValue = (value || i18n.language || '').split('-')[0];
+  const currentLang = languages.find(l => l.code === normalizedValue) || languages[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
