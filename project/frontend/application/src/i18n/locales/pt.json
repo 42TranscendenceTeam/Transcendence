@@ -146,6 +146,8 @@
     "send": "Enviar",
     "changeStatus": "Alterar Estado da Equipa",
     "confirmStatus": "Tem a certeza que deseja definir esta equipa como",
+    "cannotReopenFinished": "Esta equipa já foi marcada como terminada e não pode ser reaberta.",
+    "cannotReopenNotice": "Esta ação não pode ser desfeita.",
     "addMemberTitle": "Adicionar Membro",
     "selectFriend": "Selecione um amigo...",
     "selectUser": "Selecione um utilizador...",

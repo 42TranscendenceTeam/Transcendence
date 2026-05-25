@@ -42,6 +42,7 @@ function TeamDetail() {
   const [memberToRemove, setMemberToRemove] = useState<Member | null>(null);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [newStatus, setNewStatus] = useState('');
+  const [showFinishedError, setShowFinishedError] = useState(false);
   const [allUsers, setAllUsers] = useState<SearchUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [errorUsers, setErrorUsers] = useState('');
@@ -192,6 +193,10 @@ function TeamDetail() {
   const handleStatusChangeClick = (status: string) => {
     if (status === '__delete__') {
       setShowDeleteConfirm(true);
+      return;
+    }
+    if (team.status === 'finished' && status === 'active') {
+      setShowFinishedError(true);
       return;
     }
     setNewStatus(status);
@@ -713,9 +718,31 @@ function TeamDetail() {
             </div>
             <div className="modal-body">
               <p className="modal-message">{t('teams.confirmStatus')} {newStatus === 'active' ? t('teams.active') : t('teams.finished')}?</p>
+              {newStatus === 'finished' && (
+                <p className="modal-message" style={{ color: 'var(--color-error, #ef4444)', marginTop: '0.5rem', fontWeight: 600 }}>
+                  {t('teams.cannotReopenNotice') || 'This action cannot be undone.'}
+                </p>
+              )}
               <div className="modal-actions">
                 <button className="btn btn-secondary" onClick={() => setShowStatusModal(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-primary" onClick={handleConfirmStatusChange}>{t('common.confirm')}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showFinishedError && (
+        <div className="modal-overlay" onClick={() => setShowFinishedError(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t('common.info')}</h2>
+              <button className="modal-close" onClick={() => setShowFinishedError(false)}>&times;</button>
+            </div>
+            <div className="modal-body">
+              <p className="modal-message">{t('teams.cannotReopenFinished')}</p>
+              <div className="modal-actions">
+                <button className="btn btn-primary" onClick={() => setShowFinishedError(false)}>{t('common.close')}</button>
               </div>
             </div>
           </div>

@@ -125,6 +125,8 @@ function Feed() {
         setLoading(true);
         const teamsData = await api.getTeams();
 
+        let baseTeams: Team[];
+
         if (user) {
           const myTeams = await api.getMyTeams();
           const myTeamIds = new Set(myTeams.map(t => t.id));
@@ -142,7 +144,7 @@ function Feed() {
             return changed ? next : prev;
           });
 
-          setTeams(teamsData.filter(t => !myTeamIds.has(t.id)));
+          baseTeams = teamsData.filter(t => !myTeamIds.has(t.id));
 
           const rawPendingIds = Object.keys(requestStatuses)
             .filter(k => requestStatuses[Number(k)] === 'pending')
@@ -172,29 +174,28 @@ function Feed() {
               return changed ? next : prev;
             });
           }
-
-          const statusResults = await Promise.all(
-            teamsData
-              .filter(t => !myTeamIds.has(t.id))
-              .map(async (team) => {
-                try {
-                  const detail = await api.getTeam(team.id);
-                  return { id: team.id, isFinished: detail.status === 'finished' };
-                } catch {
-                  return { id: team.id, isFinished: false };
-                }
-              })
-          );
-          const finishedIds = new Set(
-            statusResults.filter(r => r.isFinished).map(r => r.id)
-          );
-          if (finishedIds.size > 0) {
-            setTeams(prev => prev.filter(t => !finishedIds.has(t.id)));
-          }
         } else {
-          setTeams(teamsData);
+          baseTeams = teamsData;
         }
 
+        const statusResults = await Promise.all(
+          baseTeams.map(async (team) => {
+            try {
+              const detail = await api.getTeam(team.id);
+              return { id: team.id, isFinished: detail.status === 'finished' };
+            } catch {
+              return { id: team.id, isFinished: false };
+            }
+          })
+        );
+        const finishedIds = new Set(
+          statusResults.filter(r => r.isFinished).map(r => r.id)
+        );
+        if (finishedIds.size > 0) {
+          baseTeams = baseTeams.filter(t => !finishedIds.has(t.id));
+        }
+
+        setTeams(baseTeams);
         setIsUsingMockData(false);
       } catch (err) {
         console.error('Failed to fetch teams:', err);
@@ -309,11 +310,11 @@ function Feed() {
                 {t('feed.lookingFor') || 'Looking for'} <strong>{(team.maxUsers || 10) - (team.memberCount || 0)}</strong> {(team.maxUsers || 10) - (team.memberCount || 0) > 1 ? t('feed.collaborators') : t('feed.collaborator')}
               </span>
               <button
-                className={`btn btn-small ${requestStatuses[team.id] === 'pending' ? 'btn-pending' : 'btn-primary'}`}
+                className={`btn btn-small ${requestStatuses[team.id] === 'pending' && user ? 'btn-pending' : 'btn-primary'}`}
                 onClick={() => handleJoinTeam(team.id, team.name)}
-                disabled={requestStatuses[team.id] === 'pending'}
+                disabled={requestStatuses[team.id] === 'pending' && !!user}
               >
-                {requestStatuses[team.id] === 'pending' ? t('teams.pending') : t('teams.join')}
+                {requestStatuses[team.id] === 'pending' && user ? t('teams.pending') : t('teams.join')}
               </button>
             </div>
           </div>

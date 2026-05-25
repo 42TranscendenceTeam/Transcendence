@@ -146,6 +146,8 @@
     "send": "Envoyer",
     "changeStatus": "Changer le statut de l'équipe",
     "confirmStatus": "Êtes-vous sûr de vouloir définir cette équipe comme",
+    "cannotReopenFinished": "Cette équipe a déjà été marquée comme terminée et ne peut pas être réouverte.",
+    "cannotReopenNotice": "Cette action est irréversible.",
     "addMemberTitle": "Ajouter un membre",
     "selectFriend": "Sélectionner un ami...",
     "selectUser": "Sélectionner un utilisateur...",

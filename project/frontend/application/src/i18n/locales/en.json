@@ -147,6 +147,8 @@
     "send": "Send",
     "changeStatus": "Change Team Status",
     "confirmStatus": "Are you sure you want to set this team as",
+    "cannotReopenFinished": "This team has already been marked as finished and cannot be reopened.",
+    "cannotReopenNotice": "This action cannot be undone.",
     "addMemberTitle": "Add Member",
     "selectFriend": "Select a friend...",
     "selectUser": "Select a user...",
