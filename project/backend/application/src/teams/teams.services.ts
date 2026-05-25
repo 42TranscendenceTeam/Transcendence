@@ -13,6 +13,7 @@ export const getTeamsList = async () => {
 			tags: true,
 			max_users: true,
 			created_at: true,
+			status_ongoing: true,
 			owner: {
 				select: {
 					id: true,
