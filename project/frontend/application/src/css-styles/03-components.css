@@ -33,6 +33,16 @@
 }
 
 /*
+ * Pending state button (green, used for join request sent)
+ */
+.btn-pending {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  cursor: default;
+  opacity: 0.8;
+}
+
+/*
  * Secondary button (less emphasis)
  */
 .btn-secondary {

@@ -110,12 +110,42 @@ export interface AuthContextType {
   removeTeamMember: (teamId: number, memberId: number) => void;
   createTeam: (teamData: TeamData) => void;
   updateTeamStatus: (teamId: number, status: string) => void;
+  updateTeamSettings: (teamId: number, data: { name?: string; objective?: string; tags?: string[] }) => Promise<void>;
   friendRequests: FriendRequest[];
   sentRequests: FriendRequest[];
   friends: Friend[];
+  teamInvites: TeamInvite[];
+  joinRequestNotifications: JoinRequestNotification[];
+  unreadNotifications: number;
   fetchFriendRequests: () => void;
   fetchSentRequests: () => void;
   fetchFriends: () => void;
+  fetchTeamInvites: () => void;
+  fetchJoinRequestNotifications: () => void;
   acceptFriendRequest: (requestId: number) => void;
   rejectFriendRequest: (requestId: number) => void;
+  acceptTeamInvite: (inviteId: number) => void;
+  rejectTeamInvite: (inviteId: number) => void;
+  markNotificationsRead: () => void;
+}
+
+export interface TeamInvite {
+  invite_id: number;
+  team_id: number;
+  team_name: string;
+  team_about: string;
+  team_tags: string;
+  team_max_users: number;
+  sent_at: string;
+  status: 'pending' | 'accepted' | 'rejected';
+}
+
+export interface JoinRequestNotification {
+  request_id: number;
+  user_id: number;
+  username: string;
+  avatar_url: string;
+  requested_at: string;
+  team_id: number;
+  team_name: string;
 }
