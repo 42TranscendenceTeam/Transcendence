@@ -262,7 +262,8 @@
     "unfriend": "Unfriend",
     "chat": "Chat",
     "noReceivedRequests": "No pending requests",
-    "noSentRequests": "No pending sent requests"
+    "noSentRequests": "No pending sent requests",
+    "friendRequestExists": "A pending friend request already exists."
   },
   "chat": {
     "title": "Chat",
@@ -306,7 +307,29 @@
     "noTeamInvites": "No pending team invitations",
     "noFriendInvites": "No pending friend invitations",
     "pendingTeamInvites": "Pending team invites",
-    "pendingFriendInvites": "Pending friend invites"
+    "pendingFriendInvites": "Pending friend invites",
+    "deleteAll": "Delete All",
+    "friendNotifications": "Friend Notifications",
+    "teamNotifications": "Team Notifications",
+    "noFriendNotifications": "No friend notifications",
+    "noTeamNotifications": "No team notifications",
+    "markRead": "Mark as read",
+    "delete": "Delete",
+    "justNow": "Just now",
+    "minutesAgo": "{{minutes}} min ago",
+    "hoursAgo": "{{hours}}h ago",
+    "daysAgo": "{{days}}d ago",
+    "friendRequest": "You got a friend request from {{username}}.",
+    "friendRequestAccepted": "{{username}} accepted your friend request.",
+    "friendRequestRejected": "{{username}} rejected your friend request.",
+    "teamJoinRequest": "{{username}} requested to join {{team}}.",
+    "teamJoinRequestAccepted": "You were accepted to join the {{team}} team.",
+    "teamJoinRequestRejected": "Your request to join {{team}} was rejected.",
+    "teamInviteReceived": "{{owner}} invited you to join their {{team}} team.",
+    "teamInviteAccepted": "{{username}} accepted to join the {{team}} team.",
+    "teamInviteRejected": "{{username}} declined your invite to join {{team}}.",
+    "teamRemoved": "You were removed from the {{team}} team.",
+    "teamUserLeft": "{{username}} left {{team}}."
   },
   "legal": {
     "privacy": {

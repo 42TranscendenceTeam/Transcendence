@@ -111,12 +111,19 @@ export interface AuthContextType {
   createTeam: (teamData: TeamData) => void;
   updateTeamStatus: (teamId: number, status: string) => void;
   updateTeamSettings: (teamId: number, data: { name?: string; objective?: string; tags?: string[] }) => Promise<void>;
+  notifications: AppNotification[];
+  unreadCount: number;
   friendRequests: FriendRequest[];
   sentRequests: FriendRequest[];
   friends: Friend[];
   teamInvites: TeamInvite[];
   joinRequestNotifications: JoinRequestNotification[];
   unreadNotifications: number;
+  fetchNotifications: () => void;
+  markAsRead: (id: number) => void;
+  markAllAsRead: () => void;
+  deleteNotification: (id: number) => void;
+  deleteAllNotifications: () => void;
   fetchFriendRequests: () => void;
   fetchSentRequests: () => void;
   fetchFriends: () => void;
@@ -138,6 +145,17 @@ export interface TeamInvite {
   team_max_users: number;
   sent_at: string;
   status: 'pending' | 'accepted' | 'rejected';
+}
+
+export interface AppNotification {
+  id: number;
+  user_id_trigger: number | null;
+  type: string;
+  entity_id: number | null;
+  entity_type: string | null;
+  content: string | null;
+  status_read: boolean;
+  created_at: string;
 }
 
 export interface JoinRequestNotification {

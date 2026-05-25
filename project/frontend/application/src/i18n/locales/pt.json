@@ -254,7 +254,8 @@
     "unfriend": "Deixar de ser amigo",
     "chat": "Conversar",
     "noReceivedRequests": "Sem pedidos pendentes",
-    "noSentRequests": "Sem pedidos enviados pendentes"
+    "noSentRequests": "Sem pedidos enviados pendentes",
+    "friendRequestExists": "Já existe um pedido de amizade pendente."
   },
   "chat": {
     "title": "Chat",
@@ -298,7 +299,29 @@
     "noTeamInvites": "Sem convites de equipa pendentes",
     "noFriendInvites": "Sem convites de amigos pendentes",
     "pendingTeamInvites": "Convites de equipa pendentes",
-    "pendingFriendInvites": "Convites de amigos pendentes"
+    "pendingFriendInvites": "Convites de amigos pendentes",
+    "deleteAll": "Eliminar Tudo",
+    "friendNotifications": "Notificações de amigos",
+    "teamNotifications": "Notificações de equipa",
+    "noFriendNotifications": "Sem notificações de amigos",
+    "noTeamNotifications": "Sem notificações de equipa",
+    "markRead": "Marcar como lido",
+    "delete": "Eliminar",
+    "justNow": "Agora mesmo",
+    "minutesAgo": "Há {{minutes}} min",
+    "hoursAgo": "Há {{hours}}h",
+    "daysAgo": "Há {{days}}d",
+    "friendRequest": "Você recebeu um pedido de amizade de {{username}}.",
+    "friendRequestAccepted": "{{username}} aceitou o seu pedido de amizade.",
+    "friendRequestRejected": "{{username}} rejeitou o seu pedido de amizade.",
+    "teamJoinRequest": "{{username}} pediu para entrar em {{team}}.",
+    "teamJoinRequestAccepted": "Foi aceite na equipa {{team}}.",
+    "teamJoinRequestRejected": "O seu pedido para entrar em {{team}} foi rejeitado.",
+    "teamInviteReceived": "{{owner}} convidou-o para a sua equipa {{team}}.",
+    "teamInviteAccepted": "{{username}} aceitou entrar na equipa {{team}}.",
+    "teamInviteRejected": "{{username}} recusou o seu convite para entrar em {{team}}.",
+    "teamRemoved": "Foi removido da equipa {{team}}.",
+    "teamUserLeft": "{{username}} saiu de {{team}}."
   },
   "legal": {
     "privacy": {

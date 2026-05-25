@@ -255,7 +255,8 @@
     "unfriend": "Retirer des amis",
     "chat": "Discuter",
     "noReceivedRequests": "Aucune demande en attente",
-    "noSentRequests": "Aucune demande envoyée en attente"
+    "noSentRequests": "Aucune demande envoyée en attente",
+    "friendRequestExists": "Une demande d'ami est déjà en attente."
   },
   "chat": {
     "title": "Discussion",
@@ -299,7 +300,29 @@
     "noTeamInvites": "Aucune invitation d'équipe en attente",
     "noFriendInvites": "Aucune invitation d'ami en attente",
     "pendingTeamInvites": "Invitations d'équipe en attente",
-    "pendingFriendInvites": "Invitations d'amis en attente"
+    "pendingFriendInvites": "Invitations d'amis en attente",
+    "deleteAll": "Tout supprimer",
+    "friendNotifications": "Notifications d'amis",
+    "teamNotifications": "Notifications d'équipe",
+    "noFriendNotifications": "Aucune notification d'ami",
+    "noTeamNotifications": "Aucune notification d'équipe",
+    "markRead": "Marquer comme lu",
+    "delete": "Supprimer",
+    "justNow": "À l'instant",
+    "minutesAgo": "Il y a {{minutes}} min",
+    "hoursAgo": "Il y a {{hours}}h",
+    "daysAgo": "Il y a {{days}}j",
+    "friendRequest": "Vous avez reçu une demande d'ami de {{username}}.",
+    "friendRequestAccepted": "{{username}} a accepté votre demande d'ami.",
+    "friendRequestRejected": "{{username}} a refusé votre demande d'ami.",
+    "teamJoinRequest": "{{username}} a demandé à rejoindre {{team}}.",
+    "teamJoinRequestAccepted": "Vous avez été accepté dans l'équipe {{team}}.",
+    "teamJoinRequestRejected": "Votre demande pour rejoindre {{team}} a été refusée.",
+    "teamInviteReceived": "{{owner}} vous a invité à rejoindre son équipe {{team}}.",
+    "teamInviteAccepted": "{{username}} a accepté de rejoindre l'équipe {{team}}.",
+    "teamInviteRejected": "{{username}} a refusé votre invitation à rejoindre {{team}}.",
+    "teamRemoved": "Vous avez été retiré de l'équipe {{team}}.",
+    "teamUserLeft": "{{username}} a quitté {{team}}."
   },
   "legal": {
     "privacy": {
