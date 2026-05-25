@@ -25,7 +25,7 @@ function ProfileEdit() {
   const [email, setEmail] = useState(initialEmail);
   const [description, setDescription] = useState(initialDescription);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatar);
-  const [language, setLanguage] = useState(i18n.language);
+  const [language, setLanguage] = useState((i18n.language || '').split('-')[0] || 'en');
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -62,8 +62,23 @@ function ProfileEdit() {
     setShowSuccessModal(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    try {
+      const result = await api.updateCurrentUser({
+        username,
+        email,
+        description,
+      });
+      updateUser({
+        username: result.username,
+        email: result.email,
+        description: result.description,
+      });
+    } catch (err: any) {
+      setUploadError(err.message || 'Failed to update profile');
+      return;
+    }
     if (language !== i18n.language) {
       i18n.changeLanguage(language);
     }

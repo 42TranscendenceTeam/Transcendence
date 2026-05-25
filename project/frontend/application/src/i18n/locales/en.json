@@ -165,7 +165,8 @@
     "reject": "Reject",
     "loginRequired": "Please log in to join a team",
     "joinRequestSent": "Join request sent successfully!",
-    "joinRequestFailed": "Failed to send join request. You may have already requested to join this team.",
+    "joinRequestFailed": "Failed to send join request.",
+    "alreadyRequested": "You already have a pending request for this team.",
     "allStatus": "All Status",
     "allAssignees": "All Assignees",
     "title_col": "Title",
@@ -197,7 +198,16 @@
     "addTask": "Add Task",
     "memberRemovedSuccess": "Member removed successfully",
     "inviteSentSuccess": "Invitation sent successfully",
-    "failedToRemove": "Failed to remove member"
+    "editTeam": "Edit Team",
+    "saveSettings": "Save Settings",
+    "settingsUpdated": "Team settings updated",
+    "failedToRemove": "Failed to remove member",
+    "teamFullTitle": "Team Full",
+    "teamFull": "Team is already full",
+    "failedToAcceptRequest": "Failed to accept join request",
+    "failedToRejectRequest": "Failed to reject join request",
+    "joinRequestRejected": "Join request rejected successfully",
+    "joinRequestAccepted": "Join request accepted successfully"
   },
   "tasks": {
     "title": "Tasks",

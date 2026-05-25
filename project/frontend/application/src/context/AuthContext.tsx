@@ -240,7 +240,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       const createdTeam = await api.createTeam({
         name: teamData.name,
         objective: teamData.description,
-        maxUsers: teamData.lookingFor || 10,
+        maxUsers: (teamData.lookingFor || 1) + 1,
         tags: teamData.details || [],
       });
       const team = {
@@ -281,6 +281,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.error('Failed to update team status:', err);
       throw err;
     }
+  };
+
+  const updateTeamSettings = async (teamId: number, data: { name?: string; objective?: string; tags?: string[] }) => {
+    if (!user) return;
+    const updated = await api.updateTeam(teamId, { name: data.name, objective: data.objective, tags: data.tags });
+    const updatedTeams = user.teams.map((team) => {
+      if (team.id === teamId) {
+        return {
+          ...team,
+          name: data.name ?? team.name,
+          objective: data.objective ?? team.objective,
+          tags: data.tags ?? team.tags,
+        };
+      }
+      return team;
+    });
+    setUser({ ...user, teams: updatedTeams });
   };
 
   const fetchFriendRequests = () => {
@@ -427,6 +444,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       removeTeamMember,
       createTeam,
       updateTeamStatus,
+      updateTeamSettings,
       friendRequests,
       sentRequests,
       friends,

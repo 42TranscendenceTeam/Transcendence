@@ -164,7 +164,8 @@
     "reject": "Rejeitar",
     "loginRequired": "Por favor, inicie sessão para entrar numa equipa",
     "joinRequestSent": "Pedido de entrada enviado com sucesso!",
-    "joinRequestFailed": "Falha ao enviar pedido de entrada. Já pode ter solicitado entrar nesta equipa.",
+    "joinRequestFailed": "Falha ao enviar pedido de entrada.",
+    "alreadyRequested": "Já tens um pedido pendente para esta equipa.",
     "allStatus": "Todos os Estados",
     "allAssignees": "Todos os Atribuídos",
     "title_col": "Título",
@@ -199,7 +200,16 @@
     "addTask": "Adicionar Tarefa",
     "memberRemovedSuccess": "Membro removido com sucesso",
     "inviteSentSuccess": "Convite enviado com sucesso",
-    "failedToRemove": "Falha ao remover membro"
+    "editTeam": "Editar equipa",
+    "saveSettings": "Guardar alterações",
+    "settingsUpdated": "Configurações da equipa atualizadas",
+    "failedToRemove": "Falha ao remover membro",
+    "teamFullTitle": "Equipa cheia",
+    "teamFull": "A equipa já está cheia",
+    "failedToAcceptRequest": "Falha ao aceitar pedido de entrada",
+    "failedToRejectRequest": "Falha ao rejeitar pedido de entrada",
+    "joinRequestRejected": "Pedido de entrada rejeitado com sucesso",
+    "joinRequestAccepted": "Pedido de entrada aceite com sucesso"
   },
   "tasks": {
     "title": "Tarefas",

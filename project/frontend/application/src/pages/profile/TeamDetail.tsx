@@ -27,7 +27,7 @@ function TeamDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus } = useContext(AuthContext);
+  const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
@@ -49,6 +49,10 @@ function TeamDetail() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [successReload, setSuccessReload] = useState(false);
+  const [showEditTeamModal, setShowEditTeamModal] = useState(false);
+  const [editTeamName, setEditTeamName] = useState('');
+  const [editTeamObjective, setEditTeamObjective] = useState('');
+  const [editTeamTags, setEditTeamTags] = useState<string[]>([]);
   const fileInputRefs = useRef<Record<number, HTMLInputElement>>({});
   const [team, setTeam] = useState<any>(null);
   const [loadingTeam, setLoadingTeam] = useState(true);
@@ -194,10 +198,40 @@ function TeamDetail() {
     setShowStatusModal(true);
   };
 
-  const handleConfirmStatusChange = () => {
-    updateTeamStatus(team.id, newStatus);
+  const handleConfirmStatusChange = async () => {
+    await updateTeamStatus(team.id, newStatus);
+    setTeam({ ...team, status: newStatus });
     setShowStatusModal(false);
     setNewStatus('');
+  };
+
+  const handleSaveTeamSettings = async () => {
+    try {
+      await updateTeamSettings(team.id, {
+        name: editTeamName,
+        objective: editTeamObjective,
+        tags: editTeamTags,
+      });
+      setTeam({
+        ...team,
+        name: editTeamName,
+        objective: editTeamObjective,
+        tags: editTeamTags,
+      });
+      setShowEditTeamModal(false);
+      setSuccessMessage(t('teams.settingsUpdated'));
+      setSuccessReload(false);
+      setShowSuccessModal(true);
+    } catch (err) {
+      console.error('Failed to update team settings:', err);
+      alert('Failed to update team settings');
+    }
+  };
+
+  const toggleEditTag = (tag: string) => {
+    setEditTeamTags(prev =>
+      prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+    );
   };
 
   const handleAcceptJoinRequest = async (requestId: number) => {
@@ -210,9 +244,12 @@ function TeamDetail() {
       setJoinRequests(prev => prev.filter(r => r.request_id !== requestId));
       const updatedTeam = await api.getTeam(parseInt(id));
       setTeam(updatedTeam);
+      setSuccessMessage(t('teams.joinRequestAccepted'));
+      setSuccessReload(false);
+      setShowSuccessModal(true);
     } catch (err) {
       console.error('Failed to accept join request:', err);
-      alert('Failed to accept join request');
+      alert(t('teams.failedToAcceptRequest'));
     }
   };
 
@@ -220,9 +257,12 @@ function TeamDetail() {
     try {
       await api.rejectJoinRequest(team.id, requestId);
       setJoinRequests(prev => prev.filter(r => r.request_id !== requestId));
+      setSuccessMessage(t('teams.joinRequestRejected'));
+      setSuccessReload(false);
+      setShowSuccessModal(true);
     } catch (err) {
       console.error('Failed to reject join request:', err);
-      alert('Failed to reject join request');
+      alert(t('teams.failedToRejectRequest'));
     }
   };
 
@@ -393,11 +433,23 @@ function TeamDetail() {
       <div className="team-section">
         <div className="section-header">
           <h2 className="team-section-title">{t('teams.members')} ({team.members.length})</h2>
-          {canEdit && (
-            <button className="btn btn-primary btn-small" onClick={() => setShowAddMemberModal(true)}>
-              + {t('teams.addMember') || 'Add Member'}
-            </button>
-          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {isLeader && (
+              <button className="btn btn-primary btn-small" onClick={() => {
+                setEditTeamName(team.name);
+                setEditTeamObjective(team.objective || '');
+                setEditTeamTags(team.tags ? [...team.tags] : []);
+                setShowEditTeamModal(true);
+              }}>
+                {t('teams.editTeam')}
+              </button>
+            )}
+            {isLeader && (
+              <button className="btn btn-primary btn-small" onClick={() => setShowAddMemberModal(true)}>
+                + {t('teams.addMember') || 'Add Member'}
+              </button>
+            )}
+          </div>
         </div>
         <div className="members-list">
           {team.members.map((member) => (
@@ -772,9 +824,59 @@ function TeamDetail() {
             <div className="modal-body">
               <p className="modal-message">{t('teams.teamFull') || 'Team is already full'}</p>
               <div className="modal-actions">
-                <button className="btn btn-primary" onClick={() => setShowTeamFullModal(false)}>OK</button>
+                <button className="btn btn-primary" onClick={() => setShowTeamFullModal(false)}>{t('common.close')}</button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {showEditTeamModal && (
+        <div className="modal-overlay" onClick={() => setShowEditTeamModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t('teams.editTeam')}</h2>
+              <button className="modal-close" onClick={() => setShowEditTeamModal(false)}>&times;</button>
+            </div>
+            <form onSubmit={(e) => { e.preventDefault(); handleSaveTeamSettings(); }} className="modal-body">
+              <div className="form-group">
+                <label className="input-label">{t('teams.teamName')}</label>
+                <input
+                  type="text"
+                  className="input"
+                  value={editTeamName}
+                  onChange={(e) => setEditTeamName(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="input-label">{t('teams.teamDescription')}</label>
+                <textarea
+                  className="input textarea"
+                  value={editTeamObjective}
+                  onChange={(e) => setEditTeamObjective(e.target.value)}
+                  rows={3}
+                />
+              </div>
+              <div className="form-group">
+                <label className="input-label">{t('teams.details') || 'Details'}</label>
+                <div className="team-details-select">
+                  {['DB', 'API', 'Frontend', 'Backend', 'Auth', 'Testing', 'DevOps', 'UI/UX', 'Security', 'Docs'].map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      className={`detail-tag ${editTeamTags.includes(tag) ? 'selected' : ''}`}
+                      onClick={() => toggleEditTag(tag)}
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="modal-actions">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowEditTeamModal(false)}>{t('common.cancel')}</button>
+                <button type="submit" className="btn btn-primary">{t('teams.saveSettings')}</button>
+              </div>
+            </form>
           </div>
         </div>
       )}

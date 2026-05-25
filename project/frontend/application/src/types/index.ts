@@ -110,6 +110,7 @@ export interface AuthContextType {
   removeTeamMember: (teamId: number, memberId: number) => void;
   createTeam: (teamData: TeamData) => void;
   updateTeamStatus: (teamId: number, status: string) => void;
+  updateTeamSettings: (teamId: number, data: { name?: string; objective?: string; tags?: string[] }) => Promise<void>;
   friendRequests: FriendRequest[];
   sentRequests: FriendRequest[];
   friends: Friend[];

@@ -106,6 +106,18 @@ function Feed() {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationType, setNotificationType] = useState<'success' | 'error' | 'info'>('success');
   const [notificationMessage, setNotificationMessage] = useState('');
+  const [requestStatuses, setRequestStatuses] = useState<Record<number, 'pending' | 'rejected'>>(() => {
+    try {
+      const saved = localStorage.getItem('joinRequestStatuses');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('joinRequestStatuses', JSON.stringify(requestStatuses));
+  }, [requestStatuses]);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -116,7 +128,69 @@ function Feed() {
         if (user) {
           const myTeams = await api.getMyTeams();
           const myTeamIds = new Set(myTeams.map(t => t.id));
+
+          setRequestStatuses(prev => {
+            const next = { ...prev };
+            let changed = false;
+            const pendingIds = Object.keys(next).filter(k => next[Number(k)] === 'pending').map(Number);
+            for (const teamId of pendingIds) {
+              if (myTeamIds.has(teamId)) {
+                delete next[teamId];
+                changed = true;
+              }
+            }
+            return changed ? next : prev;
+          });
+
           setTeams(teamsData.filter(t => !myTeamIds.has(t.id)));
+
+          const rawPendingIds = Object.keys(requestStatuses)
+            .filter(k => requestStatuses[Number(k)] === 'pending')
+            .map(Number);
+          const pendingIds = rawPendingIds.filter(id => !myTeamIds.has(id));
+          if (pendingIds.length > 0) {
+            const results = await Promise.all(
+              pendingIds.map(async (teamId) => {
+                try {
+                  const data = await api.getJoinRequests(teamId);
+                  const hasPending = data.request_list.some(r => r.user_id === user.id);
+                  return { teamId, valid: hasPending };
+                } catch {
+                  return { teamId, valid: false };
+                }
+              })
+            );
+            setRequestStatuses(prev => {
+              const next = { ...prev };
+              let changed = false;
+              for (const { teamId, valid } of results) {
+                if (!valid && next[teamId] === 'pending') {
+                  delete next[teamId];
+                  changed = true;
+                }
+              }
+              return changed ? next : prev;
+            });
+          }
+
+          const statusResults = await Promise.all(
+            teamsData
+              .filter(t => !myTeamIds.has(t.id))
+              .map(async (team) => {
+                try {
+                  const detail = await api.getTeam(team.id);
+                  return { id: team.id, isFinished: detail.status === 'finished' };
+                } catch {
+                  return { id: team.id, isFinished: false };
+                }
+              })
+          );
+          const finishedIds = new Set(
+            statusResults.filter(r => r.isFinished).map(r => r.id)
+          );
+          if (finishedIds.size > 0) {
+            setTeams(prev => prev.filter(t => !finishedIds.has(t.id)));
+          }
         } else {
           setTeams(teamsData);
         }
@@ -137,7 +211,10 @@ function Feed() {
     fetchTeams();
   }, [user]);
 
-  const availableTeams = teams.filter(t => (t.memberCount || 0) < (t.maxUsers || 10));
+  const availableTeams = teams.filter(t =>
+    (t.memberCount || 0) < (t.maxUsers || 10) &&
+    t.status !== 'finished'
+  );
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return '';
@@ -154,13 +231,20 @@ function Feed() {
     }
     try {
       await api.sendJoinRequest(teamId);
+      setRequestStatuses(prev => ({ ...prev, [teamId]: 'pending' }));
       setNotificationType('success');
       setNotificationMessage(t('teams.joinRequestSent') || `Join request sent for "${teamName}"!`);
       setShowNotification(true);
-    } catch (err) {
-      console.error('Failed to send join request:', err);
-      setNotificationType('error');
-      setNotificationMessage(t('teams.joinRequestFailed') || 'Failed to send join request. You may have already requested to join this team.');
+    } catch (err: any) {
+      const message = err?.message || '';
+      if (message.includes('already exists')) {
+        setRequestStatuses(prev => ({ ...prev, [teamId]: 'pending' }));
+        setNotificationType('info');
+        setNotificationMessage(t('teams.alreadyRequested') || 'You already have a pending request for this team.');
+      } else {
+        setNotificationType('error');
+        setNotificationMessage(t('teams.joinRequestFailed') || 'Failed to send join request.');
+      }
       setShowNotification(true);
     }
   };
@@ -224,7 +308,13 @@ function Feed() {
               <span className="task-looking">
                 {t('feed.lookingFor') || 'Looking for'} <strong>{(team.maxUsers || 10) - (team.memberCount || 0)}</strong> {(team.maxUsers || 10) - (team.memberCount || 0) > 1 ? t('feed.collaborators') : t('feed.collaborator')}
               </span>
-              <button className="btn btn-primary btn-small" onClick={() => handleJoinTeam(team.id, team.name)}>{t('teams.join')}</button>
+              <button
+                className={`btn btn-small ${requestStatuses[team.id] === 'pending' ? 'btn-pending' : 'btn-primary'}`}
+                onClick={() => handleJoinTeam(team.id, team.name)}
+                disabled={requestStatuses[team.id] === 'pending'}
+              >
+                {requestStatuses[team.id] === 'pending' ? t('teams.pending') : t('teams.join')}
+              </button>
             </div>
           </div>
         ))}

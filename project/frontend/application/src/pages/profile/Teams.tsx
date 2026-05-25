@@ -43,7 +43,15 @@ function Teams() {
     setLoading(true);
     fetchTeamInvites();
     api.getMyTeams().then((myTeams) => {
-      setTeams(myTeams);
+      if (user) {
+        const merged = myTeams.map(team => {
+          const contextTeam = user.teams.find(t => t.id === team.id);
+          return contextTeam ? { ...team, status: contextTeam.status } : team;
+        });
+        setTeams(merged);
+      } else {
+        setTeams(myTeams);
+      }
       setLoading(false);
     }).catch(() => {
       setLoading(false);

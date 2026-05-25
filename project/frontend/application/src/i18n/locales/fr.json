@@ -164,7 +164,8 @@
     "reject": "Refuser",
     "loginRequired": "Veuillez vous connecter pour rejoindre une équipe",
     "joinRequestSent": "Demande d'adhésion envoyée avec succès !",
-    "joinRequestFailed": "Échec de l'envoi de la demande d'adhésion. Vous avez peut-être déjà demandé à rejoindre cette équipe.",
+    "joinRequestFailed": "Échec de l'envoi de la demande d'adhésion.",
+    "alreadyRequested": "Vous avez déjà une demande en attente pour cette équipe.",
     "allStatus": "Tous les statuts",
     "allAssignees": "Tous les assignés",
     "title_col": "Titre",
@@ -199,7 +200,16 @@
     "addTask": "Ajouter une tâche",
     "memberRemovedSuccess": "Membre supprimé avec succès",
     "inviteSentSuccess": "Invitation envoyée avec succès",
-    "failedToRemove": "Échec de la suppression du membre"
+    "editTeam": "Modifier l'équipe",
+    "saveSettings": "Enregistrer les modifications",
+    "settingsUpdated": "Paramètres de l'équipe mis à jour",
+    "failedToRemove": "Échec de la suppression du membre",
+    "teamFullTitle": "Équipe complète",
+    "teamFull": "L'équipe est déjà complète",
+    "failedToAcceptRequest": "Échec de l'acceptation de la demande d'adhésion",
+    "failedToRejectRequest": "Échec du refus de la demande d'adhésion",
+    "joinRequestRejected": "Demande d'adhésion refusée avec succès",
+    "joinRequestAccepted": "Demande d'adhésion acceptée avec succès"
   },
   "tasks": {
     "title": "Tâches",

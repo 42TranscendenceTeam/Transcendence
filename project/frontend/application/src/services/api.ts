@@ -218,11 +218,33 @@ export const api = {
     }));
   },
 
-  // TODO: Implement - Backend needs to provide PUT /users/me
   updateCurrentUser(data: Partial<UserProfile>): Promise<UserProfile> {
-    // Frontend sends: { username?, avatar?, description? }
-    // Backend returns: { id, username, email, avatar, description, twoFactorEnabled }
-    throw new Error('TODO: Implement PUT /users/me');
+    return fetch(`${API_URL}/users/me`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+      body: JSON.stringify({
+        username: data.username,
+        email: data.email,
+        bio: data.description,
+      }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to update profile');
+        });
+      }
+      return response.json();
+    }).then((data) => ({
+      id: data.id,
+      username: data.username,
+      email: data.email,
+      avatar: getAvatarUrl(data.avatar_url),
+      description: data.bio || '',
+      twoFactorEnabled: false,
+    }));
   },
 
   // TODO: Implement - Backend needs to provide PUT /users/me/password
@@ -273,7 +295,7 @@ export const api = {
           avatar: getAvatarUrl(team.owner?.avatar_url),
         },
         role: team.owner?.id === currentUserId ? 'Leader' : '',
-        status: 'active',
+        status: team.status_ongoing !== false ? 'active' : 'finished',
         members: [],
         tasks: [],
         chat: [],
@@ -325,7 +347,7 @@ export const api = {
                 avatar: getAvatarUrl(team.owner?.avatar_url),
               },
               role: isOwner ? 'Leader' : 'Member',
-              status: 'active',
+              status: team.status_ongoing !== false ? 'active' : 'finished',
               members: memberList.map((m: { id: number; username: string; avatar_url: string }) => ({
                 id: m.id,
                 username: m.username,
@@ -352,7 +374,7 @@ export const api = {
                 avatar: getAvatarUrl(team.owner?.avatar_url),
               },
               role: 'Leader',
-              status: 'active',
+              status: team.status_ongoing !== false ? 'active' : 'finished',
               members: [],
               tasks: [],
               chat: [],
@@ -444,10 +466,10 @@ export const api = {
         ...api.getAuthHeaders(),
       },
       body: JSON.stringify({
-        name: data.name,
-        about: data.objective,
-        tags: data.tags?.join(','),
-        status_ongoing: data.status === 'active',
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.objective !== undefined && { about: data.objective }),
+        ...(data.tags !== undefined && { tags: data.tags.join(',') }),
+        ...(data.status !== undefined && { status_ongoing: data.status === 'active' }),
       }),
     }).then((response) => {
       if (!response.ok) {
