@@ -128,6 +128,7 @@ export interface AuthContextType {
   fetchSentRequests: () => void;
   fetchFriends: () => void;
   fetchTeamInvites: () => void;
+  teamRefreshTrigger: number;
   fetchJoinRequestNotifications: () => void;
   acceptFriendRequest: (requestId: number) => void;
   rejectFriendRequest: (requestId: number) => void;

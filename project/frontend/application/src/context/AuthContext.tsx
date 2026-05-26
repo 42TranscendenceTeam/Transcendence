@@ -11,6 +11,7 @@ import { createContext, useState, useEffect, ReactNode } from 'react';
 import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest, TeamInvite, JoinRequestNotification, AppNotification } from '../types';
 import { api } from '../services/api';
 import { getAvatarUrl } from '../utils/avatar';
+import { connectSocket, disconnectSocket, getSocket } from '../services/socket';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -29,6 +30,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [teamRefreshTrigger, setTeamRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -72,9 +74,51 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        connectSocket(token);
+        const sock = getSocket();
+        if (sock) {
+          const handler = (n: AppNotification) => {
+            setNotifications((prev) => [n, ...prev]);
+            if (!n.status_read) setUnreadCount((c) => c + 1);
+
+            if (n.type === 'friend_request' || n.type === 'friend_request_accepted'
+                || n.type === 'friend_request_rejected') {
+              fetchFriendRequests();
+              fetchSentRequests();
+            }
+            if (n.type === 'friend_request_accepted') {
+              fetchFriends();
+            }
+            if (n.type === 'team_invite' || n.type === 'team_invite_accepted'
+                || n.type === 'team_invite_rejected') {
+              fetchTeamInvites();
+            }
+            if (n.type === 'team_join_request' || n.type === 'team_join_request_accepted'
+                || n.type === 'team_join_request_rejected') {
+              if (user) fetchJoinRequestNotifications(user.id);
+            }
+            if (n.type === 'team_invite_accepted' || n.type === 'team_removed'
+                || n.type === 'team_user_left' || n.type === 'team_join_request_accepted') {
+              setTeamRefreshTrigger((c) => c + 1);
+            }
+          };
+          sock.on('notification:new', handler);
+          return () => sock.off('notification:new', handler);
+        }
+      }
+    } else {
+      disconnectSocket();
+    }
+  }, [user]);
+
   const logout = () => {
     localStorage.removeItem('authToken');
     setUser(null);
+    disconnectSocket();
   };
 
   const updateUser = (updates: Partial<User>) => {
@@ -531,6 +575,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       fetchSentRequests,
       fetchFriends,
       fetchTeamInvites,
+      teamRefreshTrigger,
       fetchJoinRequestNotifications,
       acceptFriendRequest,
       rejectFriendRequest,
