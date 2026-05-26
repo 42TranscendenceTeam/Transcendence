@@ -661,6 +661,21 @@ export const api = {
     });
   },
 
+  getTeamMembers(teamId: number): Promise<{ member_list: Array<{ id: number; username: string; avatar_url: string }> }> {
+    return fetch(`${API_URL}/teams/${teamId}/members`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get team members');
+      }
+      return response.json();
+    });
+  },
+
   // ========== TASKS ==========
   // TODO: Implement - Backend needs to provide GET /teams/:id/tasks
   getTasks(teamId: string): Promise<Task[]> {

@@ -322,6 +322,7 @@
     "friendRequest": "You got a friend request from {{username}}.",
     "friendRequestAccepted": "{{username}} accepted your friend request.",
     "friendRequestRejected": "{{username}} rejected your friend request.",
+    "friendRemoved": "{{username}} removed you from their friends.",
     "teamJoinRequest": "{{username}} requested to join {{team}}.",
     "teamJoinRequestAccepted": "You were accepted to join the {{team}} team.",
     "teamJoinRequestRejected": "Your request to join {{team}} was rejected.",
@@ -329,7 +330,8 @@
     "teamInviteAccepted": "{{username}} accepted to join the {{team}} team.",
     "teamInviteRejected": "{{username}} declined your invite to join {{team}}.",
     "teamRemoved": "You were removed from the {{team}} team.",
-    "teamUserLeft": "{{username}} left {{team}}."
+    "teamUserLeft": "{{username}} left {{team}}.",
+    "teamDeleted": "The {{team}} team has been deleted by its owner."
   },
   "legal": {
     "privacy": {

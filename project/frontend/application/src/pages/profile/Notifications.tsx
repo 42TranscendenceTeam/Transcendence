@@ -1,7 +1,8 @@
 import { useContext, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { api } from '../../services/api';
 import type { AppNotification } from '../../types';
 
 const FRIEND_ICON = 'M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm-6 8c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z';
@@ -37,6 +38,11 @@ const NOTIFICATION_PATTERNS: Record<string, { regex: RegExp; vars: string[]; key
     regex: /^(.+?) rejected your friend request\.$/,
     vars: ['username'],
     key: 'friendRequestRejected',
+  },
+  friend_removed: {
+    regex: /^(.+?) removed you from their friends\.$/,
+    vars: ['username'],
+    key: 'friendRemoved',
   },
   team_join_request: {
     regex: /^(.+?) requested to join (.+?)\.$/,
@@ -78,7 +84,23 @@ const NOTIFICATION_PATTERNS: Record<string, { regex: RegExp; vars: string[]; key
     vars: ['username', 'team'],
     key: 'teamUserLeft',
   },
+  team_deleted: {
+    regex: /^The (.+?) team has been deleted by its owner\.$/,
+    vars: ['team'],
+    key: 'teamDeleted',
+  },
 };
+
+function extractTeamName(type: string, content: string | null): string | null {
+  if (!content) return null;
+  const pattern = NOTIFICATION_PATTERNS[type];
+  if (!pattern) return null;
+  const match = content.match(pattern.regex);
+  if (!match) return null;
+  const teamIndex = pattern.vars.indexOf('team');
+  if (teamIndex === -1) return null;
+  return match[teamIndex + 1];
+}
 
 function getNotificationText(
   type: string,
@@ -111,11 +133,34 @@ function isTeamType(type: string): boolean {
 
 function Notifications() {
   const { t } = useTranslation();
-  const { notifications, fetchNotifications, deleteAllNotifications, deleteNotification } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { user, notifications, fetchNotifications, deleteAllNotifications, deleteNotification, markAsRead } = useContext(AuthContext);
 
   useEffect(() => {
     fetchNotifications();
   }, []);
+
+  const handleTeamNotificationClick = async (notification: AppNotification) => {
+    const teamName = extractTeamName(notification.type, notification.content);
+    if (teamName) {
+      try {
+        const teams = await api.getTeams();
+        const team = teams.find(t => t.name === teamName);
+        if (team) {
+          const membersData = await api.getTeamMembers(team.id);
+          const isMember = user?.id != null && membersData.member_list.some(m => m.id === user.id);
+          navigate(isMember ? `/teams/${team.id}` : '/profile/teams');
+        } else {
+          navigate('/profile/teams');
+        }
+      } catch {
+        navigate('/profile/teams');
+      }
+    } else {
+      navigate('/profile/teams');
+    }
+    markAsRead(notification.id);
+  };
 
   const friendNotifications = notifications.filter((n) => isFriendType(n.type));
   const teamNotifications = notifications.filter((n) => isTeamType(n.type));
@@ -144,8 +189,8 @@ function Notifications() {
               <Link
                 key={notification.id}
                 to="/profile/friends"
-                className="team-card"
-                onClick={() => deleteNotification(notification.id)}
+                className={'team-card' + (!notification.status_read ? ' notification-unread' : '')}
+                onClick={() => markAsRead(notification.id)}
               >
                 <div className="team-info">
                   <span className="team-name">{getNotificationText(notification.type, notification.content, t)}</span>
@@ -175,11 +220,11 @@ function Notifications() {
         ) : (
           <div className="notifications-list">
             {teamNotifications.map((notification) => (
-              <Link
+              <div
                 key={notification.id}
-                to="/profile/teams"
-                className="team-card"
-                onClick={() => deleteNotification(notification.id)}
+                className={'team-card' + (!notification.status_read ? ' notification-unread' : '')}
+                style={{ cursor: 'pointer' }}
+                onClick={() => handleTeamNotificationClick(notification)}
               >
                 <div className="team-info">
                   <span className="team-name">{getNotificationText(notification.type, notification.content, t)}</span>
@@ -191,7 +236,7 @@ function Notifications() {
                 >
                   {t('notifications.delete')}
                 </button>
-              </Link>
+              </div>
             ))}
           </div>
         )}
