@@ -1,12 +1,12 @@
 /**
  * Profile Layout Component
- * 
+ *
  * Layout for profile pages (Profile, Teams, Friends, etc.)
  * Includes navigation and user info
  */
 
 import { Link, useLocation } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import BottomNav from './BottomNav';
@@ -20,6 +20,7 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
   const { t } = useTranslation();
   const { logout, user, unreadCount } = useContext(AuthContext);
   const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const menuItems = [
     { path: '/', label: t('nav.feed'), icon: 'M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69zM12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.135-.847 2.1-1.96 2.193-1.104.093-2.07-.512-2.187-1.384l-.338-2.592c-.034-.266-.198-.511-.468-.68l-1.968-.787a2.25 2.25 0 00-2.226.162L5.409 17.75c-.524.21-1.103.145-1.468-.2l-.985-1.18a2.25 2.25 0 00-.468-.68l-.338-2.592c-.117-.93.092-1.786.602-2.358a2.25 2.25 0 011.96-1.193h6.198c1.11 0 2.063.643 2.17 1.746l.21 1.272c.117.93-.092 1.786-.602 2.358a2.25 2.25 0 01-1.96 1.193l-1.968.787c-.524.21-1.103.145-1.468.2l-.985 1.18c-.365.434-.6.99-.6 1.604v6.198c0 1.135-.847 2.1-1.96 2.193-1.104.093-2.07-.512-2.187-1.384l-.338-2.592c-.034-.266-.198-.511-.468-.68l-1.968-.787a2.25 2.25 0 00-2.226.162L3.409 19c-.524.21-1.103.145-1.468-.2l-.985-1.18a2.25 2.25 0 00-.468-.68l.82-1.22c.298.215.653.337 1.03.337.378 0 .733-.122 1.03-.337l.985 1.18c.365-.345.945-.51 1.468-.2l1.968.787c.27.169.434.414.468.68l.338 2.592c.117.93-.092 1.786-.602 2.358a2.25 2.25 0 01-1.96 1.193H7.193c-1.11 0-2.063-.643-2.17-1.746l-.21-1.272c-.117-.93.092-1.786.602-2.358a2.25 2.25 0 011.96-1.193h1.5' },
@@ -32,12 +33,22 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
   ];
 
   const handleLogout = () => {
+    setIsMobileMenuOpen(false);
     logout();
     window.location.href = '/';
   };
 
   return (
     <div className={`profile-layout ${user ? 'has-sidebar' : 'no-sidebar'}`}>
+      {user && (
+        <button
+          className="mobile-menu-toggle"
+          onClick={() => setIsMobileMenuOpen(true)}
+          aria-label="Open navigation menu"
+        >
+          ☰
+        </button>
+      )}
       <main className="profile-main">{children}</main>
       {user && (
         <aside className="profile-sidebar">
@@ -67,6 +78,59 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
             </button>
           </nav>
         </aside>
+      )}
+      {user && isMobileMenuOpen && (
+        <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
+          <div className="mobile-menu-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-menu-header">
+              <span>Menu</span>
+              <button
+                className="mobile-menu-close"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Close navigation menu"
+              >
+                ×
+              </button>
+            </div>
+            <nav className="mobile-menu-nav">
+              {menuItems.map((item) => (
+                item.path === '#' ? (
+                  <button
+                    key={item.path}
+                    onClick={(e) => {
+                      handleNotificationsClick(e);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="mobile-menu-nav-item"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="mobile-menu-icon">
+                      <path fillRule="evenodd" d={item.icon} clipRule="evenodd" />
+                    </svg>
+                    <span>{item.label}</span>
+                  </button>
+                ) : (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`mobile-menu-nav-item ${location.pathname === item.path ? 'active' : ''}`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="mobile-menu-icon">
+                      <path fillRule="evenodd" d={item.icon} clipRule="evenodd" />
+                    </svg>
+                    <span>{item.label}</span>
+                  </Link>
+                )
+              ))}
+              <button onClick={handleLogout} className="mobile-menu-nav-item logout-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="mobile-menu-icon">
+                  <path fillRule="evenodd" d="M7.5 3.75A2.75 2.75 0 005.75 6.5v11A2.75 2.75 0 008.5 20.25h7a.75.75 0 010 1.5h-7a4.25 4.25 0 01-4.25-4.25v-11A4.25 4.25 0 015.75 1h7a.75.75 0 010 1.5h-7zm9.22.22a.75.75 0 011.06 0l2.25 2.25a.75.75 0 010 1.06l-2.25 2.25a.75.75 0 11-1.06-1.06l.97-.97H8.5a.75.75 0 010-1.5h10.69l-.97-.97a.75.75 0 010-1.06z" clipRule="evenodd" />
+                </svg>
+                <span>{t('auth.logout')}</span>
+              </button>
+            </nav>
+          </div>
+        </div>
       )}
       <BottomNav />
     </div>
