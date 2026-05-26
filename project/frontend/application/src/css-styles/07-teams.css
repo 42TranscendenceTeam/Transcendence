@@ -1080,3 +1080,141 @@
   width: 18px;
   height: 18px;
 }
+
+/* Mobile General Teams Page */
+@media (max-width: 767px) {
+
+	.teams-header {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 1.75rem;
+		padding-top: 0.5em;
+	}
+
+	.teams-header h1,
+	.teams-header h2 {
+		margin: 0;
+	}
+
+	.teams-header-buttons {
+		display: flex;
+		width: 100%;
+		gap: 1rem;
+	}
+
+	.teams-header-buttons .btn {
+		flex: 1;
+		min-width: 0;
+	}
+}
+
+/* Mobile Specific Team Page */
+@media (max-width: 767px) {
+
+	.team-detail-page {
+		padding: 0.2em;
+	}
+
+	.team-detail-page .team-header {
+		flex-direction: column;
+		align-items: stretch;
+		text-align: left;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.team-header-content {
+		min-width: 0;
+	}
+
+	.team-title {
+		font-size: 1.5rem;
+		line-height: 1.2;
+		margin-bottom: 0.75rem;
+		text-align: left;
+		padding-right: 3rem;
+	}
+
+	.team-objective {
+		text-align: left;
+		max-width: 100%;
+	}
+
+	.team-header-meta {
+		justify-content: space-between;
+	}
+
+	.section-header {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0.75rem;
+	}
+
+	.section-header .btn {
+		width: 100%;
+	}
+
+	.task-counts {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.5rem;
+		width: 100%;
+	}
+
+	.task-counts-label {
+		grid-column: 1 / -1;
+	}
+
+	.task-count {
+		text-align: center;
+	}
+
+	.task-filters {
+		flex-direction: column;
+	}
+
+	.filter-select {
+		width: 100%;
+		max-width: none;
+	}
+
+	.team-header-meta .team-members-count {
+		font-size: 1.3em;
+	}
+
+	.members-list {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 0.75rem;
+	}
+
+	.member-card {
+		display: grid;
+		grid-template-columns: 32px 1fr auto;
+		grid-template-rows: auto auto;
+		align-items: center;
+		width: 100%;
+		padding: 0.35rem;
+	}
+
+	.member-avatar {
+		grid-column: 1;
+		grid-row: 1;
+		width: 32px;
+		height: 32px;
+	}
+
+	.member-name {
+		grid-column: 2;
+		grid-row: 1;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.member-role {
+		grid-row: 2;
+		width: fit-content;
+		font-size: 0.75rem;
+	}
+}
