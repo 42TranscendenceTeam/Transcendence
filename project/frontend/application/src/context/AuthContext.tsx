@@ -8,8 +8,9 @@
  */
 
 import { createContext, useState, useEffect, ReactNode } from 'react';
-import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest } from '../types';
+import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest, TeamInvite, JoinRequestNotification, AppNotification } from '../types';
 import { api } from '../services/api';
+import { getAvatarUrl } from '../utils/avatar';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -23,6 +24,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
   const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
+  const [teamInvites, setTeamInvites] = useState<TeamInvite[]>([]);
+  const [joinRequestNotifications, setJoinRequestNotifications] = useState<JoinRequestNotification[]>([]);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -30,17 +36,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const token = localStorage.getItem('authToken');
         if (token) {
           const userData = await api.getCurrentUser();
+          const userId = Number(userData.id);
+          const userAvatar = getAvatarUrl(userData.avatar);
           setUser({
-            id: Number(userData.id),
+            id: userId,
             username: userData.username,
             email: userData.email,
-            avatar: userData.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`,
+            avatar: userAvatar,
             description: userData.description || '',
             twoFactorEnabled: userData.twoFactorEnabled || false,
             friends: [],
             teams: [],
             globalChat: [],
           });
+          fetchNotifications();
+          fetchTeamInvites();
+          api.getTeams().then((teams) => {
+            const myTeams = teams.filter((t) => t.owner?.id === userId);
+            setUser((prev) => prev ? { ...prev, teams: myTeams } : prev);
+            fetchJoinRequestNotifications(userId);
+          }).catch(() => {});
         }
       } catch {
         localStorage.removeItem('authToken');
@@ -49,6 +64,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     };
     loadUser();
+  }, []);
+
+  useEffect(() => {
+    const handleFocus = () => fetchNotifications();
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
   const logout = () => {
@@ -66,10 +87,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser({ ...user, twoFactorEnabled: !user.twoFactorEnabled });
   };
 
-  const leaveTeam = (teamId: number) => {
+  const leaveTeam = async (teamId: number) => {
     if (!user) return;
-    const updatedTeams = user.teams.filter((t) => t.id !== teamId);
-    setUser({ ...user, teams: updatedTeams });
+    try {
+      await api.leaveTeam(teamId);
+      const updatedTeams = user.teams.filter((t) => t.id !== teamId);
+      setUser({ ...user, teams: updatedTeams });
+      fetchNotifications();
+    } catch (err) {
+      console.error('Failed to leave team:', err);
+      throw err;
+    }
   };
 
   const addChatMessage = (teamId: number, message: Message) => {
@@ -192,44 +220,91 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const removeTeamMember = (teamId: number, memberId: number) => {
+  const removeTeamMember = async (teamId: number, memberId: number) => {
     if (!user) return;
+    try {
+      await api.removeTeamMember(teamId, memberId);
+      const updatedTeams = user.teams.map((team) => {
+        if (team.id === teamId) {
+          return {
+            ...team,
+            members: team.members.filter((m) => m.id !== memberId),
+            tasks: team.tasks.map((task) => {
+              if (task.assignedTo?.id === memberId) return { ...task, assignedTo: null };
+              return task;
+            }),
+          };
+        }
+        return team;
+      });
+      setUser({ ...user, teams: updatedTeams });
+    } catch (err) {
+      console.error('Failed to remove team member:', err);
+      throw err;
+    }
+  };
+
+  const createTeam = async (teamData: TeamData) => {
+    if (!user) return;
+    try {
+      const createdTeam = await api.createTeam({
+        name: teamData.name,
+        objective: teamData.description,
+        maxUsers: (teamData.lookingFor || 1) + 1,
+        tags: teamData.details || [],
+      });
+      const team = {
+        id: createdTeam.id,
+        name: createdTeam.name,
+        objective: createdTeam.about || '',
+        owner: {
+          id: user.id,
+          username: user.username,
+          avatar: user.avatar,
+        },
+        role: 'Leader',
+        status: createdTeam.status_ongoing ? 'active' : 'finished',
+        members: [],
+        tasks: [],
+        chat: [],
+      };
+      setUser({
+        ...user,
+        teams: [...user.teams, team],
+      });
+    } catch (err) {
+      console.error('Failed to create team:', err);
+      throw err;
+    }
+  };
+
+  const updateTeamStatus = async (teamId: number, status: string) => {
+    if (!user) return;
+    try {
+      await api.updateTeam(teamId, { status });
+      const updatedTeams = user.teams.map((team) => {
+        if (team.id === teamId) return { ...team, status };
+        return team;
+      });
+      setUser({ ...user, teams: updatedTeams });
+    } catch (err) {
+      console.error('Failed to update team status:', err);
+      throw err;
+    }
+  };
+
+  const updateTeamSettings = async (teamId: number, data: { name?: string; objective?: string; tags?: string[] }) => {
+    if (!user) return;
+    const updated = await api.updateTeam(teamId, { name: data.name, objective: data.objective, tags: data.tags });
     const updatedTeams = user.teams.map((team) => {
       if (team.id === teamId) {
         return {
           ...team,
-          members: team.members.filter((m) => m.id !== memberId),
-          tasks: team.tasks.map((task) => {
-            if (task.assignedTo?.id === memberId) return { ...task, assignedTo: null };
-            return task;
-          }),
+          name: data.name ?? team.name,
+          objective: data.objective ?? team.objective,
+          tags: data.tags ?? team.tags,
         };
       }
-      return team;
-    });
-    setUser({ ...user, teams: updatedTeams });
-  };
-
-  const createTeam = (teamData: TeamData) => {
-    if (!user) return;
-    const newTeam: Team = {
-      id: Date.now(),
-      name: teamData.name,
-      objective: teamData.description,
-      owner: user,
-      role: 'Leader',
-      status: 'active',
-      members: [{ id: user.id, username: user.username, avatar: user.avatar, role: 'Leader' }],
-      tasks: [],
-      chat: [],
-    };
-    setUser({ ...user, teams: [...user.teams, newTeam] });
-  };
-
-  const updateTeamStatus = (teamId: number, status: string) => {
-    if (!user) return;
-    const updatedTeams = user.teams.map((team) => {
-      if (team.id === teamId) return { ...team, status };
       return team;
     });
     setUser({ ...user, teams: updatedTeams });
@@ -248,6 +323,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
       fetchFriendRequests();
       fetchFriends();
+      fetchNotifications();
     }).catch((err) => {
       console.error('Failed to accept friend request:', err);
     });
@@ -258,6 +334,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
       fetchFriendRequests();
       fetchSentRequests();
+      fetchNotifications();
     }).catch((err) => {
       console.error('Failed to reject friend request:', err);
     });
@@ -293,6 +370,127 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
   };
 
+  const fetchNotifications = () => {
+    api.getNotifications().then((list) => {
+      setNotifications(list);
+      setUnreadCount(list.filter((n) => !n.status_read).length);
+    }).catch((err) => {
+      console.error('Failed to fetch notifications:', err);
+    });
+  };
+
+  const markAsRead = (id: number) => {
+    api.readNotification(id).then(() => {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, status_read: true } : n))
+      );
+      setUnreadCount((prev) => Math.max(0, prev - 1));
+    }).catch(() => {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, status_read: true } : n))
+      );
+    });
+  };
+
+  const markAllAsRead = () => {
+    api.readAllNotifications().then(() => {
+      setNotifications((prev) => prev.map((n) => ({ ...n, status_read: true })));
+      setUnreadCount(0);
+    }).catch((err) => {
+      console.error('Failed to mark all as read:', err);
+    });
+  };
+
+  const deleteNotification = (id: number) => {
+    api.deleteNotification(id).then(() => {
+      setNotifications((prev) => {
+        const removed = prev.find((n) => n.id === id);
+        if (removed && !removed.status_read) {
+          setUnreadCount((c) => Math.max(0, c - 1));
+        }
+        return prev.filter((n) => n.id !== id);
+      });
+    }).catch((err) => {
+      console.error('Failed to delete notification:', err);
+    });
+  };
+
+  const deleteAllNotifications = () => {
+    api.deleteAllNotifications().then(() => {
+      setNotifications([]);
+      setUnreadCount(0);
+    }).catch((err) => {
+      console.error('Failed to delete all notifications:', err);
+    });
+  };
+
+  const fetchTeamInvites = () => {
+    api.getTeamInvites().then((invites) => {
+      setTeamInvites(invites);
+      setUnreadNotifications(invites.length + joinRequestNotifications.length);
+    }).catch((err) => {
+      console.error('Failed to fetch team invites:', err);
+    });
+  };
+
+  const fetchJoinRequestNotifications = async (userId?: number) => {
+    try {
+      const currentUserId = userId ?? user?.id;
+      if (!currentUserId) return;
+      const teams = await api.getTeams();
+      const ownedTeams = teams.filter((t) => t.owner?.id === currentUserId);
+      const results = await Promise.all(
+        ownedTeams.map((team) =>
+          api.getJoinRequests(team.id).then((data) => ({
+            team_id: team.id,
+            team_name: team.name,
+            requests: data.request_list || [],
+          }))
+        )
+      );
+      const allRequests = results.flatMap(({ team_id, team_name, requests }) =>
+        requests.map((req) => ({
+          request_id: req.request_id,
+          user_id: req.user_id,
+          username: req.username,
+          avatar_url: req.avatar_url,
+          requested_at: req.requested_at,
+          team_id,
+          team_name,
+        }))
+      );
+      setJoinRequestNotifications(allRequests);
+      setUnreadNotifications(teamInvites.length + allRequests.length);
+    } catch (err) {
+      console.error('Failed to fetch join request notifications:', err);
+    }
+  };
+
+  const acceptTeamInvite = (inviteId: number) => {
+    api.acceptTeamInvite(inviteId).then(() => {
+      setTeamInvites(teamInvites.filter((i) => i.invite_id !== inviteId));
+      setUnreadNotifications((prev) => Math.max(0, prev - 1));
+      fetchNotifications();
+      setTimeout(() => window.location.reload(), 300);
+    }).catch((err) => {
+      console.error('Failed to accept team invite:', err);
+    });
+  };
+
+  const rejectTeamInvite = (inviteId: number) => {
+    api.rejectTeamInvite(inviteId).then(() => {
+      setTeamInvites(teamInvites.filter((i) => i.invite_id !== inviteId));
+      setUnreadNotifications((prev) => Math.max(0, prev - 1));
+      fetchNotifications();
+    }).catch((err) => {
+      console.error('Failed to reject team invite:', err);
+    });
+  };
+
+  const markNotificationsRead = () => {
+    setUnreadNotifications(0);
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -315,14 +513,30 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       removeTeamMember,
       createTeam,
       updateTeamStatus,
+      updateTeamSettings,
+      notifications,
+      unreadCount,
       friendRequests,
       sentRequests,
       friends,
+      teamInvites,
+      joinRequestNotifications,
+      unreadNotifications,
+      fetchNotifications,
+      markAsRead,
+      markAllAsRead,
+      deleteNotification,
+      deleteAllNotifications,
       fetchFriendRequests,
       fetchSentRequests,
       fetchFriends,
+      fetchTeamInvites,
+      fetchJoinRequestNotifications,
       acceptFriendRequest,
       rejectFriendRequest,
+      acceptTeamInvite,
+      rejectTeamInvite,
+      markNotificationsRead,
     }}>
       {children}
     </AuthContext.Provider>

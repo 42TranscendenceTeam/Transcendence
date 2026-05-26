@@ -1,6 +1,6 @@
 import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
-import type { } from './friends.types.js';
+import { createNotification } from '../notifications/notifications.service.js';
 
 // Returns friends list of logged-in user
 export const getFriends = async (userId: number) => {
@@ -108,6 +108,9 @@ export const sendFriendRequest = async (userId: number, receiverId: number) => {
 		where: {
 			id: receiverId,
 		},
+		select: {
+			username: true,
+		}
 	});
 
 	if (!receiver)
@@ -150,12 +153,32 @@ export const sendFriendRequest = async (userId: number, receiverId: number) => {
 	if (requestExists)
 		throw new AppError("Friend request already exists.", 400);
 
-	return prisma.friendRequest.create({
+	const request = await prisma.friendRequest.create({
 		data: {
 			sender_id: userId,
 			receiver_id: receiverId,
 		},
 	});
+
+	const sender = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		select: {
+			username: true,
+		}
+	});
+
+	await createNotification(
+		receiverId,
+		'friend_request',
+		request.id,
+		'friend_request',
+		userId,
+		`You got a friend request from ${sender?.username ?? 'someone'}.`,
+	);
+
+	return request;
 };
 
 // Accept pending friend request
@@ -188,6 +211,24 @@ export const acceptFriendRequest = async (userId: number, requestId: number) => 
 		}
 	});
 
+	const receiver = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		select: {
+			username: true,
+		},
+	});
+
+	await createNotification(
+		request.sender_id,
+		'friend_request_accepted',
+		request.id,
+		'friend_request',
+		request.receiver_id,
+		`${receiver?.username ?? 'Someone'} accepted your friend request.`,
+	);
+
 	return friendship;
 };
 
@@ -205,7 +246,7 @@ export const rejectFriendRequest = async (userId: number, requestId: number) => 
 	if (!request)
 		throw new AppError("Friend request not found.", 404);
 
-	return prisma.friendRequest.update({
+	const reject = await prisma.friendRequest.update({
 		where: {
 			id: request.id,
 		},
@@ -213,6 +254,26 @@ export const rejectFriendRequest = async (userId: number, requestId: number) => 
 			status: 'rejected',
 		},
 	});
+
+	const receiver = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		select: {
+			username: true,
+		},
+	});
+
+	await createNotification(
+		request.sender_id,
+		'friend_request_rejected',
+		request.id,
+		'friend_request',
+		request.receiver_id,
+		`${receiver?.username ?? 'Someone'} rejected your friend request.`,
+	);
+
+	return reject;
 };
 
 // Delete friend
@@ -236,9 +297,29 @@ export const deleteFriend = async (userId: number, friendId: number) => {
 	if (!friendship)
 		throw new AppError("Friendship not found.", 404);
 
-	return prisma.friendship.delete({
+	const remover = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		select: {
+			username: true,
+		},
+	});
+
+	const deleted = await prisma.friendship.delete({
 		where: {
 			id: friendship.id,
 		},
 	});
+
+	await createNotification(
+		friendId,
+		'friend_removed',
+		friendship.id,
+		'friendship',
+		userId,
+		`${remover?.username ?? 'Someone'} removed you from their friends.`,
+	);
+
+	return deleted;
 };

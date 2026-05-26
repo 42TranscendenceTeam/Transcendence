@@ -18,7 +18,7 @@ interface ProfileLayoutProps {
 
 function ProfileLayout({ children }: ProfileLayoutProps) {
   const { t } = useTranslation();
-  const { logout, user } = useContext(AuthContext);
+  const { logout, user, unreadCount } = useContext(AuthContext);
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -29,18 +29,13 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
     { path: '/profile/friends', label: t('nav.friends'), icon: 'M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm-6 8c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z' },
     { path: '/profile/teams', label: t('nav.teams'), icon: 'M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5' },
     { path: '/profile/security', label: t('nav.security'), icon: 'M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z' },
-    { path: '#', label: t('nav.notifications'), icon: 'M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0' },
+    { path: '/profile/notifications', label: t('nav.notifications'), icon: 'M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0' },
   ];
 
   const handleLogout = () => {
     setIsMobileMenuOpen(false);
     logout();
     window.location.href = '/';
-  };
-
-  const handleNotificationsClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    alert('Notifications are not yet implemented.');
   };
 
   return (
@@ -59,29 +54,21 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
         <aside className="profile-sidebar">
           <nav className="profile-sidebar-nav">
             {menuItems.map((item) => (
-              item.path === '#' ? (
-                <button
-                  key={item.path}
-                  onClick={handleNotificationsClick}
-                  className="profile-sidebar-nav-item"
-                >
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`profile-sidebar-nav-item ${location.pathname === item.path ? 'active' : ''}`}
+              >
+                <div className="nav-icon-wrapper">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="nav-icon">
                     <path fillRule="evenodd" d={item.icon} clipRule="evenodd" />
                   </svg>
-                  <span>{item.label}</span>
-                </button>
-              ) : (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`profile-sidebar-nav-item ${location.pathname === item.path ? 'active' : ''}`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="nav-icon">
-                    <path fillRule="evenodd" d={item.icon} clipRule="evenodd" />
-                  </svg>
-                  <span>{item.label}</span>
-                </Link>
-              )
+                  {item.path === '/profile/notifications' && unreadCount > 0 && (
+                    <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+                  )}
+                </div>
+                <span>{item.label}</span>
+              </Link>
             ))}
             <button onClick={handleLogout} className="profile-sidebar-nav-item logout-btn">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="nav-icon">
