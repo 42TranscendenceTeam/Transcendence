@@ -661,6 +661,21 @@ export const api = {
     });
   },
 
+  getTeamMembers(teamId: number): Promise<{ member_list: Array<{ id: number; username: string; avatar_url: string }> }> {
+    return fetch(`${API_URL}/teams/${teamId}/members`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get team members');
+      }
+      return response.json();
+    });
+  },
+
   // ========== TASKS ==========
   // TODO: Implement - Backend needs to provide GET /teams/:id/tasks
   getTasks(teamId: string): Promise<Task[]> {
@@ -810,6 +825,100 @@ export const api = {
         throw new Error('Failed to get sent friend requests');
       }
       return response.json();
+    });
+  },
+
+  // ========== NOTIFICATIONS ==========
+  getNotifications(): Promise<AppNotification[]> {
+    return fetch(`${API_URL}/notifications`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get notifications');
+      }
+      return response.json();
+    });
+  },
+
+  getUnreadNotifications(): Promise<AppNotification[]> {
+    return fetch(`${API_URL}/notifications/unread`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get unread notifications');
+      }
+      return response.json();
+    });
+  },
+
+  readNotification(id: number): Promise<AppNotification> {
+    return fetch(`${API_URL}/notifications/${id}/read`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to mark notification as read');
+        });
+      }
+      return response.json();
+    });
+  },
+
+  readAllNotifications(): Promise<{ count: number }> {
+    return fetch(`${API_URL}/notifications/read-all`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to mark all notifications as read');
+      }
+      return response.json();
+    });
+  },
+
+  deleteNotification(id: number): Promise<AppNotification> {
+    return fetch(`${API_URL}/notifications/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to delete notification');
+        });
+      }
+      return response.json();
+    });
+  },
+
+  deleteAllNotifications(): Promise<void> {
+    return fetch(`${API_URL}/notifications`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to delete all notifications');
+      }
     });
   },
 

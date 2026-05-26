@@ -99,7 +99,8 @@ function Friends() {
         setSelectedUser('');
         setShowAddFriendModal(false);
       } catch (err) {
-        setErrorUsers('Failed to send friend request');
+        const msg = err instanceof Error ? err.message : '';
+        setErrorUsers(msg.includes('already exists') ? t('friends.friendRequestExists') : (msg || 'Failed to send friend request'));
         console.error(err);
       }
     }
@@ -123,7 +124,8 @@ function Friends() {
         setErrorUsers('User not found');
       }
     } catch (err) {
-      setErrorUsers('Failed to send friend request');
+      const msg = err instanceof Error ? err.message : '';
+      setErrorUsers(msg.includes('already exists') ? t('friends.friendRequestExists') : (msg || 'Failed to send friend request'));
       console.error(err);
     } finally {
       setLoadingUsers(false);

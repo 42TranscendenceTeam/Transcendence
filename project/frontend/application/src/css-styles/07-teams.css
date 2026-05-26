@@ -48,6 +48,19 @@
 }
 
 /*
+ * Notification list: suppress hover for read, show always for unread
+ */
+.notifications-list .team-card:hover {
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+.notifications-list .team-card.notification-unread {
+  border-color: var(--neon-purple);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
+}
+
+/*
  * Team card link reset
  */
 .team-card,

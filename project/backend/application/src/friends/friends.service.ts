@@ -297,9 +297,29 @@ export const deleteFriend = async (userId: number, friendId: number) => {
 	if (!friendship)
 		throw new AppError("Friendship not found.", 404);
 
-	return prisma.friendship.delete({
+	const remover = await prisma.user.findUnique({
+		where: {
+			id: userId,
+		},
+		select: {
+			username: true,
+		},
+	});
+
+	const deleted = await prisma.friendship.delete({
 		where: {
 			id: friendship.id,
 		},
 	});
+
+	await createNotification(
+		friendId,
+		'friend_removed',
+		friendship.id,
+		'friendship',
+		userId,
+		`${remover?.username ?? 'Someone'} removed you from their friends.`,
+	);
+
+	return deleted;
 };

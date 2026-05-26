@@ -146,6 +146,12 @@ export const deleteTeam = async (userId: number, teamId: number) => {
 		},
 		select: {
 			owner_id: true,
+			name: true,
+			team_users: {
+				select: {
+					user_id: true,
+				},
+			},
 		},
 	});
 
@@ -155,11 +161,28 @@ export const deleteTeam = async (userId: number, teamId: number) => {
 	if (userId !== team.owner_id)
 		throw new AppError("Only the owner of the team can delete it.", 403);
 
-	return prisma.team.delete({
+	const memberIds = team.team_users
+		.filter(tu => tu.user_id !== userId)
+		.map(tu => tu.user_id);
+
+	const deleted = await prisma.team.delete({
 		where: {
 			id: teamId,
 		}
 	});
+
+	await Promise.all(memberIds.map(memberId =>
+		createNotification(
+			memberId,
+			'team_deleted',
+			teamId,
+			'team',
+			userId,
+			`The ${team.name} team has been deleted by its owner.`,
+		)
+	));
+
+	return deleted;
 };
 
 // Get list of team members with team id

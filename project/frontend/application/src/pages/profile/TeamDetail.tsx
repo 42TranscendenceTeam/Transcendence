@@ -27,7 +27,7 @@ function TeamDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings } = useContext(AuthContext);
+  const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
@@ -252,6 +252,7 @@ function TeamDetail() {
       setSuccessMessage(t('teams.joinRequestAccepted'));
       setSuccessReload(false);
       setShowSuccessModal(true);
+      fetchNotifications();
     } catch (err) {
       console.error('Failed to accept join request:', err);
       alert(t('teams.failedToAcceptRequest'));
@@ -265,6 +266,7 @@ function TeamDetail() {
       setSuccessMessage(t('teams.joinRequestRejected'));
       setSuccessReload(false);
       setShowSuccessModal(true);
+      fetchNotifications();
     } catch (err) {
       console.error('Failed to reject join request:', err);
       alert(t('teams.failedToRejectRequest'));
