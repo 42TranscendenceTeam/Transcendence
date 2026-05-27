@@ -2,6 +2,7 @@ import { Router } from "express";
 import { asyncHandler } from "../utils/AppError.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { getTeamsListController, createTeamController, getTeamController, updateTeamController, deleteTeamController, getTeamMembersController, removeTeamMemberController, getTeamJoinRequestsController, sendTeamJoinRequestController, acceptJoinRequestController, rejectJoinRequestController, getTeamInvitesController, sendTeamInviteController, acceptTeamInviteController, rejectTeamInviteController, leaveTeamController } from "./teams.controller.js";
+import { createTaskController, getTeamTasksController } from "../tasks/tasks.controller.js";
 
 const router = Router();
 
@@ -26,5 +27,8 @@ router.delete('/:id/leave', authMiddleware, asyncHandler(leaveTeamController));
 router.get('/:id', authMiddleware, asyncHandler(getTeamController));
 router.put('/:id', authMiddleware, asyncHandler(updateTeamController));
 router.delete('/:id', authMiddleware, asyncHandler(deleteTeamController));
+
+router.post('/:id/tasks', authMiddleware, asyncHandler(createTaskController));
+router.get('/:id/tasks', authMiddleware, asyncHandler(getTeamTasksController));
 
 export default router;

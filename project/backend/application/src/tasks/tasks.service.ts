@@ -1,0 +1,238 @@
+import { prisma } from "../prisma.js";
+import { AppError } from "../utils/AppError.js";
+import type { CreateTaskDTO } from "./tasks.types.js";
+
+export const createTask = async ( creatorId: number, teamId: number, data: CreateTaskDTO) => {
+  const team = await prisma.team.findUnique({
+    where: { id: teamId },
+  });
+
+  if (!team)
+    throw new AppError("Team not found.", 404);
+
+  const isMember = await prisma.teamUser.findFirst({
+    where: { team_id: teamId, user_id: creatorId },
+  });
+
+  if (!isMember)
+    throw new AppError("You are not a member of this team.", 403);
+
+  const task = await prisma.task.create({
+    data: {
+      team_id: teamId,
+      creator_id: creatorId,
+      title: data.title,
+      description: data.description,
+      status: data.status || "open"
+    },
+  });
+
+  if (data.user_ids?.length) {
+    const validUsers = await prisma.teamUser.findMany({
+      where: {
+        team_id: teamId,
+        user_id: { in: data.user_ids },
+      },
+      select: { user_id: true },
+    });
+
+    if (validUsers.length !== data.user_ids.length) {
+      throw new AppError("Some users are not team members.", 400);
+    }
+
+    await prisma.taskUser.createMany({
+      data: validUsers.map((u) => ({
+        task_id: task.id,
+        user_id: u.user_id,
+      })),
+    });
+  }
+
+  return prisma.task.findUnique({
+    where: { id: task.id },
+      include: {
+        creator: {
+          select: { id: true, username: true, avatar_url: true },
+        },
+      task_users: {
+        include: {
+          user: {
+            select: { id: true, username: true, avatar_url: true },
+          },
+        },
+      },
+    },
+  });
+};
+
+export const getTeamTasks = async (teamId: number, requesterId: number) => {
+  const team = await prisma.team.findUnique({
+    where: { id: teamId },
+  });
+
+  if (!team)
+    throw new AppError("Team not found.", 404);
+
+  const isMember = await prisma.teamUser.findFirst({
+    where: {
+      team_id: teamId,
+      user_id: requesterId,
+    },
+  });
+
+  if (!isMember)
+    throw new AppError("You are not a member of this team.", 403);
+
+  return prisma.task.findMany({
+    where: { team_id: teamId },
+    orderBy: { created_at: "desc" },
+    include: {
+      creator: {
+        select: { id: true, username: true, avatar_url: true },
+      },
+      task_users: {
+        include: {
+          user: {
+            select: { id: true, username: true, avatar_url: true },
+          },
+        },
+      },
+    },
+  });
+};
+
+export const getTask = async (taskId: number, requesterId: number) => {
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    include: {
+      creator: {
+        select: { id: true, username: true, avatar_url: true },
+      },
+      task_users: {
+        include: {
+          user: {
+            select: { id: true, username: true, avatar_url: true },
+          },
+        },
+      },
+    },
+  });
+
+  if (!task)
+    throw new AppError("Task not found.", 404);
+
+  const isMember = await prisma.teamUser.findFirst({
+    where: {
+      team_id: task.team_id,
+      user_id: requesterId,
+    },
+  });
+
+  if (!isMember)
+    throw new AppError("You are not a member of this team.", 403);
+
+  return task;
+};
+
+export const updateTaskStatus = async (taskId: number, requesterId: number, status: "open" | "in_progress" | "closed") => {
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+  });
+
+  if (!task)
+    throw new AppError("Task not found.", 404);
+
+  const isMember = await prisma.teamUser.findFirst({
+    where: {
+      team_id: task.team_id,
+      user_id: requesterId,
+    },
+  });
+
+  if (!isMember)
+    throw new AppError("You are not a member of this team.", 403);
+
+  const allowed = ["open", "in_progress", "closed"];
+
+  if (!allowed.includes(status)) {
+    throw new AppError("Invalid status", 400);
+  }
+
+  const finished_at = status === "closed" ? new Date() : null;
+
+  return prisma.task.update({
+    where: { id: taskId },
+    data: { status, finished_at },
+    include: {
+      creator: {
+        select: {id: true, username: true, avatar_url: true },
+      },
+      task_users: {
+        include: {
+          user: {
+            select: { id: true, username: true, avatar_url: true },
+          },
+        },
+      },
+    },
+  });
+};
+
+export const updateTaskUsers = async (taskId: number, requesterId: number, userIds: number[]) => {
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+  });
+
+  if (!task)
+    throw new AppError("Task not found.", 404);
+
+  const isMember = await prisma.teamUser.findFirst({
+    where: {
+      team_id: task.team_id,
+      user_id: requesterId,
+    },
+  });
+
+  if (!isMember)
+    throw new AppError("You are not a member of this team.", 403);
+
+  const validUsers = await prisma.teamUser.findMany({
+    where: {
+      team_id: task.team_id,
+      user_id: { in: userIds },
+    },
+    select: { user_id: true },
+  });
+
+  if (validUsers.length !== userIds.length) {
+    throw new AppError("Some users are not team members.", 400);
+  }
+
+  await prisma.taskUser.deleteMany({
+    where: { task_id: taskId },
+  });
+
+  return prisma.taskUser.createMany({
+    data: validUsers.map((u) => ({
+      task_id: taskId,
+      user_id: u.user_id,
+    })),
+  });
+};
+
+export const deleteTask = async (taskId: number, requesterId: number) => {
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+  });
+
+  if (!task)
+    throw new AppError("Task not found.", 404);
+
+  if (task.creator_id !== requesterId) {
+    throw new AppError("Only the task creator can delete this task.", 403);
+  }
+
+  return prisma.task.delete({
+    where: { id: taskId },
+  });
+};
