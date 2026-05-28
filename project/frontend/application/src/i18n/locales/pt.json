@@ -73,6 +73,8 @@
   "profile": {
     "title": "Perfil",
     "collaboration": "Colaboração",
+    "teamStats": "Estatísticas de Equipas",
+    "totalTeams": "Total",
     "taskStats": "Estatísticas de Tarefas",
     "edit": {
       "title": "Editar Perfil",

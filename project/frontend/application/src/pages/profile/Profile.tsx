@@ -5,13 +5,20 @@
  * avatar, username, email, and description.
  */
 
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { api } from '../../services/api';
+import type { Team } from '../../services/api';
 
 function Profile() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
+  const [myTeams, setMyTeams] = useState<Team[]>([]);
+
+  useEffect(() => {
+    api.getMyTeams().then(setMyTeams).catch(() => setMyTeams([]));
+  }, []);
 
   if (!user) {
     return null;
@@ -29,6 +36,12 @@ function Profile() {
     done: allTasks.filter((t) => t.status === 'done').length,
   };
 
+  const teamStats = {
+    total: myTeams.length,
+    active: myTeams.filter((t) => t.status === 'active').length,
+    finished: myTeams.filter((t) => t.status === 'finished').length,
+  };
+
   return (
     <div className="profile-page">
       <div className="profile-header">
@@ -39,16 +52,18 @@ function Profile() {
       </div>
 
       <div className="profile-section">
-        <h2 className="profile-section-title">{t('profile.collaboration') || 'Collaboration'}</h2>
-        <div className="profile-stats">
-          <div className="profile-stat">
-            <span className="stat-value">{user.friends.length}</span>
-            <span className="stat-label">{t('friends.title')}</span>
-          </div>
-          <div className="profile-stat">
-            <span className="stat-value">{user.teams.length}</span>
-            <span className="stat-label">{t('teams.title')}</span>
-          </div>
+        <h2 className="profile-section-title">{t('friends.title')}</h2>
+        <div className="profile-task-stats">
+          <span className="task-count total">{t('tasks.total') || 'Total'}: {user.friends.length}</span>
+        </div>
+      </div>
+
+      <div className="profile-section">
+        <h2 className="profile-section-title">{t('profile.teamStats') || 'Teams Stats'}</h2>
+        <div className="profile-task-stats">
+          <span className="task-count total">{t('profile.totalTeams') || 'Total'}: {teamStats.total}</span>
+          <span className="task-count in_progress">{t('teams.active')}: {teamStats.active}</span>
+          <span className="task-count done">{t('teams.finished')}: {teamStats.finished}</span>
         </div>
       </div>
 

@@ -151,7 +151,7 @@ function Friends() {
               <div key={friend.id} className="friend-card">
                 <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
                 <div className="friend-info">
-                  <span className="friend-name">{friend.username}</span>
+                  <Link to={`/profile/${friend.id}`} className="friend-name">{friend.username}</Link>
                   <span className={`friend-status ${friend.isOnline ? 'online' : 'offline'}`}>
                     {friend.isOnline ? t('common.online') : t('common.offline')}
                   </span>
@@ -195,7 +195,7 @@ function Friends() {
                     alt={request.user.username}
                     className="friend-avatar"
                   />
-                  <span className="request-username">{request.user.username}</span>
+                  <Link to={`/profile/${request.user.id}`} className="request-username">{request.user.username}</Link>
                   <span className="request-status">{t('friends.pending')}</span>
                 </div>
               ))}
@@ -216,7 +216,7 @@ function Friends() {
                     alt={request.user.username}
                     className="friend-avatar"
                   />
-                  <span className="request-username">{request.user.username}</span>
+                  <Link to={`/profile/${request.user.id}`} className="request-username">{request.user.username}</Link>
                   <button
                     className="btn btn-primary btn-small"
                     onClick={() => acceptFriendRequest(request.request_id)}

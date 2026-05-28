@@ -108,6 +108,22 @@ export interface Friend {
   avatar_url: string;
 }
 
+export interface UserProfileResponse {
+  id: number;
+  username: string;
+  email: string;
+  avatar_url: string;
+  bio: string;
+  friendCount: number;
+  teamCount: number;
+  activeTeams: number;
+  finishedTeams: number;
+  taskCount: number;
+  tasksToDo: number;
+  tasksInProgress: number;
+  tasksDone: number;
+}
+
 export interface FriendRequest {
   request_id: number;
   status: 'pending' | 'accepted' | 'rejected';
@@ -186,6 +202,24 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         throw new Error('Failed to search users');
+      }
+      return response.json();
+    });
+  },
+
+  // ========== OTHER USER PROFILE ==========
+  getUserProfile(userId: number): Promise<UserProfileResponse> {
+    return fetch(`${API_URL}/users/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to get user profile');
+        });
       }
       return response.json();
     });

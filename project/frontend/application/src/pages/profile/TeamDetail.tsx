@@ -11,7 +11,7 @@
  */
 
 import { useContext, useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
@@ -462,7 +462,7 @@ function TeamDetail() {
           {team.members.map((member) => (
             <div key={member.id} className="member-card">
               <img src={member.avatar} alt={member.username} className="member-avatar" />
-              <span className="member-name">{member.username}</span>
+              <Link to={`/profile/${member.id}`} className="member-name">{member.username}</Link>
               <span className={`member-role ${member.role.toLowerCase()}`}>{member.role}</span>
               {isLeader && member.id !== user.id && (
                 <button className="btn-remove-member" onClick={() => handleRemoveMember(member)} title={t('teams.removeMember') || 'Remove member'}>
@@ -496,7 +496,7 @@ function TeamDetail() {
                   alt={request.username}
                   className="member-avatar"
                 />
-                <span className="member-name">{request.username}</span>
+                <Link to={`/profile/${request.user_id}`} className="member-name">{request.username}</Link>
                 <span className="member-role pending">{t('teams.pending')}</span>
                 <div className="member-actions">
                   <button
@@ -638,7 +638,7 @@ function TeamDetail() {
                   ))}
                 </select>
               ) : (
-                <span className="task-assigned">{task.assignedTo ? task.assignedTo.username : '-'}</span>
+                <span className="task-assigned">{task.assignedTo ? <Link to={`/profile/${task.assignedTo.id}`}>{task.assignedTo.username}</Link> : '-'}</span>
               )}
               <span className="task-files">
                 <input
@@ -687,7 +687,7 @@ function TeamDetail() {
                 <div key={msg.id} className={`chat-message ${msg.sender.username === user.username ? 'own' : ''}`}>
                   <img src={msg.sender.avatar} alt={msg.sender.username} className="chat-avatar" />
                   <div className="chat-content">
-                    <span className="chat-username">{msg.sender.username}</span>
+                    <Link to={`/profile/${msg.sender.id}`} className="chat-username">{msg.sender.username}</Link>
                     <span className="chat-time">{formatTime(msg.timestamp)}</span>
                     <p className="chat-text">{msg.text}</p>
                   </div>
