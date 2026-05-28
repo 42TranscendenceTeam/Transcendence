@@ -27,7 +27,7 @@ function TeamDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications } = useContext(AuthContext);
+  const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
@@ -76,7 +76,7 @@ function TeamDetail() {
       }
     };
     fetchTeam();
-  }, [id]);
+  }, [id, teamRefreshTrigger]);
 
   useEffect(() => {
     const fetchJoinRequests = async () => {
@@ -89,7 +89,7 @@ function TeamDetail() {
       }
     };
     fetchJoinRequests();
-  }, [id, team?.role]);
+  }, [id, team?.role, teamRefreshTrigger]);
 
   useEffect(() => {
     if (showAddMemberModal && allUsers.length === 0) {
