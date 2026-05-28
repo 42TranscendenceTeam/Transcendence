@@ -1,6 +1,7 @@
 import { prisma } from "../prisma.js";
 import { AppError } from "../utils/AppError.js";
 import type { CreateTaskDTO } from "./tasks.types.js";
+import fs from "fs";
 
 export const createTask = async ( creatorId: number, teamId: number, data: CreateTaskDTO) => {
   const team = await prisma.team.findUnique({
@@ -235,4 +236,117 @@ export const deleteTask = async (taskId: number, requesterId: number) => {
   return prisma.task.delete({
     where: { id: taskId },
   });
+};
+
+
+// *********** FILES SERVICES ***********
+export const uploadTaskFile = async (userId: number, taskId: number, file: Express.Multer.File) => {
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+  });
+
+  if (!task)
+    throw new AppError("Task not found", 404);
+
+  const isMember = await prisma.teamUser.findFirst({
+    where: {
+      team_id: task.team_id,
+      user_id: userId,
+    },
+  });
+
+  if (!isMember)
+    throw new AppError("Not a team member", 403);
+
+  const savedFile = await prisma.file.create({
+    data: {
+      uploader_id: userId,
+      task_id: taskId,
+      team_id: task.team_id,
+      file_name: file.originalname,
+      file_url: `/api/uploads/tasks/${file.filename}`,
+      file_type: file.mimetype,
+      file_size: file.size,
+    },
+  });
+
+  return prisma.file.findUnique({
+    where: { id: savedFile.id },
+      include: {
+        uploader: {
+          select: {
+            id: true,
+            username: true,
+            avatar_url: true,
+          },
+        },
+      },
+  });
+};
+
+export const getTaskFiles = async (taskId: number, userId: number) => {
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+  });
+
+  if (!task)
+    throw new AppError("Task not found.", 404);
+
+  const isMember = await prisma.teamUser.findFirst({
+    where: {
+      team_id: task.team_id,
+      user_id: userId,
+    },
+  });
+
+  if (!isMember)
+    throw new AppError("Not a team member.", 403);
+
+  return prisma.file.findMany({
+    where: { task_id: taskId },
+    orderBy: { created_at: "desc" },
+    include: {
+      uploader: {
+        select: {
+          id: true,
+          username: true,
+          avatar_url: true,
+        },
+      },
+    },
+  });
+};
+
+export const deleteFile = async (fileId: number, userId: number) => {
+  const file = await prisma.file.findUnique({
+    where: { id: fileId },
+    include: {
+      task: true,
+    },
+  });
+
+  if (!file)
+    throw new AppError("File not found.", 404);
+
+  const isMember = await prisma.teamUser.findFirst({
+    where: {
+      team_id: file.task!.team_id,
+      user_id: userId,
+    },
+  });
+
+  if (!isMember)
+    throw new AppError("Not a team member.", 403);
+
+  const filePath = `/app${file.file_url}`;
+
+  fs.unlink(filePath, (err) => {
+    if (err) console.error("File delete error:", err);
+  });
+
+  await prisma.file.delete({
+    where: { id: fileId },
+  });
+
+  return { success: true };
 };

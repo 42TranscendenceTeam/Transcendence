@@ -2,13 +2,13 @@ import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import type { CreateTaskDTO } from './tasks.types.js';
 import { AppError } from '../utils/AppError.js';
-import { createTask, getTeamTasks,  getTask, updateTaskStatus, updateTaskUsers, deleteTask } from './tasks.service.js';
+import { createTask, getTeamTasks,  getTask, updateTaskStatus, updateTaskUsers, deleteTask, uploadTaskFile, getTaskFiles, deleteFile } from './tasks.service.js';
 
 export const createTaskController = async (req: AuthRequest, res: Response) => {
   const teamId = Number(req.params.id);
 
   if (Number.isNaN(teamId))
-    throw new AppError("Mandatory valid team ID.", 400);
+    throw new AppError("Invalid team ID.", 400);
 
   const data: CreateTaskDTO = req.body;
 
@@ -26,7 +26,7 @@ export const getTeamTasksController = async (req: AuthRequest, res: Response) =>
   const teamId = Number(req.params.id);
 
   if (Number.isNaN(teamId))
-    throw new AppError("Mandatory valid team ID.", 400);
+    throw new AppError("Invalid team ID.", 400);
 
   const requesterId = req.user!.id;
 
@@ -39,7 +39,7 @@ export const getTaskController = async (req: AuthRequest, res: Response) => {
   const taskId = Number(req.params.id);
 
   if (Number.isNaN(taskId))
-    throw new AppError("Mandatory valid task ID.", 400);
+    throw new AppError("Invalid task ID.", 400);
 
   const requesterId = req.user!.id;
 
@@ -53,7 +53,7 @@ export const updateTaskStatusController = async (req: AuthRequest, res: Response
   const { status } = req.body;
 
   if (Number.isNaN(taskId))
-    throw new AppError("Mandatory valid task ID.", 400);
+    throw new AppError("Invalid task ID.", 400);
 
   if (!status)
     throw new AppError("Status is required.", 400);
@@ -70,7 +70,7 @@ export const updateTaskUsersController = async (req: AuthRequest, res: Response)
   const { user_ids } = req.body;
 
   if (Number.isNaN(taskId))
-    throw new AppError("Mandatory valid task ID.", 400);
+    throw new AppError("Invalid task ID.", 400);
 
   if (!Array.isArray(user_ids))
     throw new AppError("user_ids must be an array.", 400);
@@ -87,9 +87,48 @@ export const deleteTaskController = async (req: AuthRequest, res: Response) => {
   const requesterId = req.user!.id;
 
   if (Number.isNaN(taskId))
-    throw new AppError("Mandatory valid task ID.", 400);
+    throw new AppError("Invalid task ID.", 400);
 
   const result = await deleteTask(taskId, requesterId);
+
+  return res.json(result);
+};
+
+// *********** FILES CONTROLLERS ***********
+export const uploadTaskFileController = async (req: AuthRequest, res: Response) => {
+  const taskId = Number(req.params.id);
+  const requesterId = req.user!.id;
+
+  if (Number.isNaN(taskId))
+    throw new AppError("Invalid task ID.", 400);
+
+  if (!req.file)
+    throw new AppError("File is required.", 400);
+
+  const file = await uploadTaskFile(requesterId, taskId, req.file);
+
+  return res.status(201).json(file);
+};
+
+export const getTaskFilesController = async (req: AuthRequest, res: Response) => {
+  const taskId = Number(req.params.id);
+  const requesterId = req.user!.id;
+
+  if (Number.isNaN(taskId))
+    throw new AppError("Invalid task ID.", 400);
+
+  const files = await getTaskFiles(taskId, requesterId);
+
+  return res.json(files);
+};
+
+export const deleteFileController = async (req: AuthRequest, res: Response) => {
+  const fileId = Number(req.params.id);
+
+  if (Number.isNaN(fileId))
+    throw new AppError("Invalid file ID.", 400);
+
+  const result = await deleteFile(fileId, req.user!.id);
 
   return res.json(result);
 };
