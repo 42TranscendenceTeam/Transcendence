@@ -102,7 +102,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               if (user) fetchJoinRequestNotifications(user.id);
             }
             if (n.type === 'team_invite_accepted' || n.type === 'team_removed'
-                || n.type === 'team_user_left' || n.type === 'team_join_request_accepted') {
+                || n.type === 'team_user_left' || n.type === 'team_join_request_accepted'
+                || n.type === 'team_join_request') {
               setTeamRefreshTrigger((c) => c + 1);
             }
           };

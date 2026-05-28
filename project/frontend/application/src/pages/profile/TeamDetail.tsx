@@ -89,7 +89,7 @@ function TeamDetail() {
       }
     };
     fetchJoinRequests();
-  }, [id, team?.role]);
+  }, [id, team?.role, teamRefreshTrigger]);
 
   useEffect(() => {
     if (showAddMemberModal && allUsers.length === 0) {
