@@ -17,6 +17,16 @@ export const createTask = async ( creatorId: number, teamId: number, data: Creat
   if (!isMember)
     throw new AppError("You are not a member of this team.", 403);
 
+  const allowed = ["open", "in_progress", "closed"];
+
+  if (data.status && !allowed.includes(data.status)) {
+    throw new AppError("Invalid status.", 400);
+  }
+
+  if (data.user_ids && !Array.isArray(data.user_ids)) {
+    throw new AppError("user_ids must be an array.", 400);
+  }
+
   const task = await prisma.task.create({
     data: {
       team_id: teamId,
