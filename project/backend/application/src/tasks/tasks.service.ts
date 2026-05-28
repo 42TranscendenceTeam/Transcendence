@@ -27,18 +27,10 @@ export const createTask = async ( creatorId: number, teamId: number, data: Creat
     throw new AppError("user_ids must be an array.", 400);
   }
 
-  const task = await prisma.task.create({
-    data: {
-      team_id: teamId,
-      creator_id: creatorId,
-      title: data.title,
-      description: data.description,
-      status: data.status || "open"
-    },
-  });
+  let validUsers: { user_id: number }[] = [];
 
   if (data.user_ids?.length) {
-    const validUsers = await prisma.teamUser.findMany({
+    validUsers = await prisma.teamUser.findMany({
       where: {
         team_id: teamId,
         user_id: { in: data.user_ids },
@@ -49,7 +41,19 @@ export const createTask = async ( creatorId: number, teamId: number, data: Creat
     if (validUsers.length !== data.user_ids.length) {
       throw new AppError("Some users are not team members.", 400);
     }
+  }
 
+  const task = await prisma.task.create({
+    data: {
+      team_id: teamId,
+      creator_id: creatorId,
+      title: data.title,
+      description: data.description,
+      status: data.status || "open"
+    },
+  });
+
+  if (validUsers.length) {
     await prisma.taskUser.createMany({
       data: validUsers.map((u) => ({
         task_id: task.id,
