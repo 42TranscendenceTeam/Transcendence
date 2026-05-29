@@ -29,7 +29,7 @@ app.use('/notifications', notificationsRoutes);
 app.use('/uploads', express.static('/app/uploads'));
 app.use('/public', express.static('/app/public'));
 app.use('/message', messageRoutes);
-app.use('/team/:id/message', teamMessageRoutes);
+app.use('/team/message', teamMessageRoutes);
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });
@@ -98,3 +98,8 @@ export const getIO = () => {
 
 	return io;
 }
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+

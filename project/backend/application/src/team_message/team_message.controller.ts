@@ -6,7 +6,7 @@ import { getIO } from '../server.js';
 import { getTeamSentMessages, getTeamReceivedMessages, getAllMessages, sendTeamMessage, deleteTeamMessage } from './team_message.service.js';
 
 export const getTeamSentMessagesController = async (req: AuthRequest, res: Response) => {
-	const teamId = Number(req.params.team_id);
+	const teamId = Number(req.params.id);
 
 	if (!teamId || Number.isNaN(teamId))
 		throw new AppError("Mandatory valid team ID.", 400);
@@ -17,7 +17,7 @@ export const getTeamSentMessagesController = async (req: AuthRequest, res: Respo
 };
 
 export const getTeamReceivedMessagesController = async (req: AuthRequest, res: Response) => {
-	const teamId = Number(req.params.team_id);
+	const teamId = Number(req.params.id);
 
 	if (!teamId || Number.isNaN(teamId))
 		throw new AppError("Mandatory valid team ID.", 400);
@@ -28,40 +28,38 @@ export const getTeamReceivedMessagesController = async (req: AuthRequest, res: R
 };
 
 export const getAllMessagesController = async (req: AuthRequest, res: Response) => {
-	const teamId = Number(req.params.team_id);
+	const teamId = Number(req.params.id);
 
 	if (!teamId || Number.isNaN(teamId))
 		throw new AppError("Mandatory valid team ID.", 400);
 
-	const messagesList = await getAllMessages(req.user!.id, teamId);
+	const messagesList = await getAllMessages(teamId);
 
 	return res.json(messagesList);
 };
 
 export const sendTeamMessageController = async (req: AuthRequest, res: Response) => {
-	try {
-		const { teamId, content } = req.body;
+	const teamId = Number(req.params.id);
+	const { content } = req.body;
 
-		if (!teamId || Number.isNaN(Number(teamId)))
-			throw new AppError("Mandatory valid team ID.", 400);
+	if (!teamId || Number.isNaN(Number(teamId)))
+		throw new AppError("Mandatory valid team ID.", 400);
 
-		if (!content)
-			throw new AppError("Message contents cannot be empty", 400);
+	if (!content)
+		throw new AppError("Message contents cannot be empty", 400);
 
-		const request = await sendTeamMessage(req.user!.id, Number(teamId), content);
+	const request = await sendTeamMessage(req.user!.id, teamId, content);
 
-		await emitWithRetries(getIO(), 'team message', String(teamId), content);
+	res.status(201).json(request);
 
-		return res.status(201).json(request);
-	} catch (err) {
-		res.status(500).send();
-	}
+	emitWithRetries(getIO(), 'team message', String(teamId), content).catch(() => {});
+
 };
 
 // NOTE: Not sure if delete should also communicate with websockets
 // TODO: Check if deleting messages is allowed
 export const deleteTeamMessageController = async (req: AuthRequest, res: Response) => {
-	const messageId = Number(req.params.id);
+	const messageId = Number(req.params.message_id);
 
 	if (Number.isNaN(messageId))
 		throw new AppError("Mandatory valid message ID.", 400);

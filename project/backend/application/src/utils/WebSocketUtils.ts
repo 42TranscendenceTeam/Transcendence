@@ -19,14 +19,14 @@ export const emitWithRetries = async (
 
 				io.to(chatId).emit(event, content, (ack: boolean) => {
 					if (ack) {
-						console.log('Acknowledgement received for event: ${event}');
+						console.log(`Acknowledgement received for event: ${event}`);
 						resolve();
 					} else if (attempts < retries) {
-						console.log('No acknowledgement for event ${event}. Retrying... (${attempts})');
+						console.log(`No acknowledgement for event ${event}. Retrying... (${attempts})`);
 						setTimeout(sendEvent, RETRY_INTERVAL);
 					} else {
-						console.log('Failed to deliver event ${event} after (${retries}) attempts');
-						reject(new Error('Failed to deliver event ${event} after (${retries}) attempts'));
+						console.log(`Failed to deliver event ${event} after (${retries}) attempts`);
+						reject(new Error(`Failed to deliver event ${event} after (${retries}) attempts`));
 					}
 				});
 			};

@@ -13,6 +13,7 @@ export const getTeamSentMessages = async (userId: number, teamId: number) => {
 		},
 
 		select: {
+			id: true,
 			content: true,
 			sent_at: true
 		},
@@ -21,10 +22,11 @@ export const getTeamSentMessages = async (userId: number, teamId: number) => {
 	if (!messages)
 		throw new AppError("No messages sent to team " + teamId + ".", 404);
 
-	const message_list = messages.map((directMessage) => {
-		content: directMessage.content;
-		sent_at: directMessage.sent_at;
-	});
+	const message_list = messages.map((directMessage) => ({
+		id: directMessage.id,
+		content: directMessage.content,
+		sent_at: directMessage.sent_at,
+	}));
 
 	return {
 		message_list,
@@ -45,6 +47,8 @@ export const getTeamReceivedMessages = async (userId: number, teamId: number) =>
 		},
 
 		select: {
+			id: true,
+			sender_id: true,
 			content: true,
 			sent_at: true
 		},
@@ -53,10 +57,12 @@ export const getTeamReceivedMessages = async (userId: number, teamId: number) =>
 	if (!messages)
 		throw new AppError("No messages received from team " + teamId + ".", 404);
 
-	const message_list = messages.map((directMessage) => {
-		content: directMessage.content;
-		sent_at: directMessage.sent_at;
-	});
+	const message_list = messages.map((directMessage) => ({
+		id: directMessage.id,
+		sender_id: directMessage.sender_id,
+		content: directMessage.content,
+		sent_at: directMessage.sent_at,
+	}));
 
 	return {
 		message_list,
@@ -65,17 +71,33 @@ export const getTeamReceivedMessages = async (userId: number, teamId: number) =>
 };
 
 // Returns messages sent and received to and from a team
-export const getAllMessages = async (userId: number, teamId: number) => {
+export const getAllMessages = async (teamId: number) => {
 
-	const sent_list = getTeamSentMessages(userId, teamId);
-	const received_list = getTeamReceivedMessages(userId, teamId);
+	const messages = await prisma.teamMessage.findMany({
+		where: {
+				team_id: teamId,
+		},
 
-	if (!sent_list && !received_list)
-		throw new AppError("No messages sent or received from team " + teamId + ".", 404);
+		select: {
+			id: true,
+			sender_id: true,
+			content: true,
+			sent_at: true
+		},
+	});
+
+	if (!messages)
+		throw new AppError("No messages sent to team " + teamId + ".", 404);
+
+	const message_list = messages.map((directMessage) => ({
+		id: directMessage.id,
+		sender_id: directMessage.sender_id,
+		content: directMessage.content,
+		sent_at: directMessage.sent_at,
+	}));
 
 	return {
-		sent_list,
-		received_list,
+		message_list,
 	}
 
 };
@@ -90,7 +112,7 @@ export const sendTeamMessage = async (userId: number, teamId: number, message: s
 	});
 
 	if (!receiver)
-		throw new AppError("That user does not exist.", 404);
+		throw new AppError("That team does not exist.", 404);
 
 	const alreadyOnTeam = await prisma.teamUser.findFirst({
 		where: {
@@ -117,7 +139,7 @@ export const sendTeamMessage = async (userId: number, teamId: number, message: s
 // Delete team message
 export const deleteTeamMessage = async (messageId: number) => {
 
-	const message = await prisma.directMessage.findFirst({
+	const message = await prisma.teamMessage.findFirst({
 		where: {
 			id: messageId,
 		},
@@ -126,7 +148,7 @@ export const deleteTeamMessage = async (messageId: number) => {
 	if (!message)
 		throw new AppError("Team message not found.", 404);
 
-	return prisma.directMessage.delete({
+	return prisma.teamMessage.delete({
 		where: {
 			id: messageId,
 		},

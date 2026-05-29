@@ -5,11 +5,11 @@ import { getSentMessagesController, getReceivedMessagesController, getAllMessage
 
 const router = Router();
 
-router.get('/message', authMiddleware, asyncHandler(getAllMessagesController));
-router.get('/message/sent', authMiddleware, asyncHandler(getSentMessagesController));
-router.get('/message/received', authMiddleware, asyncHandler(getReceivedMessagesController));
-router.post('/message/:id', authMiddleware, asyncHandler(sendMessageController));
-router.put('/message/:id', authMiddleware, asyncHandler(updateReadStatusController));
-router.delete('/message/:id', authMiddleware, asyncHandler(deleteMessageController));
+router.get('/:id', authMiddleware, asyncHandler(getAllMessagesController));
+router.get('/:id/received', authMiddleware, asyncHandler(getReceivedMessagesController));
+router.get('/:id/sent', authMiddleware, asyncHandler(getSentMessagesController));
+router.post('/:id', authMiddleware, asyncHandler(sendMessageController));
+router.put('/:id', authMiddleware, asyncHandler(updateReadStatusController));
+router.delete('/:message_id', authMiddleware, asyncHandler(deleteMessageController));
 
 export default router;

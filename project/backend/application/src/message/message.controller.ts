@@ -6,7 +6,7 @@ import { getIO } from '../server.js';
 import { getSentMessages, getReceivedMessages, getAllMessages, sendMessage, updateReadStatus, deleteMessage } from './message.service.js';
 
 export const getSentMessagesController = async (req: AuthRequest, res: Response) => {
-	const friendId = Number(req.params.receiver_id);
+	const friendId = Number(req.params.id);
 
 	if (!friendId || Number.isNaN(friendId))
 		throw new AppError("Mandatory valid receiver ID.", 400);
@@ -17,7 +17,7 @@ export const getSentMessagesController = async (req: AuthRequest, res: Response)
 };
 
 export const getReceivedMessagesController = async (req: AuthRequest, res: Response) => {
-	const friendId = Number(req.params.receiver_id);
+	const friendId = Number(req.params.id);
 
 	if (!friendId || Number.isNaN(friendId))
 		throw new AppError("Mandatory valid receiver ID.", 400);
@@ -28,7 +28,7 @@ export const getReceivedMessagesController = async (req: AuthRequest, res: Respo
 };
 
 export const getAllMessagesController = async (req: AuthRequest, res: Response) => {
-	const friendId = Number(req.params.receiver_id);
+	const friendId = Number(req.params.id);
 
 	if (!friendId || Number.isNaN(friendId))
 		throw new AppError("Mandatory valid receiver ID.", 400);
@@ -39,29 +39,27 @@ export const getAllMessagesController = async (req: AuthRequest, res: Response) 
 };
 
 export const sendMessageController = async (req: AuthRequest, res: Response) => {
-	try {
-		const { friendId, content } = req.body;
+	const friendId = Number(req.params.id);
+	const { content } = req.body;
 
-		if (!friendId || Number.isNaN(Number(friendId)))
-			throw new AppError("Mandatory valid receiver ID.", 400);
+	if (!friendId || Number.isNaN(Number(friendId)))
+		throw new AppError("Mandatory valid receiver ID.", 400);
 
-		if (!content)
-			throw new AppError("Message contents cannot be empty", 400);
+	if (!content)
+		throw new AppError("Message contents cannot be empty", 400);
 
-		const request = await sendMessage(req.user!.id, Number(friendId), content);
+	const request = await sendMessage(req.user!.id, friendId, content);
 
-		const chatId = String(req.user!.id) + friendId;
+	const chatId = String(req.user!.id) + friendId;
 
-		await emitWithRetries(getIO(), 'chat message', chatId, content);
+	res.status(201).json(request);
 
-		return res.status(201).json(request);
-	} catch (err) {
-		res.status(500).send();
-	}
+	emitWithRetries(getIO(), 'chat message', chatId, content).catch(() => {});
+
 };
 
 export const updateReadStatusController = async (req: AuthRequest, res: Response) => {
-	const friendId = Number(req.params.receiver_id);
+	const friendId = Number(req.params.id);
 
 	if (Number.isNaN(friendId))
 		throw new AppError("Mandatory valid friend ID.", 400);
@@ -74,7 +72,7 @@ export const updateReadStatusController = async (req: AuthRequest, res: Response
 // NOTE: Not sure if delete should also communicate with websockets
 // TODO: Check if deleting messages is allowed
 export const deleteMessageController = async (req: AuthRequest, res: Response) => {
-	const messageId = Number(req.params.id);
+	const messageId = Number(req.params.message_id);
 
 	if (Number.isNaN(messageId))
 		throw new AppError("Mandatory valid message ID.", 400);

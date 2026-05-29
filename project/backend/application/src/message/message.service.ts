@@ -13,6 +13,7 @@ export const getSentMessages = async (userId: number, friendId: number) => {
 		},
 
 		select: {
+			id: true,
 			content: true,
 			status_read: true,
 			sent_at: true
@@ -22,11 +23,12 @@ export const getSentMessages = async (userId: number, friendId: number) => {
 	if (!messages)
 		throw new AppError("No messages sent to user " + friendId + ".", 404);
 
-	const message_list = messages.map((directMessage) => {
-		content: directMessage.content;
-		status_read: directMessage.status_read;
-		sent_at: directMessage.sent_at;
-	});
+	const message_list = messages.map((directMessage) => ({
+		id: directMessage.id,
+		content: directMessage.content,
+		status_read: directMessage.status_read,
+		sent_at: directMessage.sent_at,
+	}));
 
 	return {
 		message_list,
@@ -44,6 +46,7 @@ export const getReceivedMessages = async (userId: number, friendId: number) => {
 		},
 
 		select: {
+			id: true,
 			content: true,
 			status_read: true,
 			sent_at: true
@@ -53,11 +56,12 @@ export const getReceivedMessages = async (userId: number, friendId: number) => {
 	if (!messages)
 		throw new AppError("No messages received from user " + friendId + ".", 404);
 
-	const message_list = messages.map((directMessage) => {
-		content: directMessage.content;
-		status_read: directMessage.status_read;
-		sent_at: directMessage.sent_at;
-	});
+	const message_list = messages.map((directMessage) => ({
+		id: directMessage.id,
+		content: directMessage.content,
+		status_read: directMessage.status_read,
+		sent_at: directMessage.sent_at,
+	}));
 
 	return {
 		message_list,
@@ -68,11 +72,55 @@ export const getReceivedMessages = async (userId: number, friendId: number) => {
 // Returns messages sent and received to and from a friend
 export const getAllMessages = async (userId: number, friendId: number) => {
 
-	const sent_list = getSentMessages(userId, friendId);
-	const received_list = getReceivedMessages(userId, friendId);
+	const sent_messages = await prisma.directMessage.findMany({
+		where: {
+			AND: [
+				{ sender_id: userId },
+				{ receiver_id: friendId },
+			]
+		},
 
-	if (!sent_list && !received_list)
-		throw new AppError("No messages sent or received from user " + friendId + ".", 404);
+		select: {
+			id: true,
+			content: true,
+			status_read: true,
+			sent_at: true
+		},
+	});
+
+	if (!sent_messages)
+		throw new AppError("No messages sent to user " + friendId + ".", 404);
+
+	const sent_list = sent_messages.map((directMessage) => ({
+		id: directMessage.id,
+		content: directMessage.content,
+		status_read: directMessage.status_read,
+		sent_at: directMessage.sent_at,
+	}));
+
+	const received_messages = await prisma.directMessage.findMany({
+		where: {
+				receiver_id: userId,
+				sender_id: friendId,
+		},
+
+		select: {
+			id: true,
+			content: true,
+			status_read: true,
+			sent_at: true
+		},
+	});
+
+	if (!received_messages)
+		throw new AppError("No messages received from user " + friendId + ".", 404);
+
+	const received_list = received_messages.map((directMessage) => ({
+		id: directMessage.id,
+		content: directMessage.content,
+		status_read: directMessage.status_read,
+		sent_at: directMessage.sent_at,
+	}));
 
 	return {
 		sent_list,
