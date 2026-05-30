@@ -1,14 +1,14 @@
 /**
  * Registration Page Component
- * 
+ *
  * New user registration page with validation.
- * 
+ *
  * Validation:
  * - Username required
  * - Email format validation
  * - Password required
  * - Confirm password must match
- * 
+ *
  * Mock Mode: Shows "not implemented" alert
  * Real Mode: Calls api.register() to create account
  */
@@ -75,7 +75,6 @@ function Register() {
 
   return (
     <AuthLayout>
-      <h1 className="auth-title">Transcendence</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '1rem' }}>
           <label className="label" htmlFor="username">{t('auth.register.username')}</label>
@@ -121,7 +120,7 @@ function Register() {
             placeholder={t('auth.register.confirmPasswordPlaceholder')}
           />
         </div>
-<button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading}>
+        <button type="submit" className="btn btn-primary auth-submit-btn" disabled={loading}>
             {loading ? t('common.loading') : t('auth.register.submit')}
           </button>
           {error && (
