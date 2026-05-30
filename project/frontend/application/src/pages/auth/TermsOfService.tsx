@@ -1,6 +1,6 @@
 /**
  * Terms of Service Page Component
- * 
+ *
  * Displays the application's terms of service.
  * Static content page.
  */
@@ -16,55 +16,33 @@ function TermsOfService() {
   const { user } = useContext(AuthContext);
 
   const pageContent = (
-    <div style={{ maxWidth: '400px', margin: '0 auto' }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 600 }}>{t('legal.terms.title')}</h1>
-        
-        <div style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: '1.7' }}>
-          <p style={{ marginBottom: '1rem' }}>
-            {t('legal.terms.intro')}
-          </p>
-          
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('legal.terms.acceptableUse')}</h2>
-          <p style={{ marginBottom: '1rem' }}>
-            {t('legal.terms.acceptableUseText')}
-          </p>
-          
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('legal.terms.accountResponsibilities')}</h2>
-          <p style={{ marginBottom: '1rem' }}>
-            {t('legal.terms.accountResponsibilitiesText')}
-          </p>
-          
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('legal.terms.intellectualProperty')}</h2>
-          <p style={{ marginBottom: '1rem' }}>
-            {t('legal.terms.intellectualPropertyText')}
-          </p>
-          
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('legal.terms.limitationLiability')}</h2>
-          <p style={{ marginBottom: '1rem' }}>
-            {t('legal.terms.limitationLiabilityText')}
-          </p>
-          
-          <h2 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-primary)', marginTop: '1.5rem', marginBottom: '0.75rem' }}>{t('legal.terms.changesToTerms')}</h2>
-          <p>
-            {t('legal.terms.changesToTermsText')}
-          </p>
-        </div>
-    </div>
+    <section className="legal-page">
+      <h1 className="legal-title">{t('legal.terms.title')}</h1>
+
+      <div className="legal-content">
+        <p>{t('legal.terms.intro')}</p>
+
+        <h2>{t('legal.terms.acceptableUse')}</h2>
+        <p>{t('legal.terms.acceptableUseText')}</p>
+
+        <h2>{t('legal.terms.accountResponsibilities')}</h2>
+        <p>{t('legal.terms.accountResponsibilitiesText')}</p>
+
+        <h2>{t('legal.terms.intellectualProperty')}</h2>
+        <p>{t('legal.terms.intellectualPropertyText')}</p>
+
+        <h2>{t('legal.terms.limitationLiability')}</h2>
+        <p>{t('legal.terms.limitationLiabilityText')}</p>
+
+        <h2>{t('legal.terms.changesToTerms')}</h2>
+        <p>{t('legal.terms.changesToTermsText')}</p>
+      </div>
+    </section>
   );
 
-  if (user) {
     return (
-      <ProfileLayout>
-        {pageContent}
-      </ProfileLayout>
+      <AuthLayout>{pageContent}</AuthLayout>
     );
-  }
-
-  return (
-    <AuthLayout>
-      {pageContent}
-    </AuthLayout>
-  );
 }
 
 export default TermsOfService;
