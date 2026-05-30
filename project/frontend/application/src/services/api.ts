@@ -225,7 +225,6 @@ export const api = {
     });
   },
 
-  // TODO: Define wich methos will require "getAuthHeaders" and wich don't
   // ========== USER PROFILE ==========
   getCurrentUser(): Promise<UserProfile> {
     return fetch(`${API_URL}/users/me`, {
