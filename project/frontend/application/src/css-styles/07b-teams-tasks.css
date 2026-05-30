@@ -74,13 +74,14 @@
   background: transparent;
   border: 1px dashed var(--border);
   border-radius: 0.25rem;
-  padding: 0.25rem;
+  padding: 0.25rem 0.4rem;
   color: var(--text-secondary);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.35rem;
   transition: all 0.2s;
+  font-size: 0.75rem;
 }
 
 /*

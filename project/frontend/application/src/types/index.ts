@@ -65,9 +65,10 @@ export interface Task {
   id: number;
   title: string;
   description: string;
-  status: 'to_do' | 'in_progress' | 'done';
+  status: 'open' | 'in_progress' | 'closed';
   assignedTo: Pick<User, 'id' | 'username'> | null;
-  files: FileAttachment[];
+  files: TaskFile[];
+  creatorId?: number;
 }
 
 export interface Message {
@@ -77,9 +78,17 @@ export interface Message {
   timestamp?: string;
 }
 
-export interface FileAttachment {
-  name: string;
-  size: string;
+export interface TaskFile {
+  id: number;
+  uploader_id: number;
+  team_id: number | null;
+  task_id: number | null;
+  file_name: string;
+  file_url: string;
+  file_type: string | null;
+  file_size: number | null;
+  created_at: string;
+  uploader: { id: number; username: string; avatar_url: string };
 }
 
 export interface TeamData {
@@ -102,7 +111,8 @@ export interface AuthContextType {
   sendGlobalMessage: (message: Message) => void;
   updateTaskStatus: (teamId: number, taskId: number, status: Task['status']) => void;
   addTask: (teamId: number, newTask: Partial<Task>) => void;
-  uploadFile: (teamId: number, taskId: number, file: File) => void;
+  uploadFile: (teamId: number, taskId: number, file: File) => Promise<void>;
+  deleteTaskFile: (teamId: number, taskId: number, fileId: number) => Promise<void>;
   updateTaskAssignee: (teamId: number, taskId: number, member: Member) => void;
   addTeamMember: (teamId: number, member: Member, role: string) => void;
   addFriend: (friend: Friend) => void;

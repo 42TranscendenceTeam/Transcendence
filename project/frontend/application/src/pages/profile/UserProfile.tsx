@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { api } from '../../services/api';
@@ -11,12 +11,26 @@ function UserProfile() {
   const [profile, setProfile] = useState<UserProfileResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchProfile = useCallback(() => {
     if (!userId) return;
     api.getUserProfile(Number(userId))
       .then(setProfile)
       .catch((err) => setError(err.message));
   }, [userId]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchProfile();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    return () => document.removeEventListener('visibilitychange', handleVisibility);
+  }, [fetchProfile]);
 
   if (error) {
     return (
@@ -55,7 +69,7 @@ function UserProfile() {
         <div className="profile-task-stats">
           <span className="task-count total">{t('profile.totalTeams') || 'Total'}: {profile.teamCount}</span>
           <span className="task-count in_progress">{t('teams.active')}: {profile.activeTeams}</span>
-          <span className="task-count done">{t('teams.finished')}: {profile.finishedTeams}</span>
+          <span className="task-count closed">{t('teams.finished')}: {profile.finishedTeams}</span>
         </div>
       </div>
 
@@ -63,9 +77,9 @@ function UserProfile() {
         <h2 className="profile-section-title">{t('profile.taskStats') || 'Task Stats'}</h2>
         <div className="profile-task-stats">
           <span className="task-count total">{t('tasks.total') || 'Total'}: {profile.taskCount}</span>
-          <span className="task-count to_do">{t('tasks.open')}: {profile.tasksToDo}</span>
+          <span className="task-count open">{t('tasks.open')}: {profile.tasksToDo}</span>
           <span className="task-count in_progress">{t('tasks.inProgress') || 'In Progress'}: {profile.tasksInProgress}</span>
-          <span className="task-count done">{t('tasks.done')}: {profile.tasksDone}</span>
+          <span className="task-count closed">{t('tasks.done')}: {profile.tasksDone}</span>
         </div>
       </div>
     </div>

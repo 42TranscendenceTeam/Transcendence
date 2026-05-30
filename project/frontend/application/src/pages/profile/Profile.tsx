@@ -31,9 +31,9 @@ function Profile() {
 
   const taskStats = {
     total: allTasks.length,
-    to_do: allTasks.filter((t) => t.status === 'to_do').length,
+    open: allTasks.filter((t) => t.status === 'open').length,
     in_progress: allTasks.filter((t) => t.status === 'in_progress').length,
-    done: allTasks.filter((t) => t.status === 'done').length,
+    closed: allTasks.filter((t) => t.status === 'closed').length,
   };
 
   const teamStats = {
@@ -63,7 +63,7 @@ function Profile() {
         <div className="profile-task-stats">
           <span className="task-count total">{t('profile.totalTeams') || 'Total'}: {teamStats.total}</span>
           <span className="task-count in_progress">{t('teams.active')}: {teamStats.active}</span>
-          <span className="task-count done">{t('teams.finished')}: {teamStats.finished}</span>
+          <span className="task-count closed">{t('teams.finished')}: {teamStats.finished}</span>
         </div>
       </div>
 
@@ -71,9 +71,9 @@ function Profile() {
         <h2 className="profile-section-title">{t('profile.taskStats') || 'Task Stats'}</h2>
         <div className="profile-task-stats">
           <span className="task-count total">{t('tasks.total') || 'Total'}: {taskStats.total}</span>
-          <span className="task-count to_do">{t('tasks.open')}: {taskStats.to_do}</span>
+          <span className="task-count open">{t('tasks.open')}: {taskStats.open}</span>
           <span className="task-count in_progress">{t('tasks.inProgress') || 'In Progress'}: {taskStats.in_progress}</span>
-          <span className="task-count done">{t('tasks.done')}: {taskStats.done}</span>
+          <span className="task-count closed">{t('tasks.done')}: {taskStats.closed}</span>
         </div>
       </div>
     </div>

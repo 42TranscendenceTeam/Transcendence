@@ -319,7 +319,7 @@
 /*
  * Task count to_do
  */
-.task-count.to_do {
+.task-count.open {
   background: rgba(231, 76, 60, 0.15);
   color: #e74c3c;
 }
@@ -335,7 +335,7 @@
 /*
  * Task count done
  */
-.task-count.done {
+.task-count.closed {
   background: rgba(46, 204, 113, 0.15);
   color: #2ecc71;
 }
@@ -487,13 +487,14 @@
   background: transparent;
   border: 1px dashed var(--border);
   border-radius: 0.25rem;
-  padding: 0.25rem;
+  padding: 0.25rem 0.4rem;
   color: var(--text-secondary);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.35rem;
   transition: all 0.2s;
+  font-size: 0.75rem;
 }
 
 /*
@@ -674,7 +675,7 @@
 /*
  * Status todo
  */
-.status-todo {
+.status-open {
   background: rgba(107, 114, 128, 0.2);
   color: #9ca3af;
 }
@@ -690,7 +691,7 @@
 /*
  * Status done
  */
-.status-done {
+.status-closed {
   background: rgba(16, 185, 129, 0.2);
   color: var(--success);
 }
