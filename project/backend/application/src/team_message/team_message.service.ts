@@ -2,9 +2,9 @@ import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
 
 // Returns messages sent to a team
-export const getTeamSentMessages = async (userId: number, teamId: number) => {
-
+export const getTeamSentMessages = async (userId: number, teamId: number, amount: number) => {
 	const messages = await prisma.teamMessage.findMany({
+		take: amount,
 		where: {
 			AND: [
 				{ sender_id: userId },
@@ -16,6 +16,9 @@ export const getTeamSentMessages = async (userId: number, teamId: number) => {
 			id: true,
 			content: true,
 			sent_at: true
+		},
+		orderBy: {
+			sent_at: 'desc',
 		},
 	});
 
@@ -35,9 +38,9 @@ export const getTeamSentMessages = async (userId: number, teamId: number) => {
 };
 
 // Returns messages received from a team
-export const getTeamReceivedMessages = async (userId: number, teamId: number) => {
-
+export const getTeamReceivedMessages = async (userId: number, teamId: number, amount: number) => {
 	const messages = await prisma.teamMessage.findMany({
+		take: amount,
 		where: {
 			NOT: [
 				{sender_id: userId},
@@ -51,6 +54,9 @@ export const getTeamReceivedMessages = async (userId: number, teamId: number) =>
 			sender_id: true,
 			content: true,
 			sent_at: true
+		},
+		orderBy: {
+			sent_at: 'desc',
 		},
 	});
 
@@ -67,13 +73,12 @@ export const getTeamReceivedMessages = async (userId: number, teamId: number) =>
 	return {
 		message_list,
 	}
-
 };
 
 // Returns messages sent and received to and from a team
-export const getAllMessages = async (teamId: number) => {
-
+export const getAllMessages = async (teamId: number, amount: number) => {
 	const messages = await prisma.teamMessage.findMany({
+		take: amount,
 		where: {
 				team_id: teamId,
 		},
@@ -83,6 +88,9 @@ export const getAllMessages = async (teamId: number) => {
 			sender_id: true,
 			content: true,
 			sent_at: true
+		},
+		orderBy: {
+			sent_at: 'desc',
 		},
 	});
 
@@ -99,7 +107,6 @@ export const getAllMessages = async (teamId: number) => {
 	return {
 		message_list,
 	}
-
 };
 
 // Sends a message to a team

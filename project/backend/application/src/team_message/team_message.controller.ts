@@ -7,33 +7,51 @@ import { getTeamSentMessages, getTeamReceivedMessages, getAllMessages, sendTeamM
 
 export const getTeamSentMessagesController = async (req: AuthRequest, res: Response) => {
 	const teamId = Number(req.params.id);
+	var amount = Number(req.params.amount);
+
+	if (amount < 0)
+		throw new AppError("':amount' needs to be a positive integer.", 400);
+	else if (amount == 0)
+		amount = 1000;
 
 	if (!teamId || Number.isNaN(teamId))
 		throw new AppError("Mandatory valid team ID.", 400);
 
-	const messagesSentList = await getTeamSentMessages(req.user!.id, teamId);
+	const messagesSentList = await getTeamSentMessages(req.user!.id, teamId, amount);
 
 	return res.json(messagesSentList);
 };
 
 export const getTeamReceivedMessagesController = async (req: AuthRequest, res: Response) => {
 	const teamId = Number(req.params.id);
+	var amount = Number(req.params.amount);
+
+	if (amount < 0)
+		throw new AppError("':amount' needs to be a positive integer.", 400);
+	else if (amount == 0)
+		amount = 1000;
 
 	if (!teamId || Number.isNaN(teamId))
 		throw new AppError("Mandatory valid team ID.", 400);
 
-	const messagesReceivedList = await getTeamReceivedMessages(req.user!.id, teamId);
+	const messagesReceivedList = await getTeamReceivedMessages(req.user!.id, teamId, amount);
 
 	return res.json(messagesReceivedList);
 };
 
 export const getAllMessagesController = async (req: AuthRequest, res: Response) => {
 	const teamId = Number(req.params.id);
+	var amount = Number(req.params.amount);
+
+	if (amount < 0)
+		throw new AppError("':amount' needs to be a positive integer.", 400);
+	else if (amount == 0)
+		amount = 1000;
 
 	if (!teamId || Number.isNaN(teamId))
 		throw new AppError("Mandatory valid team ID.", 400);
 
-	const messagesList = await getAllMessages(teamId);
+	const messagesList = await getAllMessages(teamId, amount);
 
 	return res.json(messagesList);
 };

@@ -2,21 +2,23 @@ import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
 
 // Returns messages sent to a friend
-export const getSentMessages = async (userId: number, friendId: number) => {
-
+export const getSentMessages = async (userId: number, friendId: number, amount: number) => {
 	const messages = await prisma.directMessage.findMany({
+		take: amount,
 		where: {
 			AND: [
 				{ sender_id: userId },
 				{ receiver_id: friendId },
 			]
 		},
-
 		select: {
 			id: true,
 			content: true,
 			status_read: true,
 			sent_at: true
+		},
+		orderBy: {
+			sent_at: 'desc',
 		},
 	});
 
@@ -37,19 +39,21 @@ export const getSentMessages = async (userId: number, friendId: number) => {
 };
 
 // Returns messages received from a friend
-export const getReceivedMessages = async (userId: number, friendId: number) => {
-
+export const getReceivedMessages = async (userId: number, friendId: number, amount: number) => {
 	const messages = await prisma.directMessage.findMany({
+		take: amount,
 		where: {
 				receiver_id: userId,
 				sender_id: friendId,
 		},
-
 		select: {
 			id: true,
 			content: true,
 			status_read: true,
 			sent_at: true
+		},
+		orderBy: { 
+			sent_at: 'desc'
 		},
 	});
 
@@ -70,52 +74,30 @@ export const getReceivedMessages = async (userId: number, friendId: number) => {
 };
 
 // Returns messages sent and received to and from a friend
-export const getAllMessages = async (userId: number, friendId: number) => {
-
-	const sent_messages = await prisma.directMessage.findMany({
+export const getAllMessages = async (userId: number, friendId: number, amount: number) => {
+	const messages = await prisma.directMessage.findMany({
+		take: amount,
 		where: {
-			AND: [
-				{ sender_id: userId },
-				{ receiver_id: friendId },
+			OR: [
+				{ receiver_id: userId, sender_id: friendId },
+				{ sender_id: userId, receiver_id: friendId },
 			]
 		},
-
 		select: {
 			id: true,
 			content: true,
 			status_read: true,
 			sent_at: true
 		},
+		orderBy: { 
+			sent_at: 'desc'
+		},
 	});
 
-	if (!sent_messages)
+	if (!messages)
 		throw new AppError("No messages sent to user " + friendId + ".", 404);
 
-	const sent_list = sent_messages.map((directMessage) => ({
-		id: directMessage.id,
-		content: directMessage.content,
-		status_read: directMessage.status_read,
-		sent_at: directMessage.sent_at,
-	}));
-
-	const received_messages = await prisma.directMessage.findMany({
-		where: {
-				receiver_id: userId,
-				sender_id: friendId,
-		},
-
-		select: {
-			id: true,
-			content: true,
-			status_read: true,
-			sent_at: true
-		},
-	});
-
-	if (!received_messages)
-		throw new AppError("No messages received from user " + friendId + ".", 404);
-
-	const received_list = received_messages.map((directMessage) => ({
+	const message_list = messages.map((directMessage) => ({
 		id: directMessage.id,
 		content: directMessage.content,
 		status_read: directMessage.status_read,
@@ -123,8 +105,7 @@ export const getAllMessages = async (userId: number, friendId: number) => {
 	}));
 
 	return {
-		sent_list,
-		received_list,
+		message_list,
 	}
 
 };

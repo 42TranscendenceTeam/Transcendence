@@ -66,14 +66,26 @@ io.on('connection', (socket) => {
 	console.log('a user connected');
 
 	socket.on('join chat', async (userId: number, friendId: number, callback: ({ status }: EventResponse) => void) => {
-		const chatId = String(userId) + String(friendId);
+		var chatId = "";
+
+		if (userId <= friendId) {
+			chatId = String(userId) + String(friendId);
+		} else {
+			chatId = String(friendId) + String(userId);
+		}
 
 		await socket.join(chatId);
 		callback({ status: 'chat join acknownledged' });
 	});
 
 	socket.on('leave chat', async (userId: number, friendId: number, callback: ({ status }: EventResponse) => void) => {
-		const chatId = String(userId) + String(friendId);
+		var chatId = "";
+
+		if (userId <= friendId) {
+			chatId = String(userId) + String(friendId);
+		} else {
+			chatId = String(friendId) + String(userId);
+		}
 
 		await socket.leave(chatId);
 		callback({ status: 'chat leave acknownledged' });

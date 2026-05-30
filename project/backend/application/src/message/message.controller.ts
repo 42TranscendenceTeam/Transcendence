@@ -7,33 +7,51 @@ import { getSentMessages, getReceivedMessages, getAllMessages, sendMessage, upda
 
 export const getSentMessagesController = async (req: AuthRequest, res: Response) => {
 	const friendId = Number(req.params.id);
+	var amount = Number(req.params.amount);
+
+	if (amount < 0)
+		throw new AppError("':amount' needs to be a positive integer.", 400);
+	else if (amount == 0)
+		amount = 1000;
 
 	if (!friendId || Number.isNaN(friendId))
 		throw new AppError("Mandatory valid receiver ID.", 400);
 
-	const messagesSentList = await getSentMessages(req.user!.id, friendId);
+	const messagesSentList = await getSentMessages(req.user!.id, friendId, amount);
 
 	return res.json(messagesSentList);
 };
 
 export const getReceivedMessagesController = async (req: AuthRequest, res: Response) => {
 	const friendId = Number(req.params.id);
+	var amount = Number(req.params.amount);
+
+	if (amount < 0)
+		throw new AppError("':amount' needs to be a positive integer.", 400);
+	else if (amount == 0)
+		amount = 1000;
 
 	if (!friendId || Number.isNaN(friendId))
 		throw new AppError("Mandatory valid receiver ID.", 400);
 
-	const messagesReceivedList = await getReceivedMessages(req.user!.id, friendId);
+	const messagesReceivedList = await getReceivedMessages(req.user!.id, friendId, amount);
 
 	return res.json(messagesReceivedList);
 };
 
 export const getAllMessagesController = async (req: AuthRequest, res: Response) => {
 	const friendId = Number(req.params.id);
+	var amount = Number(req.params.amount);
+
+	if (amount < 0)
+		throw new AppError("':amount' needs to be a positive integer.", 400);
+	else if (amount == 0)
+		amount = 1000;
 
 	if (!friendId || Number.isNaN(friendId))
 		throw new AppError("Mandatory valid receiver ID.", 400);
 
-	const messagesList = await getAllMessages(req.user!.id, friendId);
+	const messagesList = await getAllMessages(req.user!.id, friendId, amount);
 
 	return res.json(messagesList);
 };
@@ -50,7 +68,13 @@ export const sendMessageController = async (req: AuthRequest, res: Response) => 
 
 	const request = await sendMessage(req.user!.id, friendId, content);
 
-	const chatId = String(req.user!.id) + friendId;
+	var chatId = "";
+
+	if (req.user!.id <= friendId) {
+		chatId = String(req.user!.id) + String(friendId);
+	} else {
+		chatId =  friendId + String(req.user!.id);
+	}
 
 	res.status(201).json(request);
 
