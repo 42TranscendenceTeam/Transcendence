@@ -1,60 +1,11 @@
 /*
- * Bottom navigation bar
- */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: transparent;
-  border: none;
-  display: flex;
-  justify-content: center;
-  gap: 6rem;
-  padding: 1rem 0;
-  z-index: 100;
-}
-
-/*
- * Bottom navigation item
- */
-.bottom-nav-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 0.875rem;
-  padding: 0.25rem;
-  transition: color 0.2s ease;
-}
-
-/*
- * Bottom navigation item hover/active states
- */
-.bottom-nav-item:hover,
-.bottom-nav-item.active {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-/*
- * Bottom navigation icon
- */
-.bottom-nav-item .nav-icon {
-  width: 16px;
-  height: 16px;
-}
-
-/*
- * Global Chat container
+Global Chat container
  */
 .global-chat {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--bg-card);
+  background: var(--sidebar-background);
   border: 1px solid var(--border);
   border-radius: 0.75rem;
   overflow: hidden;
@@ -125,7 +76,7 @@
 .global-chat-message .chat-username {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--text-primary);
 }
 
 /*

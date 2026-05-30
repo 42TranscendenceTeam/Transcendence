@@ -1,13 +1,12 @@
 /**
  * Feed Layout Component
- * 
+ *
  * Layout for the Feed page.
  * Includes BottomNav, GlobalChat, and quick-access navigation
  */
 
 import { useContext } from 'react';
 import type { ReactNode } from 'react';
-import BottomNav from './BottomNav';
 import GlobalChat from '../chat/GlobalChat';
 import { AuthContext } from '../../context/AuthContext';
 
@@ -32,7 +31,6 @@ function FeedLayout({ children, header, quickAccess }: FeedLayoutProps) {
           <GlobalChat />
         </aside>
       )}
-      <BottomNav />
     </div>
   );
 }

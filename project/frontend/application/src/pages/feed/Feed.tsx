@@ -261,7 +261,7 @@ function Feed() {
         </Link>
       )}
       <h1 className="feed-title">
-        <span className="title-transcendence">Transcendence</span>
+        <span>Activity Feed</span>
       </h1>
       <p className="feed-subtitle">
         <RotatingText />
