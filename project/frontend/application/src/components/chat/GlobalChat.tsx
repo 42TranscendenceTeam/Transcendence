@@ -6,6 +6,7 @@
  */
 
 import { useContext, useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import type { Message } from '../../types';
@@ -58,7 +59,7 @@ function GlobalChat() {
             <div key={msg.id} className={`global-chat-message ${msg.sender.id === user?.id ? 'own' : ''}`}>
               <img src={msg.sender.avatar} alt={msg.sender.username} className="chat-avatar" />
               <div className="global-chat-message-content">
-                <span className="chat-username">{msg.sender.username}</span>
+                <Link to={`/profile/${msg.sender.id}`} className="chat-username">{msg.sender.username}</Link>
                 <span className="chat-time">{formatTime(msg.timestamp)}</span>
                 <p className="chat-text">{msg.text}</p>
               </div>

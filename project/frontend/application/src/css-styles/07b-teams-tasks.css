@@ -302,3 +302,10 @@
   width: 16px;
   height: 16px;
 }
+
+/*
+ * Task assignee text
+ */
+.task-assigned {
+  color: var(--text-primary);
+}
