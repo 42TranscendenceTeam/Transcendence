@@ -691,6 +691,8 @@ export const acceptTeamInvite = async (userId: number, inviteId: number) => {
 					status_ongoing: true,
 					owner_id: true,
 					name: true,
+					max_users: true,
+					team_users: true,
 				},
 			},
 		},
@@ -704,6 +706,9 @@ export const acceptTeamInvite = async (userId: number, inviteId: number) => {
 
 	if (invite.team.status_ongoing === false)
 		throw new AppError("Closed teams cannot accept new members.", 400);
+
+	if (invite.team.max_users == invite.team.team_users.length)
+		throw new AppError("Team is full.", 400);
 
 	const userInTeam = await prisma.teamUser.findFirst({
 		where: {
