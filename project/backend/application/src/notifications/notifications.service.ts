@@ -1,6 +1,6 @@
 import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
-import { getIO } from '../socket.js';
+import { getIO } from '../utils/socket.js';
 
 // Returns all notifications of logged-in user
 export const getNotifications = async (userId: number) => {

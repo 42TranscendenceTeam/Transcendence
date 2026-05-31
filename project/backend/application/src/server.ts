@@ -3,13 +3,14 @@ import './config.js';
 import express from 'express';
 import type { Request, Response } from 'express';
 import { createServer } from 'http';
-import { initSocket } from './socket.js';
+import { initSocket } from './utils/socket.js';
 import authRoutes from './auth/auth.routes.js';
 import userRoutes from './users/users.routes.js';
 import teamsRoutes from './teams/teams.routes.js';
 import tasksRoutes from './tasks/tasks.routes.js';
 import friendsRoutes from './friends/friends.routes.js';
 import notificationsRoutes from './notifications/notifications.routes.js';
+import messageRoutes from './message/message.routes.js';
 
 const app = express();
 const PORT = 5000;
@@ -26,6 +27,7 @@ app.use('/friends', friendsRoutes);
 app.use('/notifications', notificationsRoutes);
 app.use('/uploads/avatars', express.static('/app/uploads/avatars'));
 app.use('/public', express.static('/app/public'));
+app.use('/message', messageRoutes);
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });
