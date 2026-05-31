@@ -101,7 +101,7 @@ export const deleteMessageController = async (req: AuthRequest, res: Response) =
 	if (Number.isNaN(messageId))
 		throw new AppError("Mandatory valid message ID.", 400);
 
-	const message = await deleteMessage(messageId);
+	const message = await deleteMessage(req.user!.id, messageId);
 
 	return res.status(200).json(message);
 };

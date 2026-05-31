@@ -193,17 +193,23 @@ export const updateReadStatus = async (userId: number, friendId: number) => {
 }
 
 // Delete message
-export const deleteMessage = async (messageId: number) => {
+export const deleteMessage = async (userId: number, messageId: number) => {
 
 	const message = await prisma.directMessage.findFirst({
 		where: {
 			id: messageId,
+		},
+		select: {
+			sender_id: true,
 		},
 	});
 
 	if (!message)
 		throw new AppError("Direct message not found.", 404);
 
+	if (message.sender_id != userId)
+		throw new AppError("Cannot delete other people's messages", 400);
+	
 	return prisma.directMessage.delete({
 		where: {
 			id: messageId,
