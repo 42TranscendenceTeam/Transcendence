@@ -49,9 +49,24 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
           ☰
         </button>
       )}
+      {user && (
+        <div className="profile-top-actions">
+          <Link to="/profile/notifications" className="top-notification-btn" aria-label={t('nav.notifications')}>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22ZM18 16v-5a6 6 0 1 0-12 0v5l-2 2v1h16v-1l-2-2Z" />
+            </svg>
+            <span className="top-notification-dot" />
+          </Link>
+          <Link to="/profile" className="top-profile-link">
+            <img src={user.avatar} />
+            <span className="top-profile-status" />
+          </Link>
+        </div>
+      )}
       <main className="profile-main">{children}</main>
       {user && (
         <aside className="profile-sidebar">
+          <img className="sidebar-logo-img" src="/sidebar-logo.png" alt="transcendence" />
           <nav className="profile-sidebar-nav">
             {menuItems.map((item) => (
               <Link

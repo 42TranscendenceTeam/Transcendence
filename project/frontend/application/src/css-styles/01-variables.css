@@ -8,22 +8,43 @@
 @tailwind components;
 @tailwind utilities;
 
-/*
- * CSS custom properties for colors
- */
+/* CSS custom properties for colors */
 :root {
-  --bg-primary: #181f2c;
-  --bg-card: #222d3d;
-  --bg-card-hover: #2a3748;
-  --text-primary: #e5e7eb;
-  --text-secondary: #9ca3af;
-  --accent: #3eafd1;
-  --accent-hover: #5bc0de;
-  --border: #3a4557;
-  --border-light: #4a5568;
-  --success: #10b981;
-  --error: #ef4444;
-  --neon-purple: #8b5cf6;
-  --neon-blue: #3b82f6;
-  --neon-pink: #ec4899;
+  --bg-primary: #060815;
+  --bg-card: #141d2f;
+  --bg-card-hover: #171b2b;
+  --text-primary: #f8fafc;
+  --text-secondary: #a1a1b5;
+  --accent: #8b5cf6;
+  --accent-hover: #6366f1;
+  --border: #272b3f;
+  --border-light: #383d5a;
+  --success: #22c55e;
+  --error: #f43f5e;
+  --neon-purple: #a07dda;
+  --neon-blue: #4f8cff;
+  --neon-pink: #d946ef;
+
+  --body-background: radial-gradient(circle at 85% 25%, rgba(124, 92, 255, 0.16), transparent 30%), radial-gradient(circle at 10% 90%, rgba(79, 140, 255, 0.10), transparent 35%);
+  --gradient-primary: linear-gradient(135deg, #a855f7 0%, #7c5cff 45%, #4f8cff 100%);
+
+  --sidebar-background: rgba(7, 10, 24, 0.92);
+  --sidebar-gradient: linear-gradient(135deg, rgba(139, 92, 246, 0.32) 25%, rgba(79, 140, 255, 0.18) 100%);
+  --sidebar-border: 1px solid rgba(139, 92, 246, 0.35);
+  --sidebar-box-shadow: 0 0 24px rgba(139, 92, 246, 0.18);
+  --sidebar-icon-color: #a78bfa;
+
+  --task-background: radial-gradient(circle at 85% 20%, rgba(79, 140, 255, 0.10), transparent 30%), radial-gradient(circle at 20% 100%, rgba(139, 92, 246, 0.08), transparent 35%);
+  --task-gradient: linear-gradient(145deg, rgba(18, 22, 40, 0.78), rgba(9, 12, 25, 0.9));
+  --task-gradient: linear-gradient(145deg, rgba(31, 42, 75, 0.78) 0%, rgba(16, 22, 43, 0.88) 35%, rgba(7, 10, 22, 0.95) 100%);
+  --task-border: 1px solid rgba(148, 163, 184, 0.14);
+  --task-box-shadow: 0 18px 55px rgba(0, 0, 0, 0.28);
+
+  --btn-text-color: #b1a0f4;
+  --btn-background: rgba(20, 24, 42, 0.72);
+  --btn-border: 1px solid rgba(139, 92, 246, 0.95);
+  --btn-box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 18px rgba(139, 92, 246, 0.18);
+  --btn-border-hover: rgba(167, 139, 250, 0.8);
+  --btn-background-hover: rgba(32, 38, 68, 0.9);
+  --btn-box-shadow-hover: 0 0 24px rgba(139, 92, 246, 0.28), 0 0 6px rgba(79, 140, 255, 0.18);
 }

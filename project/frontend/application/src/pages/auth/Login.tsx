@@ -1,12 +1,12 @@
 /**
  * Login Page Component
- * 
+ *
  * User authentication page with email/password login.
  * Supports both mock mode and real backend API.
- * 
+ *
  * Mock Mode (VITE_USE_MOCK=true):
  * - Uses mock 2FA flow for demo
- * 
+ *
  * Real Mode (VITE_USE_MOCK=false):
  * - Calls api.login() from services/api.ts
  * - Stores auth token on successful login
@@ -39,7 +39,7 @@ function Login() {
       try {
         console.log('Login:', { email, password });
         const data = { requires2FA: false, tempToken: 'mock-temp-token' };
-        
+
         if (data.requires2FA) {
           setTempToken(data.tempToken);
           setShow2FA(true);
@@ -83,8 +83,12 @@ function Login() {
 
   return (
     <AuthLayout>
-      <h1 className="auth-title">Transcendence</h1>
-      
+      <div className="login-card-header">
+        <img src="/logo-icon.png" alt="Transcendence" className="login-card-logo" />
+        <h1 className="auth-title">Welcome back</h1>
+        <p className="auth-subtitle">Glad to see you again! Please sign in to continue.</p>
+      </div>
+
       {error && (
         <div style={{ color: '#ef4444', marginBottom: '1rem', textAlign: 'center' }}>
           {error}
@@ -117,7 +121,7 @@ function Login() {
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading}>
+          <button type="submit" className="btn btn-primary auth-submit-btn" disabled={loading}>
             {loading ? t('common.loading') : t('auth.login.submit')}
           </button>
           <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
@@ -174,13 +178,30 @@ function Login() {
           </div>
         </form>
       )}
-      
+
       {!show2FA && (
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem' }}>
-          <button type="button" className="btn btn-secondary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-            <img src="/42logo.png" alt="42 logo" style={{ width: '20px', height: '20px' }} />
-            {t('auth.login.signInWith42') || 'Sign in with 42'}
-          </button>
+        <div className="auth-social-section">
+          <div className="auth-divider">
+            <span>or continue with</span>
+          </div>
+
+          <div className="auth-social-buttons">
+            <button type="button" className="auth-social-btn">
+              <img src="/42logo.png" alt="42 logo" />
+              <span>42 School</span>
+            </button>
+
+            <button type="button" className="auth-social-btn">
+              <img src="/google-logo.webp" alt="Google logo" />
+              <span>Google</span>
+            </button>
+          </div>
+          <p className="auth-terms-note">
+            By signing in, you agree with our <br />
+            <Link to="/terms">Terms of Service</Link>{' '}
+            and{' '}
+            <Link to="/privacy">Privacy Policy</Link>
+          </p>
         </div>
       )}
     </AuthLayout>

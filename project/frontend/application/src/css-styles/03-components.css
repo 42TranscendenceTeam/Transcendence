@@ -1,6 +1,4 @@
-/*
- * Base button style (shared by all buttons)
- */
+/* Base button style (shared by all buttons) */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -14,70 +12,63 @@
   outline: none;
 }
 
-/*
- * Primary action button (highlighted)
- */
+/* Primary action button (highlighted) */
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent) 0%, #2d8ab4 100%);
-  color: white;
-  box-shadow: 0 0 8px var(--neon-purple);
+  min-width: 100px;
+  height: 42px;
+  border: var(--btn-border);
+  color: var(--btn-text-color);
+  background: var(--btn-background);
+  box-shadow: var(--btn-box-shadow);
+  transition: all 0.2s ease;
 }
 
-/*
- * Primary button hover animation
- */
+/* Primary button hover animation */
 .btn-primary:hover {
-  background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent) 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 0 15px var(--neon-purple), 0 0 25px var(--neon-purple);
+  background: var(--btn-background-hover);
+  border-color: var(--btn-border-hover);
+  box-shadow: var(--btn-box-shadow-hover);
 }
 
-/*
- * Pending state button (green, used for join request sent)
- */
+/* Pending state button (green, used for join request sent) */
 .btn-pending {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
+  min-width: 100px;
+  height: 42px;
+  border: 1px solid rgba(34, 197, 94, 0.75);
+  color: #86efac;
+  background: rgba(20, 42, 28, 0.55);
+  box-shadow: var(--btn-box-shadow);
+  opacity: 0.95;
+  transition: all 0.2s ease;
   cursor: default;
-  opacity: 0.8;
 }
 
-/*
- * Secondary button (less emphasis)
- */
+/* Secondary button (less emphasis) */
 .btn-secondary {
   background: var(--bg-card);
   color: var(--text-primary);
   border: 1px solid var(--border);
 }
 
-/*
- * Secondary button hover effect
- */
+/* Secondary button hover effect */
 .btn-secondary:hover {
   background: var(--bg-card-hover);
   border-color: var(--border-light);
   box-shadow: 0 0 8px var(--neon-purple);
 }
 
-/*
- * Smaller button variant
- */
+/* Smaller button variant */
 .btn-small {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
 }
 
-/*
- * Smaller outline danger button variant
- */
+/* Smaller outline danger button variant */
 .btn-outline-danger.btn-small {
   padding: 0.5rem 1rem;
 }
 
-/*
- * Card container (used across UI blocks)
- */
+/* Card container (used across UI blocks) */
 .card {
   background: var(--bg-card);
   border-radius: 1rem;
@@ -85,13 +76,11 @@
   padding: 1.5rem;
 }
 
-/*
- * Input field base style
- */
+/* Input field base style */
 .input {
   width: 100%;
   padding: 0.75rem 1rem;
-  background: var(--bg-primary);
+  background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
   color: var(--text-primary);
@@ -99,25 +88,19 @@
   transition: border-color 0.2s ease;
 }
 
-/*
- * Input field focus state
- */
+/* Input field focus state */
 .input:focus {
   outline: none;
   border-color: var(--neon-purple);
   box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-purple);
 }
 
-/*
- * Input field placeholder
- */
+/* Input field placeholder */
 .input::placeholder {
   color: var(--text-secondary);
 }
 
-/*
- * Form label
- */
+/* Form label */
 .label {
   display: block;
   margin-bottom: 0.5rem;

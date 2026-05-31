@@ -1,135 +1,106 @@
-/*
- * Feed page layout
- */
+/* Feed Layout */
 .feed-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/*
- * Feed main content area
- */
-.feed-main {
-  flex: 1;
-  padding: 1rem;
-  padding-bottom: 3.5rem;
-  padding-top: 4rem;
-  max-width: 600px;
-  width: 100%;
-  margin: 0 auto;
+/* Top Elements */
+.sidebar-logo-img {
+  margin-bottom: 1.8em;
+  width: 95%;
+  max-width: 220px;
+  margin-right: auto;
 }
 
-/*
- * Feed header section
- */
-.feed-header {
-  margin-bottom: 1.5rem;
-}
-
-/*
- * Welcome user indicator
- */
-.welcome-user {
+.profile-top-actions {
   position: fixed;
-  top: 0.75rem;
-  left: 0.75rem;
+  top: 1rem;
+  right: 2rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  z-index: 300;
+}
+
+.top-notification-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: var(--bg-card);
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
-  z-index: 101;
-  transition: box-shadow 0.3s ease;
-  text-decoration: none;
-}
-
-/*
- * Welcome user hover effect
- */
-.welcome-user:hover {
-  box-shadow: 0 0 12px var(--neon-purple), 0 0 20px var(--neon-blue);
-}
-
-/*
- * Welcome user avatar
- */
-.welcome-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  justify-content: center;
   color: var(--text-secondary);
 }
 
-/*
- * Welcome user text
- */
-.welcome-text {
-  font-weight: 500;
-  font-size: 0.875rem;
-  color: var(--text-primary);
+.top-notification-btn svg {
+  width: 30px;
+  height: 30px;
 }
 
-/*
- * Feed page title
- */
+.top-notification-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--error);
+}
+
+.top-profile-link {
+  position: relative;
+  display: block;
+  width: 50px;
+  height: 50px;
+}
+
+.top-profile-link img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.top-profile-status {
+  position: absolute;
+  right: 2px;
+  bottom: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--success);
+  border: 2px solid var(--bg-primary);
+}
+
+/* Central Feed Header */
+.feed-header {
+  margin-bottom: 0;
+}
+
 .feed-title {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 0.25rem;
-  text-align: center;
-}
-
-/*
- * Transcendence title gradient
- */
-.title-transcendence {
-  font-size: 2.5rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent) 0%, #89d4e8 50%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  line-height: 1.2;
   letter-spacing: -0.02em;
-  display: block;
-  animation: shimmer 3s ease-in-out infinite;
+  padding-left: 1em;
 }
 
-/*
- * Shimmer animation keyframes
- */
-@keyframes shimmer {
-  0%, 100% {
-    filter: brightness(1);
-  }
-  50% {
-    filter: brightness(1.2);
-  }
-}
-
-/*
- * Feed subtitle text
- */
 .feed-subtitle {
-  font-size: 0.875rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
   color: var(--text-secondary);
-  text-align: center;
-  min-height: 1.5rem;
+  margin: 0;
+  padding-left: 1.35em;
 }
 
-/*
- * Rotating text animation
- */
+/* Subtitle Animation */
 .rotating-text {
   display: inline-block;
   animation: fadeIn 0.5s ease-in-out;
 }
 
-/*
- * Fade in animation keyframes
- */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -141,213 +112,176 @@
   }
 }
 
-/*
- * Feed task list container
- */
+/* Feed Cards Area */
+.feed-main {
+  flex: 1;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3.5rem;
+}
+
 .feed-list {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
-/*
- * Task card component
- */
+/* Feed Cards General */
 .task-card {
-  background: var(--bg-card);
-  border-radius: 1rem;
-  border: 1px solid var(--border);
-  padding: 1rem;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  background: var(--task-gradient);
+  padding: 1.5rem;
+  border: var(--task-border);
+  border-radius: 1.25rem;
+  box-shadow: var(--task-box-shadow);
+  backdrop-filter: blur(18px);
+  transition: all 0.5s ease;
 }
 
-/*
- * Task card hover effect
- */
+.task-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--task-background);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
 .task-card:hover {
   border-color: var(--neon-purple);
   box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+  transform: translateY(-2px);
 }
 
-/*
- * Task card header
- */
+/* Feed Cards Inside */
 .task-header {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.8rem;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-/*
- * Task card avatar
- */
 .task-avatar {
-  width: 32px;
-  height: 32px;
+  width: 46px;
+  height: 46px;
   border-radius: 50%;
   background: var(--bg-primary);
 }
 
-/*
- * Task user info container
- */
 .task-user-info {
   display: flex;
   flex-direction: column;
 }
 
-/*
- * Task author name
- */
 .task-author {
-  font-weight: 600;
-  font-size: 0.875rem;
+  font-weight: 700;
+  font-size: 1rem;
   color: var(--text-primary);
 }
 
-/*
- * Task timestamp
- */
 .task-timestamp {
-  font-size: 0.625rem;
+  font-size: 0.7em;
   color: var(--text-secondary);
 }
 
-/*
- * Task title text
- */
 .task-title {
-  font-size: 0.9rem;
+  font-size: 1.35rem;
   font-weight: 600;
   margin-bottom: 0.4rem;
   color: var(--text-primary);
 }
 
-/*
- * Task description text
- */
 .task-description {
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   color: var(--text-secondary);
   margin-bottom: 0.8rem;
   line-height: 1.5;
 }
 
-/*
- * Task tags container
- */
 .task-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
+  gap: 0.5rem;
+  margin-top: 1rem;
   margin-bottom: 0.8rem;
 }
 
-/*
- * Task tag item
- */
 .task-tag {
-  background: var(--bg-primary);
+  background: rgba(139, 92, 246, 0.08);
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 0.2rem 0.6rem;
-  font-size: 0.6rem;
-  color: var(--text-secondary);
+  padding: 0.35rem 0.7rem;
+  font-size: 0.70rem;
+  color: var(--sidebar-icon-color);
 }
 
-/*
- * Task card footer
- */
 .task-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-top: 0.8rem;
-  border-top: 1px solid var(--border);
 }
 
-/*
- * Task looking text
- */
+/* Task looking for */
 .task-looking {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
-/*
- * Task looking strong text
- */
 .task-looking strong {
   color: var(--accent);
 }
 
-/*
- * Bottom navigation bar
- */
+/* Privacy Policy Terms of Service */
 .bottom-nav {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: var(--bg-card);
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-around;
-  padding: 0.1rem 0;
-  z-index: 100;
-}
-
-/*
- * Bottom navigation item
- */
-.bottom-nav-item {
+  left: 1rem;
+  bottom: 1.5rem;
+  width: 210px;
+  height: auto;
+  min-height: 0;
+  padding-left: 0.25rem;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 0.2rem;
+  z-index: 250;
+}
+
+.bottom-nav-item {
+  display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
   color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 0.625rem;
-  padding: 0.25rem;
+  font-size: 0.825rem;
   transition: color 0.2s ease;
 }
 
-/*
- * Bottom navigation item hover/active states
- */
-.bottom-nav-item:hover,
-.bottom-nav-item.active {
+.bottom-nav-item:hover, .bottom-nav-item.active {
   color: var(--accent);
   text-decoration: none;
 }
 
-/*
- * Bottom navigation icon
- */
 .bottom-nav-item .nav-icon {
-  width: 10px;
-  height: 10px;
+  width: 13px;
+  height: 13px;
+  display: none;
 }
 
-/*
- * Feed sidebar (Global Chat)
- */
+/* Global chat sidebar */
 .feed-sidebar {
   display: none;
 }
 
-/*
- * Responsive styles for Feed sidebar
- */
 @media (min-width: 768px) {
   .feed-sidebar {
     display: block;
     position: fixed;
-    top: 1rem;
+    top: 7rem;
     right: 1rem;
-    width: 350px;
-    height: calc(100vh - 2rem);
+		height: calc(100vh - 8rem);
+    width: 325px;
     z-index: 150;
   }
 }
@@ -355,14 +289,7 @@
 /* Mobile feed header */
 @media (max-width: 767px) {
 
-	.title-transcendence {
-		font-size: 2rem;
-		text-align: left;
-		margin-bottom: 0.75rem;
-		padding-top: 0.1em;
-	}
-
-	.feed-main {
-		padding-top: 1.5em;
-	}
+  .feed-main {
+    padding-top: 1.5em;
+  }
 }
