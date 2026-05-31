@@ -3,7 +3,7 @@ import './config.js';
 import express from 'express';
 import type { Request, Response } from 'express';
 import { createServer } from 'http';
-import { initSocket } from './socket.js';
+import { initSocket } from './utils/socket.js';
 import authRoutes from './auth/auth.routes.js';
 import userRoutes from './users/users.routes.js';
 import teamsRoutes from './teams/teams.routes.js';
@@ -46,72 +46,3 @@ app.use((err: any, req: any, res: any, next: any) => {
 httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-// socket.io
-
-import { createServer } from 'http';
-import { Server } from 'socket.io';
-
-const server = createServer(app);
-const io = new Server(server, {
-	connectionStateRecovery: {},
-	cors: {origin: '*', methods: ['GET', 'POST'] },
-});
-
-interface EventResponse {
-	status: String
-}
-
-io.on('connection', (socket) => {
-	console.log('a user connected');
-
-	socket.on('join chat', async (userId: number, friendId: number, callback: ({ status }: EventResponse) => void) => {
-		var chatId = "";
-
-		if (userId <= friendId) {
-			chatId = String(userId) + String(friendId);
-		} else {
-			chatId = String(friendId) + String(userId);
-		}
-
-		await socket.join(chatId);
-		callback({ status: 'chat join acknownledged' });
-	});
-
-	socket.on('leave chat', async (userId: number, friendId: number, callback: ({ status }: EventResponse) => void) => {
-		var chatId = "";
-
-		if (userId <= friendId) {
-			chatId = String(userId) + String(friendId);
-		} else {
-			chatId = String(friendId) + String(userId);
-		}
-
-		await socket.leave(chatId);
-		callback({ status: 'chat leave acknownledged' });
-	});
-
-	socket.on('join team chat', async (teamId: number, callback: ({ status }: EventResponse) => void) => {
-		await socket.join(String(teamId));
-		callback({ status: 'team chat join acknownledged' });
-	});
-
-	socket.on('leave team chat', async (teamId: number, callback: ({ status }: EventResponse) => void) => {
-		await socket.leave(String(teamId));
-		callback({ status: 'team chat leave acknownledged' });
-	});
-
-	socket.on('disconnect', () => console.log('user disconnected'));
-});
-
-export const getIO = () => {
-	if (!io)
-		throw new Error('Socket.io not initialized.');
-
-	return io;
-}
-
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
-

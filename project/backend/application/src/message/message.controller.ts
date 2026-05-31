@@ -2,7 +2,7 @@ import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import { AppError } from '../utils/AppError.js';
 import { emitWithRetries } from '../utils/WebSocketUtils.js';
-import { getIO } from '../server.js';
+import { getIO } from '../utils/socket.js';
 import { getSentMessages, getReceivedMessages, getAllMessages, sendMessage, updateReadStatus, deleteMessage } from './message.service.js';
 
 export const getSentMessagesController = async (req: AuthRequest, res: Response) => {
