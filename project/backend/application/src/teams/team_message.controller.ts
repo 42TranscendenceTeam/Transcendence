@@ -82,7 +82,7 @@ export const deleteTeamMessageController = async (req: AuthRequest, res: Respons
 	if (Number.isNaN(messageId))
 		throw new AppError("Mandatory valid message ID.", 400);
 
-	const message = await deleteTeamMessage(messageId);
+	const message = await deleteTeamMessage(req.user!.id, messageId);
 
 	return res.status(200).json(message);
 };

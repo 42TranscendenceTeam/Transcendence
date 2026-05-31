@@ -11,7 +11,6 @@ import tasksRoutes from './tasks/tasks.routes.js';
 import friendsRoutes from './friends/friends.routes.js';
 import notificationsRoutes from './notifications/notifications.routes.js';
 import messageRoutes from './message/message.routes.js';
-import teamMessageRoutes from './team_message/team_message.routes.js';
 
 const app = express();
 const PORT = 5000;
@@ -29,7 +28,6 @@ app.use('/notifications', notificationsRoutes);
 app.use('/uploads', express.static('/app/uploads'));
 app.use('/public', express.static('/app/public'));
 app.use('/message', messageRoutes);
-app.use('/team/message', teamMessageRoutes);
 
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok' });

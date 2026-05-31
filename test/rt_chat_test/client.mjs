@@ -102,51 +102,51 @@ async function main() {
   console.log('  -- Team endpoints --');
 
   // POST send team message
-  const tm = await api('POST', `/team/message/${TEAM_ID}`, token, { content: 'Phase 1 Team' });
-  assert(tm && tm.id, 'team msg response missing id');
-  assert(tm.content === 'Phase 1 Team', 'team msg content mismatch');
-  assert(tm.team_id === TEAM_ID, 'team msg team_id mismatch');
-  console.log(`  POST   /team/message/${TEAM_ID}  → 201, id=${tm.id}`);
+  const tm = await api('POST', `/teams/${TEAM_ID}/message`, token, { content: 'Phase 1 Team' });
+  assert(tm && tm.id, 'teams msg response missing id');
+  assert(tm.content === 'Phase 1 Team', 'teams msg content mismatch');
+  assert(tm.team_id === TEAM_ID, 'teams msg teams_id mismatch');
+  console.log(`  POST   /teams/${TEAM_ID}/message  → 201, id=${tm.id}`);
 
-  // GET all team messages
-  const tmAll = await api('GET', `/team/message/${TEAM_ID}/0`, token);
+  // GET all teams messages
+  const tmAll = await api('GET', `/teams/${TEAM_ID}/message/0`, token);
   assert(Array.isArray(tmAll.message_list), 'tmAll.message_list not array');
   assert(tmAll.message_list.some(m => m.id === tm.id), 'tmAll missing sent message');
-  console.log(`  GET    /team/message/${TEAM_ID}/0  → OK, ${tmAll.message_list.length} msgs`);
+  console.log(`  GET    /teams/${TEAM_ID}/message/0  → OK, ${tmAll.message_list.length} msgs`);
 	
-  // GET all team messages (limited to 1)
-  const tmAll_limited = await api('GET', `/team/message/${TEAM_ID}/1`, token);
+  // GET all teams messages (limited to 1)
+  const tmAll_limited = await api('GET', `/teams/${TEAM_ID}/message/1`, token);
   assert(Array.isArray(tmAll_limited.message_list), 'tmAll_limited.message_list not array');
   assert(tmAll_limited.message_list.some(m => m.id === tmAll_limited.message_list[0].id), 'tmAll missing sent message');
-  console.log(`  GET    /team/message/${TEAM_ID}/1  → OK, ${tmAll_limited.message_list.length} msgs`);
+  console.log(`  GET    /teams/${TEAM_ID}/message/1  → OK, ${tmAll_limited.message_list.length} msgs`);
 
-  // GET sent team messages
-  const tmSent = await api('GET', `/team/message/${TEAM_ID}/sent/0`, token);
+  // GET sent teams messages
+  const tmSent = await api('GET', `/teams/${TEAM_ID}/message/sent/0`, token);
   assert(Array.isArray(tmSent.message_list), 'tmSent.message_list not array');
   assert(tmSent.message_list.some(m => m.id === tm.id), 'tmSent missing sent message');
-  console.log(`  GET    /team/message/${TEAM_ID}/sent/0  → OK, ${tmSent.message_list.length} msgs`);
+  console.log(`  GET    /teams/${TEAM_ID}/message/sent/0  → OK, ${tmSent.message_list.length} msgs`);
 	
-  // GET sent team messages (limited to 1)
-  const tmSent_limited = await api('GET', `/team/message/${TEAM_ID}/sent/1`, token);
+  // GET sent teams messages (limited to 1)
+  const tmSent_limited = await api('GET', `/teams/${TEAM_ID}/message/sent/1`, token);
   assert(Array.isArray(tmSent_limited.message_list), 'tmSent_limited.message_list not array');
   assert(tmSent_limited.message_list.some(m => m.id === tmSent.message_list[0].id), 'tmSent_limited missing sent message');
-  console.log(`  GET    /team/message/${TEAM_ID}/sent/1  → OK, ${tmSent_limited.message_list.length} msgs`);
+  console.log(`  GET    /teams/${TEAM_ID}/message/sent/1  → OK, ${tmSent_limited.message_list.length} msgs`);
 
-  // GET received team messages (as Felix)
-  const tmRecv = await api('GET', `/team/message/${TEAM_ID}/received/0`, token);
+  // GET received teams messages (as Felix)
+  const tmRecv = await api('GET', `/teams/${TEAM_ID}/message/received/0`, token);
   assert(Array.isArray(tmRecv.message_list), 'tmRecv.message_list not array');
-  console.log(`  GET    /team/message/${TEAM_ID}/received/0  → OK, ${tmRecv.message_list.length} msgs`);
+  console.log(`  GET    /teams/${TEAM_ID}/message/received/0  → OK, ${tmRecv.message_list.length} msgs`);
 
-  // GET received team messages (limited to 1)
-  const tmRecv_limited = await api('GET', `/team/message/${TEAM_ID}/received/1`, token);
+  // GET received teams messages (limited to 1)
+  const tmRecv_limited = await api('GET', `/teams/${TEAM_ID}/message/received/1`, token);
   assert(Array.isArray(tmRecv_limited.message_list), 'tmRecv_limited.message_list not array');
   assert(tmRecv_limited.message_list.some(m => m.id === tmRecv.message_list[0].id), 'tmSent_limited missing sent message');
-  console.log(`  GET    /team/message/${TEAM_ID}/received/1  → OK, ${tmRecv_limited.message_list.length} msgs`);
+  console.log(`  GET    /teams/${TEAM_ID}/message/received/1  → OK, ${tmRecv_limited.message_list.length} msgs`);
 
-  // DELETE the team message
-  const delTm = await api('DELETE', `/team/message/${tm.id}`, token);
-  assert(delTm && delTm.id === tm.id, 'delete team msg id mismatch');
-  console.log(`  DELETE /team/message/${tm.id}  → 200`);
+  // DELETE the teams message
+  const delTm = await api('DELETE', `/teams/${TEAM_ID}/message/${tm.id}`, token);
+  assert(delTm && delTm.id === tm.id, 'delete teams msg id mismatch');
+  console.log(`  DELETE /teams/${TEAM_ID}/message/${tm.id}  → 200`);
 
   console.log('PASS: Phase 1 — All REST endpoints\n');
 
@@ -245,8 +245,8 @@ async function main() {
   await Promise.all([
     api('POST', `/message/${FELIX_ID}`, token, { content: markers.a2bdm }),
     api('POST', `/message/${user.id}`, felixLogin.token, { content: markers.b2adm }),
-    api('POST', `/team/message/${TEAM_ID}`, token, { content: markers.a2bteam }),
-    api('POST', `/team/message/${TEAM_ID}`, felixLogin.token, { content: markers.b2ateam }),
+    api('POST', `/teams/${TEAM_ID}/message`, token, { content: markers.a2bteam }),
+    api('POST', `/teams/${TEAM_ID}/message`, felixLogin.token, { content: markers.b2ateam }),
   ]);
   console.log('  4 messages sent via REST');
 

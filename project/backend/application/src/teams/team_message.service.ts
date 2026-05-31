@@ -144,16 +144,22 @@ export const sendTeamMessage = async (userId: number, teamId: number, message: s
 };
 
 // Delete team message
-export const deleteTeamMessage = async (messageId: number) => {
+export const deleteTeamMessage = async (userId: number, messageId: number) => {
 
 	const message = await prisma.teamMessage.findFirst({
 		where: {
 			id: messageId,
 		},
+		select: {
+			sender_id: true,
+		},
 	});
 
 	if (!message)
 		throw new AppError("Team message not found.", 404);
+
+	if (message.sender_id != userId)
+		throw new AppError("Cannot delete other people's messages", 400);
 
 	return prisma.teamMessage.delete({
 		where: {
