@@ -2,7 +2,7 @@ import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import type { CreateTaskDTO } from './tasks.types.js';
 import { AppError } from '../utils/AppError.js';
-import { createTask, getTeamTasks,  getTask, updateTaskStatus, updateTaskUsers, deleteTask, uploadTaskFile, getTaskFiles, deleteFile } from './tasks.service.js';
+import { createTask, getTeamTasks,  getTask, updateTaskStatus, updateTaskUsers, deleteTask, uploadTaskFile, getTaskFiles, deleteFile, downloadTaskFile } from './tasks.service.js';
 
 export const createTaskController = async (req: AuthRequest, res: Response) => {
   const teamId = Number(req.params.id);
@@ -131,4 +131,22 @@ export const deleteFileController = async (req: AuthRequest, res: Response) => {
   const result = await deleteFile(fileId, req.user!.id);
 
   return res.json(result);
+};
+
+export const downloadFileController = async (req: AuthRequest, res: Response) => {
+  const fileId = Number(req.params.id);
+
+  if (Number.isNaN(fileId))
+    throw new AppError("Invalid file ID.", 400);
+
+  const file = await downloadTaskFile(fileId, req.user!.id);
+
+  const filePath = `/app/uploads/tasks/${file.file_url.split('/').pop()}`;
+
+  const fileName = file.file_name;
+
+  res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+  res.setHeader('Content-Type', file.file_type || 'application/octet-stream');
+
+  res.sendFile(filePath);
 };

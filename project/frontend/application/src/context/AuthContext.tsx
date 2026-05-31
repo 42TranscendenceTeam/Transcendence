@@ -269,16 +269,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const updateTaskAssignee = async (teamId: number, taskId: number, member: Member) => {
+  const updateTaskAssignee = async (teamId: number, taskId: number, members: Member[]) => {
     if (!user) return;
     try {
-      await api.updateTaskUsers(taskId, [member.id]);
+      const memberIds = members.map(m => m.id);
+      await api.updateTaskUsers(taskId, memberIds);
       const updatedTeams = user.teams.map((team) => {
         if (team.id === teamId) {
           return {
             ...team,
             tasks: team.tasks.map((task) => {
-              if (task.id === taskId) return { ...task, assignedTo: { id: member.id, username: member.username } };
+              if (task.id === taskId) return { ...task, assignedTo: members.map(m => ({ id: m.id, username: m.username })) };
               return task;
             }),
           };
@@ -330,7 +331,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             ...team,
             members: team.members.filter((m) => m.id !== memberId),
             tasks: team.tasks.map((task) => {
-              if (task.assignedTo?.id === memberId) return { ...task, assignedTo: null };
+              if (task.assignedTo?.some(a => a.id === memberId)) return { ...task, assignedTo: task.assignedTo.filter(a => a.id !== memberId) };
               return task;
             }),
           };

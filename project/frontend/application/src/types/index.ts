@@ -66,7 +66,7 @@ export interface Task {
   title: string;
   description: string;
   status: 'open' | 'in_progress' | 'closed';
-  assignedTo: Pick<User, 'id' | 'username'> | null;
+  assignedTo: Pick<User, 'id' | 'username'>[];
   files: TaskFile[];
   creatorId?: number;
 }
@@ -113,7 +113,7 @@ export interface AuthContextType {
   addTask: (teamId: number, newTask: Partial<Task>) => void;
   uploadFile: (teamId: number, taskId: number, file: File) => Promise<void>;
   deleteTaskFile: (teamId: number, taskId: number, fileId: number) => Promise<void>;
-  updateTaskAssignee: (teamId: number, taskId: number, member: Member) => void;
+  updateTaskAssignee: (teamId: number, taskId: number, members: Member[]) => void;
   addTeamMember: (teamId: number, member: Member, role: string) => void;
   addFriend: (friend: Friend) => void;
   findUserByUsername: (username: string) => User | undefined;

@@ -717,10 +717,22 @@ export const api = {
       title: task.title,
       description: task.description || '',
       status: task.status,
-      assignedTo: task.task_users?.[0]?.user
-        ? { id: task.task_users[0].user.id, username: task.task_users[0].user.username }
-        : null,
-      files: [],
+      assignedTo: (task.task_users || []).map((tu: any) => ({
+        id: tu.user.id,
+        username: tu.user.username,
+      })),
+      files: (task.files || []).map((f: any) => ({
+        id: f.id,
+        uploader_id: f.uploader_id,
+        team_id: f.team_id,
+        task_id: f.task_id,
+        file_name: f.file_name,
+        file_url: f.file_url,
+        file_type: f.file_type,
+        file_size: f.file_size,
+        created_at: f.created_at,
+        uploader: f.uploader,
+      })),
       creatorId: task.creator_id,
     };
   },

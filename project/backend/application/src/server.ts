@@ -24,7 +24,7 @@ app.use('/teams', teamsRoutes);
 app.use('/tasks', tasksRoutes);
 app.use('/friends', friendsRoutes);
 app.use('/notifications', notificationsRoutes);
-app.use('/uploads', express.static('/app/uploads'));
+app.use('/uploads/avatars', express.static('/app/uploads/avatars'));
 app.use('/public', express.static('/app/public'));
 
 app.get('/health', (req: Request, res: Response) => {

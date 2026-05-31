@@ -33,7 +33,7 @@ function TeamDetail() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
   const [showTaskForm, setShowTaskForm] = useState(false);
-  const [newTask, setNewTask] = useState({ title: '', description: '', assignedTo: '', status: 'open' as Task['status'] });
+  const [newTask, setNewTask] = useState({ title: '', description: '', assignedTo: [] as string[], status: 'open' as Task['status'] });
   const [statusFilter, setStatusFilter] = useState('all');
   const [assigneeFilter, setAssigneeFilter] = useState('all');
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
@@ -67,6 +67,10 @@ function TeamDetail() {
   const [taskToDelete, setTaskToDelete] = useState<number | null>(null);
   const [showDeleteFileConfirm, setShowDeleteFileConfirm] = useState(false);
   const [fileToDelete, setFileToDelete] = useState<{ taskId: number; fileId: number } | null>(null);
+  const [showFormAssigneeDropdown, setShowFormAssigneeDropdown] = useState(false);
+  const [openAssigneeTask, setOpenAssigneeTask] = useState<number | null>(null);
+  const [downloadingFileId, setDownloadingFileId] = useState<number | null>(null);
+  const formAssigneeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchTeam = async () => {
@@ -103,7 +107,17 @@ function TeamDetail() {
       if (!id) return;
       try {
         const taskData = await api.getTasks(parseInt(id));
-        setTasks(taskData);
+        const tasksWithFiles = await Promise.all(
+          taskData.map(async (task) => {
+            try {
+              const files = await api.getTaskFiles(task.id);
+              return { ...task, files };
+            } catch {
+              return task;
+            }
+          })
+        );
+        setTasks(tasksWithFiles);
       } catch (err) {
         console.error('Failed to fetch tasks:', err);
       }
@@ -116,6 +130,34 @@ function TeamDetail() {
       fetchUsers();
     }
   }, [showAddMemberModal]);
+
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (showFormAssigneeDropdown && formAssigneeRef.current && !formAssigneeRef.current.contains(target)) {
+        setShowFormAssigneeDropdown(false);
+      }
+      if (openAssigneeTask !== null) {
+        const panel = document.getElementById(`assignee-panel-${openAssigneeTask}`);
+        const trigger = document.getElementById(`assignee-trigger-${openAssigneeTask}`);
+        if (panel && !panel.contains(target) && trigger && !trigger.contains(target)) {
+          setOpenAssigneeTask(null);
+        }
+      }
+    };
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowFormAssigneeDropdown(false);
+        setOpenAssigneeTask(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClick);
+    document.addEventListener('keydown', handleKey);
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('keydown', handleKey);
+    };
+  }, [showFormAssigneeDropdown, openAssigneeTask]);
 
   const fetchUsers = async () => {
     setLoadingUsers(true);
@@ -171,15 +213,15 @@ function TeamDetail() {
 
   const filteredTasks = (tasks || []).filter((task: any) => {
     const statusMatch = statusFilter === 'all' || task.status === statusFilter;
-    const assigneeMatch = assigneeFilter === 'all' || task.assignedTo?.username === assigneeFilter;
+    const assigneeMatch = assigneeFilter === 'all' || (task.assignedTo && task.assignedTo.some(a => a.username === assigneeFilter));
     return statusMatch && assigneeMatch;
   });
 
   const handleLeaveTeam = () => {
     setTasks(prevTasks => 
       prevTasks.map(task => 
-        task.assignedTo?.id === user.id
-          ? { ...task, assignedTo: null }
+        task.assignedTo?.some(a => a.id === user.id)
+          ? { ...task, assignedTo: task.assignedTo.filter(a => a.id !== user.id) }
           : task
       )
     );
@@ -297,15 +339,15 @@ function TeamDetail() {
     e.preventDefault();
     if (!newTask.title.trim() || !canEdit) return;
     try {
-      const member = team.members.find((m: Member) => m.username === newTask.assignedTo);
+      const members = team.members.filter((m: Member) => newTask.assignedTo.includes(m.username));
       const createdTask = await api.createTask(team.id, {
         title: newTask.title,
         description: newTask.description,
         status: newTask.status,
-        ...(member ? { user_ids: [member.id] } : {}),
+        user_ids: members.map((m: Member) => m.id),
       });
       setTasks([...tasks, createdTask]);
-      setNewTask({ title: '', description: '', assignedTo: '', status: 'open' });
+      setNewTask({ title: '', description: '', assignedTo: [], status: 'open' });
       setShowTaskForm(false);
     } catch (err) {
       console.error('Failed to create task:', err);
@@ -323,26 +365,15 @@ function TeamDetail() {
     }
   };
 
-  const handleAssigneeChange = async (taskId: number, memberUsername: string) => {
+  const handleAssigneeChange = async (taskId: number, selectedMembers: Member[]) => {
     if (!canEdit) return;
-    if (memberUsername) {
-      const member = team.members.find((m: Member) => m.username === memberUsername);
-      if (member) {
-        try {
-          await api.updateTaskUsers(taskId, [member.id]);
-          setTasks(tasks.map((t) => t.id === taskId ? { ...t, assignedTo: { id: member.id, username: member.username } } : t));
-          updateTaskAssignee(team.id, taskId, member);
-        } catch (err) {
-          console.error('Failed to update task users:', err);
-        }
-      }
-    } else {
-      try {
-        await api.updateTaskUsers(taskId, []);
-        setTasks(tasks.map((t) => t.id === taskId ? { ...t, assignedTo: null } : t));
-      } catch (err) {
-        console.error('Failed to remove task users:', err);
-      }
+    try {
+      const memberIds = selectedMembers.map(m => m.id);
+      await api.updateTaskUsers(taskId, memberIds);
+      setTasks(tasks.map((t) => t.id === taskId ? { ...t, assignedTo: selectedMembers.map(m => ({ id: m.id, username: m.username })) } : t));
+      updateTaskAssignee(team.id, taskId, selectedMembers);
+    } catch (err) {
+      console.error('Failed to update task users:', err);
     }
   };
 
@@ -485,6 +516,25 @@ function TeamDetail() {
     } catch (err) {
       console.error('Failed to remove member:', err);
       alert(t('teams.failedToRemove') || 'Failed to remove member');
+    }
+  };
+
+  const handleDownload = async (file: TaskFile) => {
+    setDownloadingFileId(file.id);
+    try {
+      const token = localStorage.getItem('authToken');
+      const res = await fetch(`/api/tasks/files/${file.id}/download`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Download failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+    } catch (err) {
+      console.error('Download failed:', err);
+    } finally {
+      setDownloadingFileId(null);
     }
   };
 
@@ -644,16 +694,39 @@ function TeamDetail() {
               rows={2}
             />
             <div className="task-form-row">
-              <select
-                className="input"
-                value={newTask.assignedTo}
-                onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
-              >
-                <option value="">{t('teams.assignTo')}</option>
-                {team.members.map((member) => (
-                  <option key={member.id} value={member.username}>{member.username}</option>
-                ))}
-              </select>
+              <div className="assignee-dropdown-wrapper" ref={formAssigneeRef}>
+                <button
+                  type="button"
+                  className="input assignee-dropdown-trigger"
+                  onClick={() => setShowFormAssigneeDropdown(!showFormAssigneeDropdown)}
+                >
+                  <span className="dropdown-arrow">&#9660;</span>
+                  {newTask.assignedTo.length > 0
+                    ? newTask.assignedTo.join(', ')
+                    : t('teams.assignTo')
+                  }
+                </button>
+                {showFormAssigneeDropdown && (
+                  <div className="assignee-dropdown-panel" id="form-assignee-panel">
+                    {team.members.map((member) => (
+                      <label key={member.id} className="assignee-dropdown-option">
+                        <input
+                          type="checkbox"
+                          checked={newTask.assignedTo.includes(member.username)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setNewTask({ ...newTask, assignedTo: [...newTask.assignedTo, member.username] });
+                            } else {
+                              setNewTask({ ...newTask, assignedTo: newTask.assignedTo.filter(u => u !== member.username) });
+                            }
+                          }}
+                        />
+                        <span>{member.username}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
               <select
                 className="input"
                 value={newTask.status}
@@ -719,18 +792,59 @@ function TeamDetail() {
                 </span>
               )}
               {canEdit ? (
-                <select
-                  className="assigned-select"
-                  value={task.assignedTo?.username || ''}
-                  onChange={(e) => handleAssigneeChange(task.id, e.target.value)}
-                >
-                  <option value="">{t('teams.unassigned')}</option>
-                  {team.members.map((member) => (
-                    <option key={member.id} value={member.username}>{member.username}</option>
-                  ))}
-                </select>
+                <div className="assignee-dropdown-wrapper">
+                  <button
+                    type="button"
+                    className="assigned-select assignee-dropdown-trigger"
+                    id={`assignee-trigger-${task.id}`}
+                    onClick={() => setOpenAssigneeTask(openAssigneeTask === task.id ? null : task.id)}
+                  >
+                    {task.assignedTo && task.assignedTo.length > 0
+                      ? task.assignedTo.map((a: { username: string }) => a.username).join(', ')
+                      : t('teams.unassigned')
+                    }
+                  </button>
+                  {openAssigneeTask === task.id && (
+                    <div
+                      className="assignee-dropdown-panel"
+                      id={`assignee-panel-${task.id}`}
+                    >
+                      {team.members.map((member) => {
+                        const isAssigned = task.assignedTo?.some((a: { id: number }) => a.id === member.id) ?? false;
+                        return (
+                          <label key={member.id} className="assignee-dropdown-option">
+                            <input
+                              type="checkbox"
+                              checked={isAssigned}
+                              onChange={() => {
+                                const current = team.members.filter((m: Member) =>
+                                  (task.assignedTo || []).some((a: { id: number }) => a.id === m.id)
+                                );
+                                const updated = isAssigned
+                                  ? current.filter((m: Member) => m.id !== member.id)
+                                  : [...current, member];
+                                handleAssigneeChange(task.id, updated);
+                              }}
+                            />
+                            <span>{member.username}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               ) : (
-                <span className="task-assigned">{task.assignedTo ? <Link to={`/profile/${task.assignedTo.id}`}>{task.assignedTo.username}</Link> : '-'}</span>
+                <span className="task-assigned">
+                  {task.assignedTo && task.assignedTo.length > 0
+                    ? task.assignedTo.map((a: { id: number; username: string }, i: number) => (
+                        <span key={a.id}>
+                          {i > 0 && ', '}
+                          <Link to={`/profile/${a.id}`}>{a.username}</Link>
+                        </span>
+                      ))
+                    : '-'
+                  }
+                </span>
               )}
               <span className="task-files">
                 <input
@@ -759,9 +873,13 @@ function TeamDetail() {
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="file-icon">
                         <path fillRule="evenodd" d="M4.5 3.75a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 5a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 5a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75z" clipRule="evenodd" />
                       </svg>
-                      <a href={file.file_url} target="_blank" rel="noopener noreferrer" className="file-link">
-                        {file.file_name}
-                      </a>
+                      <span
+                        className="file-link"
+                        onClick={() => handleDownload(file)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {downloadingFileId === file.id ? t('teams.downloading') || '...' : file.file_name}
+                      </span>
                       {canEdit && (
                         <button
                           type="button"

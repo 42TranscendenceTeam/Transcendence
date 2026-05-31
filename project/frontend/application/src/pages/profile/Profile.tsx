@@ -25,7 +25,7 @@ function Profile() {
   }
 
   const allTasks = (user.teams || []).flatMap((team) =>
-    (team.tasks || []).filter((task) => task.assignedTo?.id === user.id)
+    (team.tasks || []).filter((task) => task.assignedTo?.some(a => a.id === user.id))
       .map((task) => ({ ...task, teamName: team.name }))
   );
 

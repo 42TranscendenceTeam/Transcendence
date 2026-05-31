@@ -379,19 +379,17 @@
  * Task form row children
  */
 .task-form-row select,
-.task-form-row .btn {
+.task-form-row .btn,
+.task-form-row .assignee-dropdown-wrapper {
   flex: 1;
 }
 
-/*
- * Task form row first child
- */
-.task-form-row select:first-child {
-  flex: 2;
-}
+/* ========================================
+   Task status select dropdown
+   ======================================== */
 
 /*
- * Task status select dropdown
+ * Task status select in per-task rows
  */
 .task-status-select {
   background: var(--bg-primary);
@@ -401,6 +399,7 @@
   color: var(--text-primary);
   font-size: 0.75rem;
   cursor: pointer;
+  max-width: 100px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -413,10 +412,6 @@
   box-shadow: 0 0 8px var(--neon-purple);
   outline: none;
 }
-
-/* ========================================
-   Task Filters
-   ======================================== */
 
 /*
  * Task filters container
@@ -463,6 +458,11 @@
   font-size: 0.75rem;
   cursor: pointer;
   max-width: 100px;
+  min-height: 1.5rem;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
