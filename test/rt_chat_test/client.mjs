@@ -175,9 +175,11 @@ async function main() {
 
   const socketA = io('https://localhost', {
     transports: ['websocket'], rejectUnauthorized: false,
+	  auth: { token },
   });
   const socketB = io('https://localhost', {
     transports: ['websocket'], rejectUnauthorized: false,
+	  auth: { token: felixLogin.token },
   });
 
   socketA.on('connect_error', err => {
