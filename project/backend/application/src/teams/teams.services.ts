@@ -337,6 +337,8 @@ export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
 			status_ongoing: true,
 			owner_id: true,
 			name: true,
+			max_users: true,
+			team_users: true,
 		},
 	});
 
@@ -345,6 +347,9 @@ export const sendTeamJoinRequest = async (userId: number, teamId: number) => {
 
 	if (team.status_ongoing === false)
 		throw new AppError("Closed teams cannot receive join requests.", 400);
+
+	if (team.max_users == team.team_users.length)
+		throw new AppError("Team is full.", 400);
 
 	const requestExists = await prisma.teamJoinRequest.findFirst({
 		where: {
@@ -424,6 +429,8 @@ export const acceptJoinRequest = async (userId: number, teamId: number, requestI
 					owner_id: true,
 					status_ongoing: true,
 					name: true,
+					max_users: true,
+					team_users: true,
 				}
 			}
 		}
@@ -437,6 +444,9 @@ export const acceptJoinRequest = async (userId: number, teamId: number, requestI
 
 	if (request.team.status_ongoing === false)
 		throw new AppError("Closed teams cannot accept join requests.", 400);
+
+	if (request.team.max_users == request.team.team_users.length)
+		throw new AppError("Team is full.", 400);
 
 	const userInTeam = await prisma.teamUser.findFirst({
 		where: {
@@ -578,7 +588,9 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 				select: {
 					username: true,
 				}
-			}
+			},
+			max_users: true,
+			team_users: true,
 		}
 	});
 
@@ -590,6 +602,9 @@ export const sendTeamInvite = async (userId: number, teamId: number, receiverId:
 
 	if (team.status_ongoing === false)
 		throw new AppError("Closed teams cannot send invites.", 400);
+
+	if (team.max_users == team.team_users.length)
+		throw new AppError("Team is full.", 400);
 
 	const inviteExists = await prisma.teamInvite.findFirst({
 		where: {
