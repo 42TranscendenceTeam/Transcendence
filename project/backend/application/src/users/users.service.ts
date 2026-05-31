@@ -128,9 +128,9 @@ export const getUserById = async (userId: number) => {
   });
 
   const taskCount = taskAssignments.length;
-  const tasksToDo = taskAssignments.filter((ta) => ta.task.status === 'to_do').length;
+  const tasksToDo = taskAssignments.filter((ta) => ta.task.status === 'open').length;
   const tasksInProgress = taskAssignments.filter((ta) => ta.task.status === 'in_progress').length;
-  const tasksDone = taskAssignments.filter((ta) => ta.task.status === 'done').length;
+  const tasksDone = taskAssignments.filter((ta) => ta.task.status === 'closed').length;
 
   return {
     id: user.id,

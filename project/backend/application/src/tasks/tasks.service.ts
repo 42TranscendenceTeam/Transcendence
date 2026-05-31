@@ -367,3 +367,28 @@ export const deleteFile = async (fileId: number, userId: number) => {
 
   return { success: true };
 };
+
+export const downloadTaskFile = async (fileId: number, userId: number) => {
+  const file = await prisma.file.findUnique({
+    where: { id: fileId },
+    include: { task: true },
+  });
+
+  if (!file)
+    throw new AppError("File not found.", 404);
+
+  if (!file.task)
+    throw new AppError("File has no associated task.", 404);
+
+  const isMember = await prisma.teamUser.findFirst({
+    where: {
+      team_id: file.task.team_id,
+      user_id: userId,
+    },
+  });
+
+  if (!isMember)
+    throw new AppError("Not a team member.", 403);
+
+  return file;
+};

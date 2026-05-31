@@ -9,32 +9,32 @@ import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
-import type { Team } from '../../services/api';
+import type { Team, UserProfileResponse } from '../../services/api';
 
 function Profile() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const [myTeams, setMyTeams] = useState<Team[]>([]);
+  const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
 
   useEffect(() => {
+    if (!user) return;
     api.getMyTeams().then(setMyTeams).catch(() => setMyTeams([]));
-  }, []);
+    api.getUserProfile(user.id).then(setProfileData).catch(() => setProfileData(null));
+  }, [user]);
 
   if (!user) {
     return null;
   }
 
-  const allTasks = (user.teams || []).flatMap((team) =>
-    (team.tasks || []).filter((task) => task.assignedTo?.id === user.id)
-      .map((task) => ({ ...task, teamName: team.name }))
-  );
-
-  const taskStats = {
-    total: allTasks.length,
-    to_do: allTasks.filter((t) => t.status === 'to_do').length,
-    in_progress: allTasks.filter((t) => t.status === 'in_progress').length,
-    done: allTasks.filter((t) => t.status === 'done').length,
-  };
+  const taskStats = profileData
+    ? {
+        total: profileData.taskCount,
+        open: profileData.tasksToDo,
+        in_progress: profileData.tasksInProgress,
+        closed: profileData.tasksDone,
+      }
+    : { total: 0, open: 0, in_progress: 0, closed: 0 };
 
   const teamStats = {
     total: myTeams.length,
@@ -63,7 +63,7 @@ function Profile() {
         <div className="profile-task-stats">
           <span className="task-count total">{t('profile.totalTeams') || 'Total'}: {teamStats.total}</span>
           <span className="task-count in_progress">{t('teams.active')}: {teamStats.active}</span>
-          <span className="task-count done">{t('teams.finished')}: {teamStats.finished}</span>
+          <span className="task-count closed">{t('teams.finished')}: {teamStats.finished}</span>
         </div>
       </div>
 
@@ -71,9 +71,9 @@ function Profile() {
         <h2 className="profile-section-title">{t('profile.taskStats') || 'Task Stats'}</h2>
         <div className="profile-task-stats">
           <span className="task-count total">{t('tasks.total') || 'Total'}: {taskStats.total}</span>
-          <span className="task-count to_do">{t('tasks.open')}: {taskStats.to_do}</span>
+          <span className="task-count open">{t('tasks.open')}: {taskStats.open}</span>
           <span className="task-count in_progress">{t('tasks.inProgress') || 'In Progress'}: {taskStats.in_progress}</span>
-          <span className="task-count done">{t('tasks.done')}: {taskStats.done}</span>
+          <span className="task-count closed">{t('tasks.done')}: {taskStats.closed}</span>
         </div>
       </div>
     </div>
