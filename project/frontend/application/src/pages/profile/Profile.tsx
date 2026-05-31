@@ -9,32 +9,32 @@ import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
-import type { Team } from '../../services/api';
+import type { Team, UserProfileResponse } from '../../services/api';
 
 function Profile() {
   const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const [myTeams, setMyTeams] = useState<Team[]>([]);
+  const [profileData, setProfileData] = useState<UserProfileResponse | null>(null);
 
   useEffect(() => {
+    if (!user) return;
     api.getMyTeams().then(setMyTeams).catch(() => setMyTeams([]));
-  }, []);
+    api.getUserProfile(user.id).then(setProfileData).catch(() => setProfileData(null));
+  }, [user]);
 
   if (!user) {
     return null;
   }
 
-  const allTasks = (user.teams || []).flatMap((team) =>
-    (team.tasks || []).filter((task) => task.assignedTo?.some(a => a.id === user.id))
-      .map((task) => ({ ...task, teamName: team.name }))
-  );
-
-  const taskStats = {
-    total: allTasks.length,
-    open: allTasks.filter((t) => t.status === 'open').length,
-    in_progress: allTasks.filter((t) => t.status === 'in_progress').length,
-    closed: allTasks.filter((t) => t.status === 'closed').length,
-  };
+  const taskStats = profileData
+    ? {
+        total: profileData.taskCount,
+        open: profileData.tasksToDo,
+        in_progress: profileData.tasksInProgress,
+        closed: profileData.tasksDone,
+      }
+    : { total: 0, open: 0, in_progress: 0, closed: 0 };
 
   const teamStats = {
     total: myTeams.length,
