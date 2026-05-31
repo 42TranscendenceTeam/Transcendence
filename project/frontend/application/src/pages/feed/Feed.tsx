@@ -294,7 +294,7 @@ function Feed() {
                 className="task-avatar"
               />
               <div className="task-user-info">
-                <span className="task-author">{team.owner.username}</span>
+                <Link to={`/profile/${team.owner.id}`} className="task-author">{team.owner.username}</Link>
                 <span className="task-timestamp">{formatDate(team.created_at)}</span>
               </div>
             </div>

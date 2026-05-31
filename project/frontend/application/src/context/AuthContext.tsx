@@ -11,6 +11,8 @@ import { createContext, useState, useEffect, ReactNode } from 'react';
 import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest, TeamInvite, JoinRequestNotification, AppNotification } from '../types';
 import { api } from '../services/api';
 import { getAvatarUrl } from '../utils/avatar';
+import { validateTaskFile } from '../utils/fileValidation';
+import { connectSocket, disconnectSocket, getSocket } from '../services/socket';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -29,6 +31,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [teamRefreshTrigger, setTeamRefreshTrigger] = useState(0);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -72,9 +75,52 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        connectSocket(token);
+        const sock = getSocket();
+        if (sock) {
+          const handler = (n: AppNotification) => {
+            setNotifications((prev) => [n, ...prev]);
+            if (!n.status_read) setUnreadCount((c) => c + 1);
+
+            if (n.type === 'friend_request' || n.type === 'friend_request_accepted'
+                || n.type === 'friend_request_rejected') {
+              fetchFriendRequests();
+              fetchSentRequests();
+            }
+            if (n.type === 'friend_request_accepted') {
+              fetchFriends();
+            }
+            if (n.type === 'team_invite' || n.type === 'team_invite_accepted'
+                || n.type === 'team_invite_rejected') {
+              fetchTeamInvites();
+            }
+            if (n.type === 'team_join_request' || n.type === 'team_join_request_accepted'
+                || n.type === 'team_join_request_rejected') {
+              if (user) fetchJoinRequestNotifications(user.id);
+            }
+            if (n.type === 'team_invite_accepted' || n.type === 'team_removed'
+                || n.type === 'team_user_left' || n.type === 'team_join_request_accepted'
+                || n.type === 'team_join_request') {
+              setTeamRefreshTrigger((c) => c + 1);
+            }
+          };
+          sock.on('notification:new', handler);
+          return () => sock.off('notification:new', handler);
+        }
+      }
+    } else {
+      disconnectSocket();
+    }
+  }, [user]);
+
   const logout = () => {
     localStorage.removeItem('authToken');
     setUser(null);
+    disconnectSocket();
   };
 
   const updateUser = (updates: Partial<User>) => {
@@ -127,68 +173,123 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser({ ...user, globalChat: [...(user.globalChat || []), message] });
   };
 
-  const updateTaskStatus = (teamId: number, taskId: number, status: Task['status']) => {
+  const updateTaskStatus = async (teamId: number, taskId: number, status: Task['status']) => {
     if (!user) return;
-    const updatedTeams = user.teams.map((team) => {
-      if (team.id === teamId) {
-        return {
-          ...team,
-          tasks: team.tasks.map((task) => {
-            if (task.id === taskId) return { ...task, status };
-            return task;
-          }),
-        };
-      }
-      return team;
-    });
-    setUser({ ...user, teams: updatedTeams });
+    try {
+      const updated = await api.updateTaskStatus(taskId, status);
+      const updatedTeams = user.teams.map((team) => {
+        if (team.id === teamId) {
+          return {
+            ...team,
+            tasks: team.tasks.map((task) => {
+              if (task.id === taskId) return updated;
+              return task;
+            }),
+          };
+        }
+        return team;
+      });
+      setUser({ ...user, teams: updatedTeams });
+    } catch (err) {
+      console.error('Failed to update task status:', err);
+    }
   };
 
-  const addTask = (teamId: number, newTask: Partial<Task>) => {
+  const addTask = async (teamId: number, newTask: Partial<Task>) => {
     if (!user) return;
-    const updatedTeams = user.teams.map((team) => {
-      if (team.id === teamId) {
-        return { ...team, tasks: [...team.tasks, { id: Date.now(), ...newTask } as Task] };
-      }
-      return team;
-    });
-    setUser({ ...user, teams: updatedTeams });
+    try {
+      const created = await api.createTask(teamId, {
+        title: newTask.title || '',
+        description: newTask.description || '',
+        status: newTask.status || 'open',
+      });
+      const updatedTeams = user.teams.map((team) => {
+        if (team.id === teamId) {
+          return { ...team, tasks: [...team.tasks, created] };
+        }
+        return team;
+      });
+      setUser({ ...user, teams: updatedTeams });
+    } catch (err) {
+      console.error('Failed to add task:', err);
+    }
   };
 
-  const uploadFile = (teamId: number, taskId: number, file: File) => {
+  const uploadFile = async (teamId: number, taskId: number, file: File) => {
     if (!user) return;
-    const updatedTeams = user.teams.map((team) => {
-      if (team.id === teamId) {
-        return {
-          ...team,
-          tasks: team.tasks.map((task) => {
-            if (task.id === taskId) {
-              return { ...task, files: [...task.files, { name: file.name, size: `${(file.size / 1024).toFixed(1)}KB` }] };
-            }
-            return task;
-          }),
-        };
-      }
-      return team;
-    });
-    setUser({ ...user, teams: updatedTeams });
+    const validation = validateTaskFile(file);
+    if (!validation.valid) {
+      throw new Error(validation.error);
+    }
+    try {
+      const savedFile = await api.uploadTaskFile(taskId, file);
+      const updatedTeams = user.teams.map((team) => {
+        if (team.id === teamId) {
+          return {
+            ...team,
+            tasks: team.tasks.map((task) => {
+              if (task.id === taskId) {
+                return { ...task, files: [...task.files, savedFile] };
+              }
+              return task;
+            }),
+          };
+        }
+        return team;
+      });
+      setUser({ ...user, teams: updatedTeams });
+    } catch (err) {
+      console.error('Failed to upload file:', err);
+      throw err;
+    }
   };
 
-  const updateTaskAssignee = (teamId: number, taskId: number, member: Member) => {
+  const deleteTaskFile = async (teamId: number, taskId: number, fileId: number) => {
     if (!user) return;
-    const updatedTeams = user.teams.map((team) => {
-      if (team.id === teamId) {
-        return {
-          ...team,
-          tasks: team.tasks.map((task) => {
-            if (task.id === taskId) return { ...task, assignedTo: { id: member.id, username: member.username } };
-            return task;
-          }),
-        };
-      }
-      return team;
-    });
-    setUser({ ...user, teams: updatedTeams });
+    try {
+      await api.deleteTaskFile(fileId);
+      const updatedTeams = user.teams.map((team) => {
+        if (team.id === teamId) {
+          return {
+            ...team,
+            tasks: team.tasks.map((task) => {
+              if (task.id === taskId) {
+                return { ...task, files: task.files.filter((f) => f.id !== fileId) };
+              }
+              return task;
+            }),
+          };
+        }
+        return team;
+      });
+      setUser({ ...user, teams: updatedTeams });
+    } catch (err) {
+      console.error('Failed to delete file:', err);
+      throw err;
+    }
+  };
+
+  const updateTaskAssignee = async (teamId: number, taskId: number, members: Member[]) => {
+    if (!user) return;
+    try {
+      const memberIds = members.map(m => m.id);
+      await api.updateTaskUsers(taskId, memberIds);
+      const updatedTeams = user.teams.map((team) => {
+        if (team.id === teamId) {
+          return {
+            ...team,
+            tasks: team.tasks.map((task) => {
+              if (task.id === taskId) return { ...task, assignedTo: members.map(m => ({ id: m.id, username: m.username })) };
+              return task;
+            }),
+          };
+        }
+        return team;
+      });
+      setUser({ ...user, teams: updatedTeams });
+    } catch (err) {
+      console.error('Failed to update task assignee:', err);
+    }
   };
 
   const addTeamMember = (teamId: number, member: Member, role: string) => {
@@ -230,7 +331,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             ...team,
             members: team.members.filter((m) => m.id !== memberId),
             tasks: team.tasks.map((task) => {
-              if (task.assignedTo?.id === memberId) return { ...task, assignedTo: null };
+              if (task.assignedTo?.some(a => a.id === memberId)) return { ...task, assignedTo: task.assignedTo.filter(a => a.id !== memberId) };
               return task;
             }),
           };
@@ -506,6 +607,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       updateTaskStatus,
       addTask,
       uploadFile,
+      deleteTaskFile,
       updateTaskAssignee,
       addTeamMember,
       addFriend,
@@ -531,6 +633,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       fetchSentRequests,
       fetchFriends,
       fetchTeamInvites,
+      teamRefreshTrigger,
       fetchJoinRequestNotifications,
       acceptFriendRequest,
       rejectFriendRequest,

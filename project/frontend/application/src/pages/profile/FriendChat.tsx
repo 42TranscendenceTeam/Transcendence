@@ -73,7 +73,7 @@ function FriendChat() {
         </Link>
         <div className="friend-chat-title">
           <img src={friend.avatar} alt={friend.username} className="friend-chat-avatar" />
-          <h1>{friend.username}</h1>
+          <Link to={`/profile/${friend.id}`}><h1>{friend.username}</h1></Link>
         </div>
       </div>
 
@@ -86,7 +86,7 @@ function FriendChat() {
                   <img src={msg.sender.avatar || friend.avatar} alt={msg.sender.username} className="chat-avatar" />
                 )}
                 <div className="friend-chat-message-content">
-                  {msg.sender.id !== user?.id && <span className="chat-username">{msg.sender.username}</span>}
+                  {msg.sender.id !== user?.id && <Link to={`/profile/${msg.sender.id}`} className="chat-username">{msg.sender.username}</Link>}
                   <span className="chat-time">{formatTime(msg.timestamp)}</span>
                   <p className="chat-text">{msg.text}</p>
                 </div>

@@ -7,6 +7,7 @@ import { initSocket } from './socket.js';
 import authRoutes from './auth/auth.routes.js';
 import userRoutes from './users/users.routes.js';
 import teamsRoutes from './teams/teams.routes.js';
+import tasksRoutes from './tasks/tasks.routes.js';
 import friendsRoutes from './friends/friends.routes.js';
 import notificationsRoutes from './notifications/notifications.routes.js';
 
@@ -20,9 +21,10 @@ app.use(express.json());
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/teams', teamsRoutes);
+app.use('/tasks', tasksRoutes);
 app.use('/friends', friendsRoutes);
 app.use('/notifications', notificationsRoutes);
-app.use('/uploads', express.static('/app/uploads'));
+app.use('/uploads/avatars', express.static('/app/uploads/avatars'));
 app.use('/public', express.static('/app/public'));
 
 app.get('/health', (req: Request, res: Response) => {

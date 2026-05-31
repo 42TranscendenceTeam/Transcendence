@@ -30,6 +30,7 @@ const API_URL = import.meta.env.VITE_API_URL || '/api';
  *  Example, "LoginRequest" must have email and password strings.
  */
 import { getAvatarUrl } from '../utils/avatar';
+import type { TaskFile } from '../types';
 
 export interface LoginRequest {
   email: string;
@@ -99,13 +100,29 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  status: 'to_do' | 'in_progress' | 'done';
+  status: 'open' | 'in_progress' | 'closed';
 }
 
 export interface Friend {
   id: number;
   username: string;
   avatar_url: string;
+}
+
+export interface UserProfileResponse {
+  id: number;
+  username: string;
+  email: string;
+  avatar_url: string;
+  bio: string;
+  friendCount: number;
+  teamCount: number;
+  activeTeams: number;
+  finishedTeams: number;
+  taskCount: number;
+  tasksToDo: number;
+  tasksInProgress: number;
+  tasksDone: number;
 }
 
 export interface FriendRequest {
@@ -191,7 +208,24 @@ export const api = {
     });
   },
 
-  // TODO: Define wich methos will require "getAuthHeaders" and wich don't
+  // ========== OTHER USER PROFILE ==========
+  getUserProfile(userId: number): Promise<UserProfileResponse> {
+    return fetch(`${API_URL}/users/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to get user profile');
+        });
+      }
+      return response.json();
+    });
+  },
+
   // ========== USER PROFILE ==========
   getCurrentUser(): Promise<UserProfile> {
     return fetch(`${API_URL}/users/me`, {
@@ -677,32 +711,178 @@ export const api = {
   },
 
   // ========== TASKS ==========
-  // TODO: Implement - Backend needs to provide GET /teams/:id/tasks
-  getTasks(teamId: string): Promise<Task[]> {
-    // Frontend sends: nothing
-    // Backend returns: Array of { id, title, description, status, assignedTo }
-    throw new Error('TODO: Implement GET /teams/:id/tasks');
+  mapBackendTask(task: any): Task {
+    return {
+      id: task.id,
+      title: task.title,
+      description: task.description || '',
+      status: task.status,
+      assignedTo: (task.task_users || []).map((tu: any) => ({
+        id: tu.user.id,
+        username: tu.user.username,
+      })),
+      files: (task.files || []).map((f: any) => ({
+        id: f.id,
+        uploader_id: f.uploader_id,
+        team_id: f.team_id,
+        task_id: f.task_id,
+        file_name: f.file_name,
+        file_url: f.file_url,
+        file_type: f.file_type,
+        file_size: f.file_size,
+        created_at: f.created_at,
+        uploader: f.uploader,
+      })),
+      creatorId: task.creator_id,
+    };
   },
 
-  // TODO: Implement - Backend needs to provide POST /teams/:id/tasks
-  createTask(teamId: string, data: { title: string; description: string }): Promise<Task> {
-    // Frontend sends: { title, description }
-    // Backend returns: { id, title, description, status }
-    throw new Error('TODO: Implement POST /teams/:id/tasks');
+  getTasks(teamId: number): Promise<Task[]> {
+    return fetch(`${API_URL}/teams/${teamId}/tasks`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) throw new Error('Failed to get tasks');
+      return response.json();
+    }).then((tasks: any[]) =>
+      tasks.map((t) => api.mapBackendTask(t))
+    );
   },
 
-  // TODO: Implement - Backend needs to provide PUT /teams/:id/tasks/:taskId
-  updateTask(teamId: string, taskId: string, data: Partial<Task>): Promise<Task> {
-    // Frontend sends: { title?, description?, status?, assignedTo? }
-    // Backend returns: { id, title, description, status }
-    throw new Error('TODO: Implement PUT /teams/:id/tasks/:taskId');
+  createTask(teamId: number, data: { title: string; description: string; status?: Task['status']; user_ids?: number[] }): Promise<Task> {
+    return fetch(`${API_URL}/teams/${teamId}/tasks`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+      body: JSON.stringify({
+        title: data.title,
+        description: data.description,
+        ...(data.status && { status: data.status }),
+        ...(data.user_ids !== undefined && { user_ids: data.user_ids }),
+      }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to create task');
+        });
+      }
+      return response.json();
+    }).then((task) => api.mapBackendTask(task));
   },
 
-  // TODO: Implement - Backend needs to provide DELETE /teams/:id/tasks/:taskId
-  deleteTask(teamId: string, taskId: string): Promise<void> {
-    // Frontend sends: nothing
-    // Backend returns: nothing
-    throw new Error('TODO: Implement DELETE /teams/:id/tasks/:taskId');
+  getTask(taskId: number): Promise<Task> {
+    return fetch(`${API_URL}/tasks/${taskId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) throw new Error('Failed to get task');
+      return response.json();
+    }).then((task) => api.mapBackendTask(task));
+  },
+
+  updateTaskStatus(taskId: number, status: Task['status']): Promise<Task> {
+    return fetch(`${API_URL}/tasks/${taskId}/status`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+      body: JSON.stringify({ status }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to update task status');
+        });
+      }
+      return response.json();
+    }).then((task) => api.mapBackendTask(task));
+  },
+
+  updateTaskUsers(taskId: number, userIds: number[]): Promise<void> {
+    return fetch(`${API_URL}/tasks/${taskId}/users`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+      body: JSON.stringify({ user_ids: userIds }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to update task users');
+        });
+      }
+    });
+  },
+
+  deleteTask(taskId: number): Promise<void> {
+    return fetch(`${API_URL}/tasks/${taskId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to delete task');
+        });
+      }
+    });
+  },
+
+  // ========== TASK FILES ==========
+  uploadTaskFile(taskId: number, file: File): Promise<TaskFile> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return fetch(`${API_URL}/tasks/${taskId}/files`, {
+      method: 'POST',
+      headers: api.getAuthHeaders(),
+      body: formData,
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((data) => {
+          throw new Error(data.error || 'Failed to upload file');
+        });
+      }
+      return response.json();
+    });
+  },
+
+  getTaskFiles(taskId: number): Promise<TaskFile[]> {
+    return fetch(`${API_URL}/tasks/${taskId}/files`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) throw new Error('Failed to get task files');
+      return response.json();
+    });
+  },
+
+  deleteTaskFile(fileId: number): Promise<void> {
+    return fetch(`${API_URL}/tasks/files/${fileId}`, {
+      method: 'DELETE',
+      headers: {
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((data) => {
+          throw new Error(data.error || 'Failed to delete file');
+        });
+      }
+    });
   },
 
   // ========== FRIENDS ==========

@@ -120,6 +120,7 @@
  */
 .member-name {
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 /*
@@ -222,7 +223,7 @@
 /*
  * Status badge for tasks in "To Do"
  */
-.status-todo {
+.status-open {
   background: rgba(107, 114, 128, 0.2);
   color: #9ca3af;
 }
@@ -238,7 +239,7 @@
 /*
  * Status badge for completed tasks
  */
-.status-done {
+.status-closed {
   background: rgba(16, 185, 129, 0.2);
   color: var(--success);
 }
@@ -269,4 +270,30 @@
 .file-icon {
   width: 14px;
   height: 14px;
+}
+
+/*
+ * File link in task files column
+ */
+.file-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.file-link:hover {
+  text-decoration: underline;
+}
+
+/*
+ * File delete button
+ */
+.file-delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-error, #ef4444);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
 }

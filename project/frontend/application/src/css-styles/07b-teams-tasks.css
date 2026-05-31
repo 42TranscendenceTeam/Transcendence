@@ -74,13 +74,14 @@
   background: transparent;
   border: 1px dashed var(--border);
   border-radius: 0.25rem;
-  padding: 0.25rem;
+  padding: 0.25rem 0.4rem;
   color: var(--text-secondary);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.35rem;
   transition: all 0.2s;
+  font-size: 0.75rem;
 }
 
 /*
@@ -224,16 +225,9 @@
  * Styling for select and button elements in rows
  */
 .task-form-row select,
-.task-form-row .btn {
+.task-form-row .btn,
+.task-form-row .assignee-dropdown-wrapper {
   flex: 1;
-}
-
-/*
- * First Select in Task Form Row
- * Wider layout for the first select element
- */
-.task-form-row select:first-child {
-  flex: 2;
 }
 
 /*
@@ -301,4 +295,73 @@
 .add-task-btn svg {
   width: 16px;
   height: 16px;
+}
+
+/*
+ * Task assignee text
+ */
+.task-assigned {
+  color: var(--text-primary);
+}
+
+/*
+ * Custom assignee dropdown (task form & task row)
+ */
+.assignee-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.assignee-dropdown-trigger {
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-arrow {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  float: right;
+  margin-left: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.assignee-dropdown-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 50;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--neon-purple);
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  padding: 0.5rem;
+  min-width: 160px;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.assignee-dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.assignee-dropdown-option:hover {
+  background: var(--bg-card-hover);
+  color: var(--accent);
+}
+
+.assignee-dropdown-option input[type="checkbox"] {
+  cursor: pointer;
+  flex-shrink: 0;
 }

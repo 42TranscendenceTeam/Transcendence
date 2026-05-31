@@ -83,6 +83,72 @@ export const updateMe = async (userId: number, data: UpdateUserDTO) => {
   });
 };
 
+export const getUserById = async (userId: number) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      avatar_url: true,
+      bio: true,
+      _count: {
+        select: {
+          first_friend: true,
+          second_friend: true,
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  const teamMemberships = await prisma.teamUser.findMany({
+    where: { user_id: userId },
+    select: {
+      team: {
+        select: { status_ongoing: true },
+      },
+    },
+  });
+
+  const teamCount = teamMemberships.length;
+  const activeTeams = teamMemberships.filter((tm) => tm.team.status_ongoing === true).length;
+  const finishedTeams = teamMemberships.filter((tm) => tm.team.status_ongoing === false).length;
+
+  const taskAssignments = await prisma.taskUser.findMany({
+    where: { user_id: userId },
+    select: {
+      task: {
+        select: { status: true },
+      },
+    },
+  });
+
+  const taskCount = taskAssignments.length;
+  const tasksToDo = taskAssignments.filter((ta) => ta.task.status === 'open').length;
+  const tasksInProgress = taskAssignments.filter((ta) => ta.task.status === 'in_progress').length;
+  const tasksDone = taskAssignments.filter((ta) => ta.task.status === 'closed').length;
+
+  return {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    avatar_url: user.avatar_url ?? '/api/public/avatars/default.png',
+    bio: user.bio ?? '',
+    friendCount: user._count.first_friend + user._count.second_friend,
+    teamCount,
+    activeTeams,
+    finishedTeams,
+    taskCount,
+    tasksToDo,
+    tasksInProgress,
+    tasksDone,
+  };
+};
+
 export const searchUsers = async (query: string) => {
   const users = await prisma.user.findMany({
     where: {

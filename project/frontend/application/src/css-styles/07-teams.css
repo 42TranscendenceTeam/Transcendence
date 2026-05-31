@@ -100,6 +100,7 @@
  */
 .team-name {
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 /*
@@ -318,7 +319,7 @@
 /*
  * Task count to_do
  */
-.task-count.to_do {
+.task-count.open {
   background: rgba(231, 76, 60, 0.15);
   color: #e74c3c;
 }
@@ -334,7 +335,7 @@
 /*
  * Task count done
  */
-.task-count.done {
+.task-count.closed {
   background: rgba(46, 204, 113, 0.15);
   color: #2ecc71;
 }
@@ -378,19 +379,17 @@
  * Task form row children
  */
 .task-form-row select,
-.task-form-row .btn {
+.task-form-row .btn,
+.task-form-row .assignee-dropdown-wrapper {
   flex: 1;
 }
 
-/*
- * Task form row first child
- */
-.task-form-row select:first-child {
-  flex: 2;
-}
+/* ========================================
+   Task status select dropdown
+   ======================================== */
 
 /*
- * Task status select dropdown
+ * Task status select in per-task rows
  */
 .task-status-select {
   background: var(--bg-primary);
@@ -400,6 +399,7 @@
   color: var(--text-primary);
   font-size: 0.75rem;
   cursor: pointer;
+  max-width: 100px;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -412,10 +412,6 @@
   box-shadow: 0 0 8px var(--neon-purple);
   outline: none;
 }
-
-/* ========================================
-   Task Filters
-   ======================================== */
 
 /*
  * Task filters container
@@ -462,6 +458,11 @@
   font-size: 0.75rem;
   cursor: pointer;
   max-width: 100px;
+  min-height: 1.5rem;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -486,13 +487,14 @@
   background: transparent;
   border: 1px dashed var(--border);
   border-radius: 0.25rem;
-  padding: 0.25rem;
+  padding: 0.25rem 0.4rem;
   color: var(--text-secondary);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.35rem;
   transition: all 0.2s;
+  font-size: 0.75rem;
 }
 
 /*
@@ -566,6 +568,7 @@
  */
 .member-name {
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 /*
@@ -672,7 +675,7 @@
 /*
  * Status todo
  */
-.status-todo {
+.status-open {
   background: rgba(107, 114, 128, 0.2);
   color: #9ca3af;
 }
@@ -688,7 +691,7 @@
 /*
  * Status done
  */
-.status-done {
+.status-closed {
   background: rgba(16, 185, 129, 0.2);
   color: var(--success);
 }

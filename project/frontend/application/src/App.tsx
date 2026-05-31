@@ -15,6 +15,7 @@ import PrivacyPolicy from './pages/auth/PrivacyPolicy';
 import TermsOfService from './pages/auth/TermsOfService';
 import ProfileLayout from './components/layouts/ProfileLayout';
 import Profile from './pages/profile/Profile';
+import UserProfile from './pages/profile/UserProfile';
 import ProfileEdit from './pages/profile/ProfileEdit';
 import Friends from './pages/profile/Friends';
 import FriendChat from './pages/profile/FriendChat';
@@ -67,6 +68,16 @@ function App() {
               <ProtectedRoute>
                 <ProfileLayout>
                   <Profile />
+                </ProfileLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile/:userId"
+            element={
+              <ProtectedRoute>
+                <ProfileLayout>
+                  <UserProfile />
                 </ProfileLayout>
               </ProtectedRoute>
             }

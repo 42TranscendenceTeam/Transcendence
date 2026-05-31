@@ -3,3 +3,4 @@ node_modules
 .vscode
 envscript.sh
 socket-test
+dist

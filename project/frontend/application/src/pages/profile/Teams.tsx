@@ -26,7 +26,7 @@ const TEAM_DETAILS = [
 
 function Teams() {
   const { t } = useTranslation();
-  const { user, createTeam, teamInvites, fetchTeamInvites, acceptTeamInvite, rejectTeamInvite } = useContext(AuthContext);
+  const { user, createTeam, teamInvites, fetchTeamInvites, acceptTeamInvite, rejectTeamInvite, teamRefreshTrigger } = useContext(AuthContext);
   const [error, setError] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,7 +56,7 @@ function Teams() {
     }).catch(() => {
       setLoading(false);
     });
-  }, []);
+  }, [teamRefreshTrigger]);
 
   if (!user) {
     return null;
