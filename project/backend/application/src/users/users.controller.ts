@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { getMe, updateMe, searchUsers, getUserById } from './users.service.js';
+import { getMe, updateMe, searchUsers, getUserById, getUserState } from './users.service.js';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import type { UpdateUserDTO } from './users.types.js';
 
@@ -33,6 +33,14 @@ export const getUserByIdController = async (req: Request, res: Response) => {
   const id = Number(req.params.id);
 
   const user = await getUserById(id);
+
+  return res.json(user);
+};
+
+export const getUserStateController = async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+
+  const user = await getUserState(id);
 
   return res.json(user);
 };
