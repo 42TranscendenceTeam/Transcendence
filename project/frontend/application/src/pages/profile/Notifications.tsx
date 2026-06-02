@@ -2,6 +2,7 @@ import { useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 import type { AppNotification } from '../../types';
 
@@ -134,6 +135,7 @@ function isTeamType(type: string): boolean {
 function Notifications() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showError } = useError();
   const { user, notifications, fetchNotifications, deleteAllNotifications, deleteNotification, markAsRead } = useContext(AuthContext);
 
   useEffect(() => {
@@ -149,11 +151,18 @@ function Notifications() {
         if (team) {
           const membersData = await api.getTeamMembers(team.id);
           const isMember = user?.id != null && membersData.member_list.some(m => m.id === user.id);
-          navigate(isMember ? `/teams/${team.id}` : '/profile/teams');
+          if (isMember) {
+            navigate(`/teams/${team.id}`);
+          } else {
+            showError(t('common.error'), t('teams.notFoundDesc'));
+            navigate('/profile/teams');
+          }
         } else {
+          showError(t('common.error'), t('teams.notFoundDesc'));
           navigate('/profile/teams');
         }
       } catch {
+        showError(t('common.error'), t('notifications.teamLoadFailed'));
         navigate('/profile/teams');
       }
     } else {

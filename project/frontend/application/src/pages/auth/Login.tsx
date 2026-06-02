@@ -37,14 +37,12 @@ function Login() {
 
     if (USE_MOCK) {
       try {
-        console.log('Login:', { email, password });
         const data = { requires2FA: false, tempToken: 'mock-temp-token' };
 
         if (data.requires2FA) {
           setTempToken(data.tempToken);
           setShow2FA(true);
         } else {
-          console.log('Login successful, user data:', data.user);
           window.location.href = '/';
         }
       } catch {
@@ -72,7 +70,6 @@ function Login() {
     setLoading(true);
 
     try {
-      console.log('Verifying 2FA code:', { tempToken, code: twoFactorCode });
       window.location.href = '/';
     } catch {
       setError('Invalid verification code. Please try again.');

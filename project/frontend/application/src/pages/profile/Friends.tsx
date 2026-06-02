@@ -48,9 +48,8 @@ function Friends() {
     try {
       const users = await api.searchUsers('');
       setAllUsers(users);
-    } catch (err) {
+    } catch {
       setErrorUsers('Failed to load users');
-      console.error(err);
     } finally {
       setLoadingUsers(false);
     }
@@ -81,8 +80,7 @@ function Friends() {
         await api.removeFriend(friendToRemove.id);
         removeFriend(friendToRemove.id);
         fetchFriends();
-      } catch (err) {
-        console.error('Failed to remove friend:', err);
+      } catch {
       }
       setShowRemoveModal(false);
       setFriendToRemove(null);
@@ -101,7 +99,6 @@ function Friends() {
       } catch (err) {
         const msg = err instanceof Error ? err.message : '';
         setErrorUsers(msg.includes('already exists') ? t('friends.friendRequestExists') : (msg || 'Failed to send friend request'));
-        console.error(err);
       }
     }
   };
@@ -126,7 +123,6 @@ function Friends() {
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
       setErrorUsers(msg.includes('already exists') ? t('friends.friendRequestExists') : (msg || 'Failed to send friend request'));
-      console.error(err);
     } finally {
       setLoadingUsers(false);
     }

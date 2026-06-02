@@ -338,7 +338,8 @@
     "teamInviteRejected": "{{username}} declined your invite to join {{team}}.",
     "teamRemoved": "You were removed from the {{team}} team.",
     "teamUserLeft": "{{username}} left {{team}}.",
-    "teamDeleted": "The {{team}} team has been deleted by its owner."
+    "teamDeleted": "The {{team}} team has been deleted by its owner.",
+    "teamLoadFailed": "Failed to load team information."
   },
   "legal": {
     "privacy": {

@@ -197,8 +197,7 @@ function Feed() {
 
         setTeams(baseTeams);
         setIsUsingMockData(false);
-      } catch (err) {
-        console.error('Failed to fetch teams:', err);
+      } catch {
         if (!user) {
           setTeams(MOCK_AVAILABLE_TEAMS);
           setIsUsingMockData(true);

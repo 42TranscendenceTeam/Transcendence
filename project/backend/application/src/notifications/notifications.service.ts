@@ -33,7 +33,7 @@ export const getUnreadNotifications = async (userId: number) => {
 	const notifications = await prisma.notification.findMany({
 		where: {
 			user_id_receiver: userId,
-			status_read: false,
+			status_read: false, // <- Problemo
 		},
 		orderBy: {
 			created_at: 'desc',

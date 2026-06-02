@@ -330,7 +330,8 @@
     "teamInviteRejected": "{{username}} recusou o seu convite para entrar em {{team}}.",
     "teamRemoved": "Foi removido da equipa {{team}}.",
     "teamUserLeft": "{{username}} saiu de {{team}}.",
-    "teamDeleted": "A equipa {{team}} foi eliminada pelo seu proprietário."
+    "teamDeleted": "A equipa {{team}} foi eliminada pelo seu proprietário.",
+    "teamLoadFailed": "Falha ao carregar informações da equipa."
   },
   "legal": {
     "privacy": {
