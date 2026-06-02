@@ -169,3 +169,29 @@ export const searchUsers = async (query: string) => {
     avatar_url: user.avatar_url || "/api/public/avatars/default.png",
   }));
 };
+
+export const toggle2FA = async (userId: number) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { two_factor_enabled: true },
+  });
+
+  if (!user) {
+    throw new AppError("User not found", 404);
+  }
+
+  const updatedUser = await prisma.user.update({
+    where: { id: userId },
+    data: {
+      two_factor_enabled: !user.two_factor_enabled,
+    },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      two_factor_enabled: true,
+    },
+  });
+
+  return updatedUser;
+};

@@ -10,3 +10,4 @@ function getEnv(key: string): string {
 
 export const JWT_SECRET = getEnv('JWT_SECRET');
 export const DATABASE_URL = getEnv('DATABASE_URL');
+export const RESEND_API_KEY = getEnv('RESEND_API_KEY');

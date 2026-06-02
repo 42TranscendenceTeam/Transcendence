@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { register, login } from './auth.service.js';
+import { register, login, verify2FA } from './auth.service.js';
 
 export const registerUser = async (req: Request, res: Response) => {
   const result = await register(req.body);
@@ -8,5 +8,12 @@ export const registerUser = async (req: Request, res: Response) => {
 
 export const loginUser = async (req: Request, res: Response) => {
   const result = await login(req.body);
+  res.json(result);
+};
+
+export const verify2FAController = async (req: Request, res: Response) => {
+  const { temp_token, code } = req.body;
+
+  const result = await verify2FA(temp_token, code);
   res.json(result);
 };
