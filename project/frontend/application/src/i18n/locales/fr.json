@@ -263,7 +263,11 @@
     "chat": "Discuter",
     "noReceivedRequests": "Aucune demande en attente",
     "noSentRequests": "Aucune demande envoyée en attente",
-    "friendRequestExists": "Une demande d'ami est déjà en attente."
+    "friendRequestExists": "Une demande d'ami est déjà en attente.",
+    "alreadyFriends": "Vous êtes déjà amis.",
+    "addFriendFailed": "Échec de l'envoi de la demande d'ami.",
+    "userNotFound": "Utilisateur non trouvé.",
+    "loadUsersFailed": "Échec du chargement des utilisateurs."
   },
   "chat": {
     "title": "Discussion",

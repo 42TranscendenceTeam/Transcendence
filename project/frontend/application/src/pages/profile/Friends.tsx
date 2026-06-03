@@ -9,6 +9,7 @@ import { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 import { getAvatarUrl } from '../../utils/avatar';
 import type { Friend } from '../../types';
@@ -20,6 +21,7 @@ interface SearchUser {
 
 function Friends() {
   const { t } = useTranslation();
+  const { showError } = useError();
   const { user, removeFriend, addFriend, friendRequests, sentRequests, friends, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests, fetchSentRequests, fetchFriends } = useContext(AuthContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [friendToRemove, setFriendToRemove] = useState<Friend | null>(null);
@@ -28,7 +30,6 @@ function Friends() {
   const [manualUsername, setManualUsername] = useState('');
   const [allUsers, setAllUsers] = useState<SearchUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
-  const [errorUsers, setErrorUsers] = useState('');
 
   useEffect(() => {
     fetchFriendRequests();
@@ -44,12 +45,11 @@ function Friends() {
 
   const fetchUsers = async () => {
     setLoadingUsers(true);
-    setErrorUsers('');
     try {
       const users = await api.searchUsers('');
       setAllUsers(users);
     } catch {
-      setErrorUsers('Failed to load users');
+      showError(t('common.error'), t('friends.loadUsersFailed'));
     } finally {
       setLoadingUsers(false);
     }
@@ -91,6 +91,14 @@ function Friends() {
     if (!selectedUser) return;
     const userToAdd = availableUsers.find((u) => u.username === selectedUser);
     if (userToAdd) {
+      if (friends.some((f) => f.id === userToAdd.id)) {
+        showError(t('common.error'), t('friends.alreadyFriends'));
+        return;
+      }
+      if (sentRequests.some((r) => r.user.id === userToAdd.id)) {
+        showError(t('common.error'), t('friends.friendRequestExists'));
+        return;
+      }
       try {
         await api.addFriend(userToAdd.id);
         fetchSentRequests();
@@ -98,7 +106,7 @@ function Friends() {
         setShowAddFriendModal(false);
       } catch (err) {
         const msg = err instanceof Error ? err.message : '';
-        setErrorUsers(msg.includes('already exists') ? t('friends.friendRequestExists') : (msg || 'Failed to send friend request'));
+        showError(t('common.error'), msg || t('friends.addFriendFailed'));
       }
     }
   };
@@ -106,23 +114,30 @@ function Friends() {
   const handleAddManual = async () => {
     if (!manualUsername.trim()) return;
     setLoadingUsers(true);
-    setErrorUsers('');
     try {
       const users = await api.searchUsers(manualUsername.trim());
       const foundUser = users.find(
         (u) => u.username.toLowerCase() === manualUsername.trim().toLowerCase()
       );
       if (foundUser) {
+        if (friends.some((f) => f.id === foundUser.id)) {
+          showError(t('common.error'), t('friends.alreadyFriends'));
+          return;
+        }
+        if (sentRequests.some((r) => r.user.id === foundUser.id)) {
+          showError(t('common.error'), t('friends.friendRequestExists'));
+          return;
+        }
         await api.addFriend(foundUser.id);
         fetchSentRequests();
         setManualUsername('');
         setShowAddFriendModal(false);
       } else {
-        setErrorUsers('User not found');
+        showError(t('common.error'), t('friends.userNotFound'));
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
-      setErrorUsers(msg.includes('already exists') ? t('friends.friendRequestExists') : (msg || 'Failed to send friend request'));
+      showError(t('common.error'), msg || t('friends.addFriendFailed'));
     } finally {
       setLoadingUsers(false);
     }
@@ -300,8 +315,6 @@ function Friends() {
                   </button>
                 </div>
               </div>
-
-              {errorUsers && <p className="error-text">{errorUsers}</p>}
 
               {availableUsers.length === 0 && friends.length > 0 && !loadingUsers && (
                 <p className="empty-hint text-center">{t('friends.noUsersToAdd') || 'No users available to add'}</p>

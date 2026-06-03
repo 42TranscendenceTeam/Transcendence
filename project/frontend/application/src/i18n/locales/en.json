@@ -270,7 +270,11 @@
     "chat": "Chat",
     "noReceivedRequests": "No pending requests",
     "noSentRequests": "No pending sent requests",
-    "friendRequestExists": "A pending friend request already exists."
+    "friendRequestExists": "A pending friend request already exists.",
+    "alreadyFriends": "You are already friends.",
+    "addFriendFailed": "Failed to send friend request.",
+    "userNotFound": "User not found.",
+    "loadUsersFailed": "Failed to load users."
   },
   "chat": {
     "title": "Chat",

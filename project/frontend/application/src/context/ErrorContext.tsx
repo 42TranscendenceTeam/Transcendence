@@ -31,7 +31,7 @@ export function ErrorProvider({ children }: ErrorProviderProps) {
   return (
     <ErrorContext.Provider value={{ showError }}>
       {error && (
-        <div className="modal-overlay" onClick={() => setError(null)}>
+        <div className="modal-overlay" style={{ zIndex: 1100 }} onClick={() => setError(null)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>{error.title}</h2>

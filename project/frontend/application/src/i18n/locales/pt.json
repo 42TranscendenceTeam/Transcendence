@@ -262,7 +262,11 @@
     "chat": "Conversar",
     "noReceivedRequests": "Sem pedidos pendentes",
     "noSentRequests": "Sem pedidos enviados pendentes",
-    "friendRequestExists": "Já existe um pedido de amizade pendente."
+    "friendRequestExists": "Já existe um pedido de amizade pendente.",
+    "alreadyFriends": "Já são amigos.",
+    "addFriendFailed": "Falha ao enviar pedido de amizade.",
+    "userNotFound": "Utilizador não encontrado.",
+    "loadUsersFailed": "Falha ao carregar utilizadores."
   },
   "chat": {
     "title": "Chat",
