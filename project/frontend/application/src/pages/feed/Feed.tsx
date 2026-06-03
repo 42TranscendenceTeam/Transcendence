@@ -178,23 +178,6 @@ function Feed() {
           baseTeams = teamsData;
         }
 
-        const statusResults = await Promise.all(
-          baseTeams.map(async (team) => {
-            try {
-              const detail = await api.getTeam(team.id);
-              return { id: team.id, isFinished: detail.status === 'finished' };
-            } catch {
-              return { id: team.id, isFinished: false };
-            }
-          })
-        );
-        const finishedIds = new Set(
-          statusResults.filter(r => r.isFinished).map(r => r.id)
-        );
-        if (finishedIds.size > 0) {
-          baseTeams = baseTeams.filter(t => !finishedIds.has(t.id));
-        }
-
         setTeams(baseTeams);
         setIsUsingMockData(false);
       } catch {
