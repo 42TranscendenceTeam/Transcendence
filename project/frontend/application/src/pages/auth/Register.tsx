@@ -23,7 +23,7 @@ import { api } from '../../services/api';
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function Register() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { lng: 'en' });
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');

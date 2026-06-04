@@ -21,7 +21,7 @@ import { api } from '../../services/api';
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function Login() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { lng: 'en' });
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,6 +53,12 @@ function Login() {
     } else {
       setLoading(true);
       try {
+        const { exists } = await api.checkEmail(email);
+        if (!exists) {
+          setError(t('auth.login.userNotFound') || 'No account found with this email.');
+          setLoading(false);
+          return;
+        }
         const result = await api.login({ email, password });
         localStorage.setItem('authToken', result.token);
         window.location.href = '/';

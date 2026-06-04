@@ -41,7 +41,8 @@
       "verificationCode": "Código de Verificação",
       "verify": "Verificar",
       "backToLogin": "Voltar ao Login",
-      "signInWith42": "Entrar com 42"
+      "signInWith42": "Entrar com 42",
+      "userNotFound": "Nenhuma conta encontrada com este email."
     },
     "register": {
       "title": "Registar",

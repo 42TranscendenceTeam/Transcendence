@@ -174,6 +174,21 @@ export const api = {
     });
   },
 
+  checkEmail(email: string): Promise<{ exists: boolean }> {
+    return fetch(`${API_URL}/auth/check-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to check email');
+        });
+      }
+      return response.json();
+    });
+  },
+
   // ========== AVATAR UPLOAD ==========
   uploadAvatar(file: File): Promise<{ avatar_url: string }> {
     const formData = new FormData();
