@@ -145,6 +145,7 @@ export interface AuthContextType {
   acceptTeamInvite: (inviteId: number) => void;
   rejectTeamInvite: (inviteId: number) => void;
   markNotificationsRead: () => void;
+  onlineFriendIds: Set<number>;
 }
 
 export interface TeamInvite {
