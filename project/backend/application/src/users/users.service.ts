@@ -3,6 +3,7 @@ import { AppError } from '../utils/AppError.js';
 import type { UpdateUserDTO } from './users.types.js';
 import fs from 'fs';
 import path from 'path';
+import { getOnlineUsers } from '../utils/socket.js';
 
 export const getMe = async (userId: number) => {
   const user = await prisma.user.findUnique({
@@ -168,4 +169,13 @@ export const searchUsers = async (query: string) => {
     ...user,
     avatar_url: user.avatar_url || "/api/public/avatars/default.png",
   }));
+};
+
+export const getUserState = async (userId: number) => {
+	const user = getOnlineUsers().get(userId);
+
+	if (user)
+		return { Online: true };
+	else
+		return { Online: false };
 };
