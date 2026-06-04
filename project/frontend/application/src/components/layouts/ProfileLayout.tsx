@@ -63,7 +63,7 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
           </Link>
         </div>
       )}
-      <main className="profile-main">{children}</main>
+      <main className={`profile-main ${location.pathname === '/' ? 'profile-main-feed' : ''}`}>{children}</main>
       {user && (
         <aside className="profile-sidebar">
           <img className="sidebar-logo-img" src="/sidebar-logo.png" alt="transcendence" />

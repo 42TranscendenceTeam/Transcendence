@@ -166,7 +166,7 @@ function ProfileEdit() {
           </div>
         </div>
 
-        <button type="submit" className="btn btn-primary">{t('profile.edit.saveChanges')}</button>
+			  <button type="submit" className="btn btn-primary save-profile-btn">{t('profile.edit.saveChanges')}</button>
       </form>
 
       {/* Success Modal */}

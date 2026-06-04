@@ -1,5 +1,5 @@
 /*
- * Modal overlay backdrop
+ * Modal Styles
  */
 .modal-overlay {
   position: fixed;
@@ -14,64 +14,59 @@
   z-index: 1000;
 }
 
-/*
- * Modal container
- */
 .modal {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  width: 90%;
-  max-width: 400px;
+  width: 70%;
+  max-width: 700px;
   max-height: 90vh;
   overflow-y: auto;
+  background: var(--task-gradient);
+  border: var(--task-border);
+  border-radius: 1rem;
+  box-shadow: var(--task-box-shadow);
+  backdrop-filter: blur(18px);
 }
 
-/*
- * Modal header
- */
 .modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
+  gap: 1rem;
+  padding: 1.15rem 1.25rem;
+  border-bottom: var(--task-border);
 }
 
-/*
- * Modal header heading
- */
 .modal-header h2 {
-  font-size: 1rem;
-  font-weight: 600;
   margin: 0;
-}
-
-/*
- * Modal close button
- */
-.modal-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-}
-
-/*
- * Modal close button hover
- */
-.modal-close:hover {
   color: var(--text-primary);
+  font-size: 1.05rem;
+  font-weight: 700;
 }
 
-/*
- * Modal body
- */
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: var(--task-border);
+  border-radius: 50%;
+  color: var(--error);
+  background: var(--btn-background);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  color: var(--error);
+  border-color: var(--error);
+  background: var(--btn-background-hover);
+  box-shadow: var(--btn-box-shadow-hover);
+}
+
 .modal-body {
-  padding: 1rem;
+  padding: 1.25rem;
 }
 
 /*

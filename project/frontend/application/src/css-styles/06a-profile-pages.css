@@ -1,178 +1,178 @@
-/*
- * Friends page header
- */
+/* ========================================
+      Friends Page
+  ======================================== */
+
+/* Friends List Section */
 .friends-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-/*
- * Friends header title override
- */
-.friends-header .profile-page-title {
-  margin-bottom: 0;
-}
-
-/*
- * Friends list container
- */
-.friends-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-/*
- * Friend card component
- */
-.friend-card {
-  display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  transition: border-color 0.2s ease;
+  margin-bottom: 1rem;
 }
 
-.friend-card:hover {
-  border-color: var(--accent);
+.friends-search-wrapper {
+  min-width: 320px;
 }
 
-/*
- * Friend avatar
- */
-.friend-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-/*
- * Friend info container
- */
-.friend-info {
-  flex: 1;
-  min-width: 0;
-}
-
-/*
- * Friend username
- */
-.friend-username {
-  display: block;
-  font-weight: 600;
+.friends-search-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: var(--btn-background);
+  border: var(--task-border);
+  border-radius: 0.6rem;
   color: var(--text-primary);
-  margin-bottom: 0.125rem;
+  font-size: 0.85rem;
 }
 
-/*
- * Friend online status
- */
-.friend-status {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  font-size: 0.75rem;
+.friends-search-input::placeholder {
   color: var(--text-secondary);
 }
 
-/*
- * Status indicator base styles
- */
-.status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.friends-search-input:focus {
+  outline: none;
+  border-color: var(--btn-border-hover);
+  box-shadow: var(--sidebar-box-shadow);
 }
 
-/*
- * Status indicator for online users
- */
-.status-indicator.online {
-  background: #22c55e;
-}
-
-/*
- * Status indicator for offline users
- */
-.status-indicator.offline {
-  background: #ef4444;
-}
-
-/*
- * Friend actions container
- */
-.friend-actions {
+.friends-section-header {
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
-/*
- * Friend action button
- */
-.friend-action-btn {
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
-  border-radius: 0.375rem;
-  border: none;
+.friends-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.friends-section-title .profile-section-title {
+  margin-bottom: 0;
+}
+
+.friends-section-icon {
+  color: var(--accent);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.friends-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.friend-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  background: var(--sidebar-background);
+  box-shadow: var(--task-box-shadow);
+  border: var(--task-border);
+  border-radius: 0.75rem;
+  padding: 1.25rem 1rem 1rem;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.friend-card:hover {
+  border-color: var(--btn-border-hover);
+  box-shadow: var(--sidebar-box-shadow);
+}
+
+.friend-card-menu {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: var(--task-border);
+  border-radius: 50%;
+  color: var(--error);
+  background: var(--btn-background);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1;
+  font-family: Arial, sans-serif;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.friend-action-btn.primary {
-  background: var(--accent);
-  color: var(--bg-primary);
+.friend-card-menu:hover {
+  border-color: var(--error);
+  background: var(--btn-background-hover);
+  box-shadow: var(--btn-box-shadow-hover);
+  transform: scale(1.05);
 }
 
-.friend-action-btn.secondary {
-  background: transparent;
+.friend-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid var(--accent);
+  object-fit: cover;
+}
+
+.friend-info {
+  min-width: 0;
+  text-align: center;
+}
+
+.friend-name {
+  font-size: 1.15em;
+  display: block;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.friend-name:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.friend-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
   color: var(--text-secondary);
-  border: 1px solid var(--border);
 }
 
-.friend-action-btn.danger {
-  background: transparent;
-  color: #ef4444;
-  border: 1px solid #ef4444;
+.friend-status::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
 }
 
-/*
- * Friend action button hover effect
- */
-.friend-action-btn:hover {
-  opacity: 0.8;
+.friend-status.online {
+  color: var(--success);
 }
 
-/*
- * Friend requests section container
- */
-.friend-requests-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
+.friend-status.offline {
+  color: var(--text-secondary);
 }
 
-/*
- * Sent requests section container
- */
-.sent-requests-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
+.friend-chat-btn {
+  width: 80%;
 }
 
-/*
- * Pending requests section (wrapper for sent + received)
- */
+.friend-chat-btn:hover {
+  text-decoration: none;
+  border-color: var(--neon-purple);
+  box-shadow: var(--sidebar-box-shadow);
+}
+
+/* Pending requests section (wrapper for sent + received) */
 .pending-requests-section {
   background: var(--bg-card);
   border: 1px solid var(--border);
@@ -181,43 +181,13 @@
   margin-bottom: 1rem;
 }
 
-/*
- * Pending requests header with title and add button
- */
 .pending-requests-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-/*
- * Subsection title (Sent/Received labels)
- */
-.subsection-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-secondary);
+  justify-content: flex-start;
+  align-items: flex-start;
   margin-bottom: 0.5rem;
 }
 
-/*
- * Sent requests subsection
- */
-.sent-requests-subsection {
-  margin-bottom: 1rem;
-}
-
-/*
- * Received requests subsection
- */
-.received-requests-subsection {
-  margin-bottom: 0;
-}
-
-/*
- * Section title for requests
- */
 .section-title {
   font-size: 1rem;
   font-weight: 500;
@@ -225,460 +195,388 @@
   color: var(--text-primary);
 }
 
-/*
- * Requests list container
- */
+.requests-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 28px;
+  padding: 0 0.75rem;
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  background: var(--btn-background);
+  border: var(--task-border);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-left: 1rem;
+}
+
+.subsection-title {
+  position: relative;
+  margin-bottom: 0.75rem;
+  padding-left: 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.subsection-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.05rem;
+  width: 3px;
+  height: 1rem;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: var(--sidebar-box-shadow);
+}
+
+.sent-requests-subsection {
+  margin-bottom: 0rem;
+}
+
+.received-requests-subsection {
+  margin-bottom: 1rem;
+}
+
+/* Requests list container */
 .requests-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0;
+  overflow: hidden;
+  border: var(--task-border);
+  border-radius: 0.75rem;
 }
 
-/*
- * Request card component
- */
 .request-card {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 1rem;
-  background: var(--bg-input);
+  background: var(--sidebar-background);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.75rem;
+  padding: 0.5rem 1rem;
   transition: border-color 0.2s ease;
 }
 
 .request-card:hover {
-  border-color: var(--accent);
+  background: var(--btn-background-hover);
+  box-shadow: var(--sidebar-box-shadow);
 }
 
-/*
- * Request username
- */
+.request-card:last-child {
+  border-bottom: none;
+}
+
+.request-info {
+  min-width: 0;
+}
+
+.request-card .friend-avatar {
+  width: 55px;
+  height: 55px;
+  border: none;
+}
+
 .request-username {
-  flex: 1;
-  font-weight: 500;
+  display: block;
   color: var(--text-primary);
+  font-weight: 700;
 }
 
-/*
- * Request status (for sent requests)
- */
+.request-username:hover {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.request-message {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.request-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.request-actions .btn {
+  min-width: 125px;
+  height: 37px;
+}
+
+.request-actions .friend-card-menu {
+  position: static;
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+}
+
 .request-status {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  padding: 0.25rem 0.5rem;
-  background: var(--bg-input);
-  border-radius: 0.25rem;
-}
-
-/*
- * Profile edit form container
- */
-.profile-edit-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/*
- * Form group container
- */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/*
- * Form label styling
- */
-.form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-/*
- * Form input field
- */
-.form-input {
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  background: var(--bg-input);
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  transition: border-color 0.2s ease;
-}
-
-/*
- * Focus state for form input fields
- */
-.form-input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-
-/*
- * Form textarea for multi-line input
- */
-.form-textarea {
-  min-height: 100px;
-  resize: vertical;
-}
-
-/*
- * Avatar section container
- */
-.avatar-section {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-}
-
-/*
- * Current avatar styling
- */
-.current-avatar {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  border: 3px solid var(--accent);
-}
-
-/*
- * Avatar label text
- */
-.avatar-label {
-  font-size: 0.875rem;
+  justify-content: center;
+  min-width: 90px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.5rem;
   color: var(--text-secondary);
-}
-
-/*
- * Avatar select button
- */
-.avatar-select-btn {
-  padding: 0.5rem 1rem;
-  background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.avatar-select-btn:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-/*
- * Language selector container
- */
-.language-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-/*
- * Custom language dropdown
- */
-.language-dropdown {
-  position: relative;
-  width: 100%;
-}
-
-.language-dropdown-trigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  color: var(--text-primary);
-  font-size: 1rem;
-  cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.language-dropdown-trigger:hover {
-  border-color: var(--border-light);
-}
-
-.language-dropdown-trigger:focus {
-  outline: none;
-  border-color: var(--neon-purple);
-  box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-purple);
-}
-
-/*
- * Language flag icon
- */
-.language-flag {
-  font-size: 1.25rem;
-}
-
-/*
- * Language name text
- */
-.language-name {
-  flex: 1;
-  text-align: left;
-}
-
-/*
- * Dropdown arrow icon
- */
-.language-arrow {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  transition: transform 0.2s ease;
-}
-
-.language-arrow.open {
-  transform: rotate(180deg);
-}
-
-/*
- * Language dropdown menu
- */
-.language-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 0.25rem);
-  left: 0;
-  right: 0;
-
-  display: flex !important;
-  flex-direction: column !important;
-
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  z-index: 100;
-}
-
-/*
- * Language dropdown item
- */
-.language-dropdown-item {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center;
-  gap: 0.75rem;
-
-  width: 100%;
-}
-
-.language-dropdown-item:last-child {
-  border-bottom: none;
-}
-
-.language-dropdown-item:hover {
-  background: var(--bg-card-hover);
-}
-
-.language-dropdown-item.selected {
-  background: rgba(139, 92, 246, 0.15);
-  color: var(--accent);
-}
-
-/*
- * Save button container
- */
-.save-button-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-}
-
-/*
- * Security page container
- */
-.security-page {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-/*
- * Security section container
- */
-.security-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-}
-
-/*
- * Security section title
- */
-.security-section-title {
-  font-size: 1rem;
+  background: var(--btn-background);
+  border: var(--task-border);
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.75rem;
 }
 
-/*
- * Security option container
- */
-.security-option {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid var(--border);
-}
-
-/*
- * Last child border removal for security options
- */
-.security-option:last-child {
-  border-bottom: none;
-}
-
-/*
- * Security option label
- */
-.security-option-label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.security-option-label span:first-child {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.security-option-label span:last-child {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-/*
- * Toggle switch for enabling/disabling options
- */
-.toggle-switch {
-  position: relative;
-  width: 48px;
-  height: 24px;
-  background: var(--bg-input);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-/*
- * Active state for toggle switch
- */
-.toggle-switch.active {
-  background: var(--accent);
-}
-
-/*
- * Toggle switch handle
- */
-.toggle-switch::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background: var(--text-primary);
-  border-radius: 50%;
-  transition: transform 0.2s ease;
-}
-
-/*
- * Active state for toggle switch handle
- */
-.toggle-switch.active::after {
-  transform: translateX(24px);
-}
-
-/*
- * Danger zone section for security settings
- */
-.security-danger-zone {
-  border-color: #ef4444;
-}
-
-/*
- * Danger zone title styling
- */
-.security-danger-zone .security-section-title {
-  color: #ef4444;
-}
-
-/*
- * Delete account button
- */
-.delete-account-btn {
-  padding: 0.75rem 1.5rem;
-  background: transparent;
-  border: 1px solid #ef4444;
-  border-radius: 0.5rem;
-  color: #ef4444;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-/*
- * Hover effect for delete account button
- */
-.delete-account-btn:hover {
-  background: #ef4444;
-  color: white;
-}
 
 /* Mobile Friends Page */
 @media (max-width: 480px) {
 
-	.friends-header {
-		padding-top: 0.6em;
-		padding-bottom: 1.5em;
-	}
+  .friends-header {
+    padding-top: 0.6em;
+    padding-bottom: 1.5em;
+  }
 
-	.friend-card, .request-card {
-		flex-wrap: wrap;
-		gap: 0.75rem;
-	}
+  .friend-card,
+  .request-card {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
 
-	.friend-avatar {
-		width: 44px;
-		height: 44px;
-	}
+  .friend-avatar {
+    width: 44px;
+    height: 44px;
+  }
 
-	.friend-info, .request-username {
-		flex: 1;
-		min-width: calc(100% - 60px);
-	}
+  .friend-info,
+  .request-username {
+    flex: 1;
+    min-width: calc(100% - 60px);
+  }
 
-	.friend-card .btn, .request-card .btn {
-		padding: 0.45em;
-		max-width: 130px;
-		flex: 0 1 45%;
-		justify-content: center;
-		text-align: center;
-	}
+  .friend-card .btn,
+  .request-card .btn {
+    padding: 0.45em;
+    max-width: 130px;
+    flex: 0 1 45%;
+    justify-content: center;
+    text-align: center;
+  }
 
-	.add-member-row {
-		flex-direction: column;
-		align-items: stretch;
-		gap: 0.75rem;
-	}
+  .add-member-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+}
+
+
+/* ========================================
+      Notifications Page
+  ======================================== */
+.notifications-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.notifications-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.notifications-header .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.notifications-header .btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.notifications-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  margin-top: 1rem;
+}
+
+.notifications-section-title {
+  display: flex;
+  align-items: center;
+  color: var(--text-primary);
+  font-weight: 400;
+  font-size: 1rem;
+}
+
+.notifications-section-title svg {
+  width: 25px;
+  height: 25px;
+  color: var(--neon-purple);
+}
+
+.notifications-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.notifications-section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 26px;
+  padding: 0 0.65rem;
+  border-radius: 999px;
+  color: var(--text-primary);
+  background: var(--btn-background);
+  border: var(--task-border);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-left: 1em;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.notification-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 72px;
+  padding: 0.85rem 1rem 0.85rem 2rem;
+  background: var(--btn-background);
+  border: var(--task-border);
+  border-radius: 0.75rem;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  cursor: pointer;
+}
+
+.notification-item:hover {
+  border-color: var(--neon-purple);
+  box-shadow: var(--sidebar-box-shadow);
+  text-decoration: none;
+}
+
+.notification-item.unread {
+  border-left: 1px solid var(--accent);
+  background: var(--sidebar-background);
+}
+
+.notification-item.unread .notification-item-time{
+  color: var(--neon-purple);
+}
+
+.notification-item.unread::before {
+  content: '';
+  position: absolute;
+  left: 0.85rem;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--neon-purple);
+  transform: translateY(-50%);
+}
+
+.notification-item-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  border-radius: 0.5rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.notification-item.unread .notification-item-icon {
+  color: var(--neon-purple);
+}
+
+.notification-item-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.notification-item-text {
+  display: block;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.notification-item-time {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.notification-item-actions {
+  display: flex;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+/* ========================================
+      Friends Page Mobile
+  ======================================== */
+
+@media (max-width: 767px) {
+  .friends-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .friends-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .friends-search-wrapper {
+    max-width: none;
+  }
+
+  .friends-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+ * Text center utility (WHY EVEN USE THIS??)
+ */
+.text-center {
+  text-align: center;
 }

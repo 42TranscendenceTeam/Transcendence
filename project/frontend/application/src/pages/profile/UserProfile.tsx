@@ -51,35 +51,80 @@ function UserProfile() {
   return (
     <div className="profile-page">
       <div className="profile-header">
-        <img src={getAvatarUrl(profile.avatar_url)} alt={profile.username} className="profile-avatar-large" />
-        <h1 className="profile-username">{profile.username}</h1>
-        <p className="profile-email">{profile.email}</p>
-        {profile.bio && <p className="profile-description">{profile.bio}</p>}
-      </div>
+        <div className="profile-header-main">
+          <img
+            src={getAvatarUrl(profile.avatar_url)}
+            alt={profile.username}
+            className="profile-avatar-large"
+          />
 
-      <div className="profile-section">
-        <h2 className="profile-section-title">{t('friends.title')}</h2>
-        <div className="profile-task-stats">
-          <span className="task-count total">{t('tasks.total') || 'Total'}: {profile.friendCount}</span>
+          <div className="profile-header-info">
+            <h1 className="profile-username">{profile.username}</h1>
+            <p className="profile-email">{profile.email}</p>
+            {profile.bio && <p className="profile-description">{profile.bio}</p>}
+          </div>
         </div>
       </div>
 
-      <div className="profile-section">
-        <h2 className="profile-section-title">{t('profile.teamStats') || 'Teams Stats'}</h2>
-        <div className="profile-task-stats">
-          <span className="task-count total">{t('profile.totalTeams') || 'Total'}: {profile.teamCount}</span>
-          <span className="task-count in_progress">{t('teams.active')}: {profile.activeTeams}</span>
-          <span className="task-count closed">{t('teams.finished')}: {profile.finishedTeams}</span>
-        </div>
-      </div>
+      <div className="profile-stats-grid">
+        <div className="profile-stat-card">
+          <div className="profile-stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+            </svg>
+          </div>
 
-      <div className="profile-section">
-        <h2 className="profile-section-title">{t('profile.taskStats') || 'Task Stats'}</h2>
-        <div className="profile-task-stats">
-          <span className="task-count total">{t('tasks.total') || 'Total'}: {profile.taskCount}</span>
-          <span className="task-count open">{t('tasks.open')}: {profile.tasksToDo}</span>
-          <span className="task-count in_progress">{t('tasks.inProgress') || 'In Progress'}: {profile.tasksInProgress}</span>
-          <span className="task-count closed">{t('tasks.done')}: {profile.tasksDone}</span>
+          <div className="profile-stat-info">
+            <span className="profile-stat-value">{profile.friendCount}</span>
+            <span className="profile-stat-label">{t('friends.title')}</span>
+          </div>
+        </div>
+
+        <div className="profile-stat-card">
+          <div className="profile-stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L2 7l10 5 10-5-10-5zm0 7.8L6.2 7 12 4.2 17.8 7 12 9.8zM2 12l10 5 10-5-2.2-1.1L12 14.8 4.2 10.9 2 12zm0 5l10 5 10-5-2.2-1.1L12 19.8 4.2 15.9 2 17z" />
+            </svg>
+          </div>
+
+          <div className="profile-stat-info">
+            <span className="profile-stat-value">{profile.teamCount}</span>
+            <span className="profile-stat-label">{t('teams.title')}</span>
+
+            <div className="profile-stat-subtext">
+              <span className="task-count in_progress">
+                {t('teams.active')}: {profile.activeTeams}
+              </span>
+              <span className="task-count closed">
+                {t('teams.finished')}: {profile.finishedTeams}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="profile-stat-card">
+          <div className="profile-stat-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 4h10a2 2 0 012 2v14l-3-2-3 2-3-2-3 2-3-2V6a2 2 0 012-2zm2 5h6V7H9v2zm0 4h6v-2H9v2zm0 4h4v-2H9v2z" />
+            </svg>
+          </div>
+
+          <div className="profile-stat-info">
+            <span className="profile-stat-value">{profile.taskCount}</span>
+            <span className="profile-stat-label">{t('profile.taskStats') || 'Task Stats'}</span>
+
+            <div className="profile-stat-subtext">
+              <span className="task-count open">
+                {t('tasks.open')}: {profile.tasksToDo}
+              </span>
+              <span className="task-count in_progress">
+                {t('tasks.inProgress') || 'In Progress'}: {profile.tasksInProgress}
+              </span>
+              <span className="task-count closed">
+                {t('tasks.done')}: {profile.tasksDone}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

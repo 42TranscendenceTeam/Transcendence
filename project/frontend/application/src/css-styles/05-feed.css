@@ -3,6 +3,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-right: 340px;
 }
 
 /* Top Elements */
@@ -116,7 +117,6 @@
 .feed-main {
   flex: 1;
   width: 100%;
-  max-width: 700px;
   margin: 0 auto;
   padding: 1.5rem 1rem 3.5rem;
 }
@@ -292,4 +292,10 @@
   .feed-main {
     padding-top: 1.5em;
   }
+}
+
+.feed-header-container, .feed-main {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
 }

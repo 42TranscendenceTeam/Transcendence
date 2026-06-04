@@ -1,6 +1,8 @@
-/*
- * Teams page header
- */
+/* ========================================
+            Teams List Page
+  ======================================== */
+
+/* Teams List */
 .teams-header {
   display: flex;
   justify-content: space-between;
@@ -8,259 +10,152 @@
   margin-bottom: 0.5rem;
 }
 
-/*
- * Teams header buttons container
- */
 .teams-header-buttons {
   display: flex;
   gap: 0.5rem;
 }
 
-/*
- * Teams list container
- */
-.teams-list {
+/* Pending Invitations */
+.team-invite-card {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.team-invite-card .request-actions {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 0.75rem;
 }
 
-/*
- * Team card component
- */
-.team-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  padding: 1rem;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/*
- * Team card hover effect
- */
-.team-card:hover {
-  border-color: var(--neon-purple);
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
-}
-
-/*
- * Notification list: suppress hover for read, show always for unread
- */
-.notifications-list .team-card:hover {
-  border-color: var(--border);
-  box-shadow: none;
-}
-
-.notifications-list .team-card.notification-unread {
-  border-color: var(--neon-purple);
-  box-shadow: 0 0 12px rgba(139, 92, 246, 0.3);
-}
-
-/*
- * Team card link reset
- */
-.team-card,
-.team-card:hover {
-  text-decoration: none;
-}
-
-/*
- * Team card anchor reset
- */
-.team-card a,
-.team-card a:hover {
-  text-decoration: none;
-  color: inherit;
-}
-
-/*
- * Team card text reset on hover
- */
-.team-card:hover .team-name,
-.team-card:hover .team-description {
-  text-decoration: none;
-}
-
-/*
- * Team info container
- */
-.team-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  flex: 1;
-}
-
-/*
- * Team name
- */
-.team-name {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-/*
- * Team role badge
- */
-.team-role {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-/*
- * Team description
- */
-.team-description {
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-}
-
-/*
- * Team details tags container
- */
-.team-details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  margin-top: 0.25rem;
-}
-
-/*
- * Team detail tag
- */
-.team-detail-tag {
-  font-size: 0.625rem;
-  padding: 0.125rem 0.375rem;
-  background: var(--bg-primary);
-  border-radius: 0.25rem;
-  color: var(--text-secondary);
-}
-
-/*
- * Team meta information
- */
-.team-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-}
-
-/*
- * Team members count
- */
-.team-members-count {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--accent);
-}
-
-/*
- * Team status badge
- */
-.team-status {
-  font-size: 0.625rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 0.25rem;
-  text-transform: capitalize;
-}
-
-/*
- * Team status active/open
- */
-.team-status.active,
-.team-status.open {
-  background: rgba(46, 204, 113, 0.15);
-  color: #2ecc71;
-}
-
-/*
- * Team status finished
- */
-.team-status.finished {
-  background: rgba(231, 76, 60, 0.15);
-  color: #e74c3c;
+.team-invite-card .request-actions .btn {
+  min-width: 125px;
+  height: 37px;
 }
 
 /* ========================================
-   Team Detail Page
-   ======================================== */
+      Individual Team Page
+  ======================================== */
+.profile-main>.team-detail-page {
+  max-width: 90%;
+}
 
-/*
- * Team detail page container
- */
+/* Top Center Header */
 .team-detail-page {
   width: 100%;
-  max-width: 100%;
   padding: 0 1rem;
 }
 
-/*
- * Team detail header
- */
 .team-header {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 2rem;
   margin-bottom: 1.5rem;
+  padding: 1.75rem;
+  background: var(--task-gradient);
+  border: var(--task-border);
+  border-radius: 1rem;
+  box-shadow: var(--task-box-shadow);
+  overflow: hidden;
 }
 
-/*
- * Team header content
- */
 .team-header-content {
+  position: relative;
+  z-index: 1;
   flex: 1;
+  min-width: 0;
 }
 
-/*
- * Team header centered (detail page variant)
- */
 .team-detail-page .team-header {
   margin-bottom: 1.5rem;
-  text-align: center;
+  text-align: left;
 }
 
-/*
- * Team title
- */
 .team-title {
-  font-size: 2rem;
+  font-size: 2.25rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  line-height: 1.05;
 }
 
-/*
- * Title gradient effect
- */
 .title-gradient {
-  background: linear-gradient(135deg, var(--accent) 0%, #89d4e8 50%, var(--accent) 100%);
+  background: var(--gradient-primary);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  filter: drop-shadow(0 0 18px rgba(139, 92, 246, 0.22));
 }
 
-/*
- * Team objective text
- */
 .team-objective {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
+  max-width: 680px;
+  color: var(--text-primary);
+  font-size: 0.92rem;
+  line-height: 1.6;
 }
 
-/*
- * Team section container
- */
+/* Top Right Metadata */
+.team-header-meta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.team-members-count {
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.team-header-meta .team-members-count {
+  font-size: 1.25rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+}
+
+.team-status-select {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  background: var(--bg-card);
+  cursor: pointer;
+}
+
+.team-status-select.active {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+.team-status-select.finished {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.team-status-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.team-status-select option[value="__delete__"] {
+  color: var(--error);
+  font-weight: 600;
+}
+
+/* Page Sections */
 .team-section {
   margin-bottom: 1.5rem;
+  padding: 1.25rem;
+  background: var(--btn-background);
+  border: var(--task-border);
+  border-radius: 1rem;
+  box-shadow: var(--task-box-shadow);
 }
 
-/*
- * Section header
- */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -268,20 +163,75 @@
   margin-bottom: 0.75rem;
 }
 
-/*
- * Section header title override
- */
+.team-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
 .section-header .team-section-title {
   margin-bottom: 0;
 }
 
-/* ========================================
-   Task Counts
-   ======================================== */
+/* Team Members List */
+.members-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
 
-/*
- * Task counts container
- */
+.member-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 200px;
+  background: var(--btn-background);
+  border: var(--task-border);
+  border-radius: 0.75rem;
+  padding: 0.7rem 2.5rem 0.7rem 1.5rem;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.member-card:hover {
+  background: var(--btn-background-hover);
+  border-color: var(--btn-border-hover);
+  box-shadow: var(--sidebar-box-shadow);
+}
+
+.member-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: var(--sidebar-box-shadow);
+}
+
+.member-name {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.member-role {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+}
+
+.member-role.leader {
+  background: var(--sidebar-background);
+  border: var(--task-border);
+  color: var(--neon-purple);
+}
+
+.member-role.member {
+  background: var(--btn-background);
+  border: var(--task-border);
+  color: var(--text-secondary);
+}
+
+/* Task Counts Row */
 .task-counts {
   display: flex;
   align-items: center;
@@ -289,142 +239,130 @@
   font-size: 0.875rem;
 }
 
-/*
- * Task counts label
- */
 .task-counts-label {
   font-weight: 600;
   color: var(--text-primary);
 }
 
-/*
- * Task count badge
- */
 .task-count {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 26px;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: var(--btn-background);
+  border: var(--task-border);
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/*
- * Task count total
- */
 .task-count.total {
   background: transparent;
   border: 1px solid #3498db;
   color: #3498db;
 }
 
-/*
- * Task count to_do
- */
 .task-count.open {
   background: rgba(231, 76, 60, 0.15);
-  color: #e74c3c;
+  color: var(--error);
 }
 
-/*
- * Task count in_progress
- */
 .task-count.in_progress {
   background: rgba(243, 156, 18, 0.15);
   color: #f39c12;
 }
 
-/*
- * Task count done
- */
 .task-count.closed {
   background: rgba(46, 204, 113, 0.15);
-  color: #2ecc71;
+  color: var(--success);
 }
 
-/*
- * Team section title
- */
-.team-section-title {
-  font-size: 1rem;
+/* Tasks Table */
+.tasks-table {
+  background: var(--task-gradient);
+  border: var(--task-border);
+  border-radius: 1rem;
+  box-shadow: var(--task-box-shadow);
+  overflow-x: auto;
+}
+
+.tasks-header {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr 0.8fr 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: var(--bg-primary);
   font-weight: 500;
-  margin-bottom: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  min-width: 850px;
+  letter-spacing: 0.04em;
 }
 
-/* ========================================
-   Task Form
-   ======================================== */
-
-/*
- * Task form container
- */
-.task-form {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
+.task-row {
+  display: grid;
+  grid-template-columns: 1.2fr 2fr 0.8fr 1fr 1fr;
+  gap: 1rem;
+  min-width: 850px;
   padding: 1rem;
-  margin-bottom: 1rem;
+  border-bottom: var(--task-border);
+  align-items: center;
+  font-size: 0.875rem;
+  transition: background 0.2s ease;
+}
+
+.task-row:hover {
+  background: var(--btn-background);
+}
+
+.task-row:last-child {
+  border-bottom: none;
+}
+
+.task-row .task-title {
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.task-row .task-description {
+  color: var(--text-secondary);
+  font-size: 0.75rem;
+  margin-bottom: 0;
+}
+
+/* Task form Modal */
+.task-form {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--btn-background);
+  border: var(--task-border);
+  border-radius: 0.75rem;
 }
 
-/*
- * Task form row
- */
 .task-form-row {
   display: flex;
   gap: 0.5rem;
 }
 
-/*
- * Task form row children
- */
 .task-form-row select,
 .task-form-row .btn,
 .task-form-row .assignee-dropdown-wrapper {
   flex: 1;
 }
 
-/* ========================================
-   Task status select dropdown
-   ======================================== */
-
-/*
- * Task status select in per-task rows
- */
-.task-status-select {
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  color: var(--text-primary);
-  font-size: 0.75rem;
-  cursor: pointer;
-  max-width: 100px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/*
- * Task status select hover/focus
- */
-.task-status-select:hover,
-.task-status-select:focus {
-  border-color: var(--neon-purple);
-  box-shadow: 0 0 8px var(--neon-purple);
-  outline: none;
-}
-
-/*
- * Task filters container
- */
+/* Task filters Dropdown */
 .task-filters {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
 }
 
-/*
- * Filter select dropdown
- */
 .filter-select {
   min-width: 140px;
   font-size: 0.75rem;
@@ -432,9 +370,6 @@
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/*
- * Filter select hover/focus
- */
 .filter-select:hover,
 .filter-select:focus {
   border-color: var(--neon-purple);
@@ -442,22 +377,38 @@
   outline: none;
 }
 
-/* ========================================
-   Assigned Select
-   ======================================== */
-
-/*
- * Assigned select dropdown
- */
-.assigned-select {
+/* Status Task Select Dropdown */
+.task-status-select {
   background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
+  border-radius: 0.45rem;
+  padding: 0.4rem 0.55rem;
   color: var(--text-primary);
   font-size: 0.75rem;
   cursor: pointer;
-  max-width: 100px;
+  max-width: 120px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.task-status-select:hover,
+.task-status-select:focus {
+  outline: none;
+  background: var(--btn-background-hover);
+  border-color: var(--btn-border-hover);
+  box-shadow: var(--btn-box-shadow-hover);
+}
+
+/* Assigned To Task Dropdown */
+.assigned-select {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 0.45rem;
+  padding: 0.4rem 0.55rem;
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  min-width: 120px;
+  max-width: 120px;
   min-height: 1.5rem;
   text-align: left;
   overflow: hidden;
@@ -466,27 +417,84 @@
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/*
- * Assigned select hover/focus
- */
 .assigned-select:hover,
 .assigned-select:focus {
-  border-color: var(--neon-purple);
-  box-shadow: 0 0 8px var(--neon-purple);
   outline: none;
+  background: var(--btn-background-hover);
+  border-color: var(--btn-border-hover);
+  box-shadow: var(--btn-box-shadow-hover);
 }
 
-/* ========================================
-   File Upload
-   ======================================== */
+/* Task Assigned Dropdown */
+.task-assigned {
+  color: var(--text-primary);
+}
 
-/*
- * File upload button
- */
-.file-upload-btn {
-  background: transparent;
-  border: 1px dashed var(--border);
+.assignee-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.assignee-dropdown-trigger {
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-arrow {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  float: right;
+  margin-left: 0.35rem;
+  margin-top: 0.15rem;
+}
+
+.assignee-dropdown-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 50;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--neon-purple);
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  padding: 0.5rem;
+  min-width: 180px;
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.assignee-dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.assignee-dropdown-option:hover {
+  background: var(--btn-background-hover);
+  color: var(--accent);
+}
+
+.assignee-dropdown-option input[type="checkbox"] {
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+/* Files Upload Section */
+.file-upload-btn {
+  background: var(--btn-background);
+  border: 1px dashed var(--border);
+  border-radius: 0.45rem;
   padding: 0.25rem 0.4rem;
   color: var(--text-secondary);
   cursor: pointer;
@@ -497,217 +505,23 @@
   font-size: 0.75rem;
 }
 
-/*
- * File upload button hover
- */
 .file-upload-btn:hover {
+  background: var(--btn-background-hover);
   border-color: var(--accent);
   color: var(--accent);
 }
 
-/*
- * File upload button SVG
- */
 .file-upload-btn svg {
   width: 16px;
   height: 16px;
 }
 
-/* ========================================
-   Tasks Empty State
-   ======================================== */
-
-/*
- * Tasks empty state
- */
-.tasks-empty {
-  padding: 2rem;
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-}
-
-/* ========================================
-   Members
-   ======================================== */
-
-/*
- * Members list container
- */
-.members-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-/*
- * Member card
- */
-.member-card {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.5rem 2.5rem 0.5rem 0.75rem;
-  position: relative;
-}
-
-/*
- * Member avatar
- */
-.member-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-}
-
-/*
- * Member name
- */
-.member-name {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-/*
- * Member role badge
- */
-.member-role {
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 999px;
-}
-
-/*
- * Member role leader
- */
-.member-role.leader {
-  background: rgba(62, 175, 209, 0.2);
-  color: var(--accent);
-}
-
-/*
- * Member role member
- */
-.member-role.member {
-  background: var(--bg-primary);
-  color: var(--text-secondary);
-}
-
-/* ========================================
-   Tasks Table
-   ======================================== */
-
-/*
- * Tasks table container
- */
-.tasks-table {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.75rem;
-  overflow-x: auto;
-}
-
-/*
- * Tasks table header row
- */
-.tasks-header {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: var(--bg-primary);
-  font-weight: 500;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  border-bottom: 1px solid var(--border);
-  min-width: 700px;
-}
-
-/*
- * Task table row
- */
-.task-row {
-  display: grid;
-  grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.875rem;
-  align-items: center;
-  min-width: 700px;
-}
-
-/*
- * Task row last child
- */
-.task-row:last-child {
-  border-bottom: none;
-}
-
-/*
- * Task row title
- */
-.task-row .task-title {
-  font-weight: 500;
-}
-
-/*
- * Task row description
- */
-.task-row .task-description {
-  color: var(--text-secondary);
-  font-size: 0.75rem;
-}
-
-/*
- * Task status badge (table variant)
- */
-.task-status {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  border-radius: 999px;
-  text-transform: capitalize;
-}
-
-/*
- * Status todo
- */
-.status-open {
-  background: rgba(107, 114, 128, 0.2);
-  color: #9ca3af;
-}
-
-/*
- * Status progress
- */
-.status-progress {
-  background: rgba(62, 175, 209, 0.2);
-  color: var(--accent);
-}
-
-/*
- * Status done
- */
-.status-closed {
-  background: rgba(16, 185, 129, 0.2);
-  color: var(--success);
-}
-
-/*
- * Task files container
- */
 .task-files {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-/*
- * File item
- */
 .file-item {
   display: flex;
   align-items: center;
@@ -716,168 +530,52 @@
   color: var(--accent);
 }
 
-/*
- * File icon
- */
 .file-icon {
-  width: 14px;
-  height: 14px;
+  width: 15px;
+  height: 15px;
 }
 
-/* ========================================
-   Team Actions
-   ======================================== */
-
-/*
- * Team actions container
- */
-.team-actions {
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border);
+.file-link {
+  color: var(--neon-purple);
+  transition: color 0.2s ease;
 }
 
-/*
- * Outline danger button
- */
-.btn-outline-danger {
-  background: transparent;
-  border: 1px solid var(--error);
-  color: var(--error);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.file-link:hover {
+  color: var(--accent);
+  text-decoration: none;
 }
 
-/*
- * Outline danger button hover
- */
-.btn-outline-danger:hover {
-  background: var(--error);
-  color: white;
-}
-
-/*
- * Danger button
- */
-.btn-danger {
-  background: var(--error);
-  color: white;
+.file-delete-btn {
+  background: none;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  color: var(--error);
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
 }
 
-/*
- * Danger button hover
- */
-.btn-danger:hover {
-  background: #dc2626;
-}
-
-/*
- * Leave confirmation modal
- */
-.leave-confirm {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
+/* Tasks empty state */
+.tasks-empty {
+  font-size: 0.875rem;
+  padding: 2rem;
+  background: var(--btn-background);
+  border: var(--task-border);
   border-radius: 0.75rem;
-  padding: 1.5rem;
+  color: var(--text-secondary);
   text-align: center;
 }
 
-/*
- * Leave confirm paragraph
- */
-.leave-confirm p {
-  margin-bottom: 1rem;
-}
-
-/*
- * Leave confirm buttons
- */
-.leave-confirm-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
 /* ========================================
-   Team Header Detail
+          Create + Edit Team Modal
    ======================================== */
-
-/*
- * Team header meta container
- */
-.team-header-meta {
+.team-details-select {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  flex-wrap: wrap;
+  gap: 0.375rem;
 }
 
-/*
- * Team header meta members count
- */
-.team-header-meta .team-members-count {
-  font-size: 1rem;
-  padding: 0.5rem 0.75rem;
-  background: var(--bg-primary);
-  border-radius: 0.5rem;
-}
-
-/*
- * Team status select dropdown
- */
-.team-status-select {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  color: var(--text-primary);
-  font-size: 0.75rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-/*
- * Team status select active
- */
-.team-status-select.active {
-  border-color: #2ecc71;
-  color: #2ecc71;
-}
-
-/*
- * Team status select finished
- */
-.team-status-select.finished {
-  border-color: #e74c3c;
-  color: #e74c3c;
-}
-
-/*
- * Team status select disabled
- */
-.team-status-select:disabled {
-  cursor: not-allowed;
-  opacity: 0.7;
-}
-
-.team-status-select option[value="__delete__"] {
-  color: #e74c3c;
-  font-weight: 600;
-}
-
-/* ========================================
-   Team Details Select
-   ======================================== */
-
-/*
- * Detail tag
- */
 .detail-tag {
   font-size: 0.625rem;
   padding: 0.25rem 0.5rem;
@@ -889,39 +587,21 @@
   transition: all 0.2s;
 }
 
-/*
- * Detail tag hover
- */
 .detail-tag:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
 
-/*
- * Detail tag selected
- */
 .detail-tag.selected {
   background: var(--accent);
   border-color: var(--accent);
-  color: white;
-}
-
-/*
- * Team details select container
- */
-.team-details-select {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
+  color: var(--text-primary);
 }
 
 /* ========================================
-   Modal Actions
+        Add Friend + Add Member Modals
    ======================================== */
 
-/*
- * Modal actions container
- */
 .modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -929,71 +609,27 @@
   margin-top: 1rem;
 }
 
-/*
- * Form group for modal
- */
-.form-group {
-  margin-bottom: 1rem;
-}
-
-/*
- * Input label
- */
 .form-group .input-label {
   display: block;
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-secondary);
-  margin-bottom: 0.375rem;
+  margin-bottom: 0.2rem;
 }
 
-/*
- * Team status uppercase variant
- */
-.team-status {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  text-transform: uppercase;
-}
-
-/*
- * Team status active variant
- */
-.team-status.active {
-  background: rgba(16, 185, 129, 0.2);
-  color: var(--success);
-}
-
-/* ========================================
-   Add Member
-   ======================================== */
-
-/*
- * Add member method container
- */
 .add-member-method {
   margin-bottom: 1rem;
 }
 
-/*
- * Add member row
- */
 .add-member-row {
   display: flex;
   gap: 0.5rem;
 }
 
-/*
- * Add member row input
- */
 .add-member-row .input {
   flex: 1;
 }
 
-/*
- * Add member divider
- */
 .add-member-divider {
   text-align: center;
   color: var(--text-secondary);
@@ -1002,9 +638,6 @@
   position: relative;
 }
 
-/*
- * Add member divider before/after
- */
 .add-member-divider::before,
 .add-member-divider::after {
   content: '';
@@ -1015,44 +648,19 @@
   background: var(--border);
 }
 
-/*
- * Add member divider before
- */
 .add-member-divider::before {
   left: 0;
 }
 
-/*
- * Add member divider after
- */
 .add-member-divider::after {
   right: 0;
 }
 
-/*
- * Add member role container
- */
-.add-member-role {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-}
-
-/*
- * Add member role input
- */
-.add-member-role .input {
-  flex: 1;
-}
-
 /* ========================================
-   Remove Member Modal
+          Remove Friend Modal
    ======================================== */
 
-/*
- * Remove member message
- */
+/* Remove User as Friend Options in The Modal  */
 .remove-member-message {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -1060,18 +668,13 @@
   font-size: 0.875rem;
 }
 
-/*
- * Remove member actions
- */
 .remove-member-actions {
   display: flex;
   justify-content: center;
   gap: 0.75rem;
 }
 
-/*
- * Remove member button
- */
+/* Remove member button Next to Picture */
 .btn-remove-member {
   position: absolute;
   right: 0.5rem;
@@ -1086,156 +689,153 @@
   transition: all 0.2s;
 }
 
-/*
- * Remove member button hover
- */
 .btn-remove-member:hover {
-  color: #e74c3c;
+  color: var(--error);
   background: rgba(231, 76, 60, 0.1);
 }
 
-/*
- * Remove member button SVG
- */
 .btn-remove-member svg {
   width: 18px;
   height: 18px;
 }
 
+/* ========================================
+              Mobile
+======================================== */
 /* Mobile General Teams Page */
 @media (max-width: 767px) {
 
-	.teams-header {
-		flex-direction: column;
-		align-items: stretch;
-		gap: 1.75rem;
-		padding-top: 0.5em;
-	}
+  .teams-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.75rem;
+    padding-top: 0.5em;
+  }
 
-	.teams-header h1,
-	.teams-header h2 {
-		margin: 0;
-	}
+  .teams-header h1,
+  .teams-header h2 {
+    margin: 0;
+  }
 
-	.teams-header-buttons {
-		display: flex;
-		width: 100%;
-		gap: 1rem;
-	}
+  .teams-header-buttons {
+    display: flex;
+    width: 100%;
+    gap: 1rem;
+  }
 
-	.teams-header-buttons .btn {
-		flex: 1;
-		min-width: 0;
-	}
+  .teams-header-buttons .btn {
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 /* Mobile Specific Team Page */
 @media (max-width: 767px) {
 
-	.team-detail-page {
-		padding: 0.2em;
-	}
+  .team-detail-page {
+    padding: 0.2em;
+  }
 
-	.team-detail-page .team-header {
-		flex-direction: column;
-		align-items: stretch;
-		text-align: left;
-		gap: 1rem;
-		margin-bottom: 1.5rem;
-	}
+  .team-detail-page .team-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
 
-	.team-header-content {
-		min-width: 0;
-	}
+  .team-header-content {
+    min-width: 0;
+  }
 
-	.team-title {
-		font-size: 1.5rem;
-		line-height: 1.2;
-		margin-bottom: 0.75rem;
-		text-align: left;
-		padding-right: 3rem;
-	}
+  .team-title {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+    text-align: left;
+    padding-right: 3rem;
+  }
 
-	.team-objective {
-		text-align: left;
-		max-width: 100%;
-	}
+  .team-objective {
+    text-align: left;
+    max-width: 100%;
+  }
 
-	.team-header-meta {
-		justify-content: space-between;
-	}
+  .team-header-meta {
+    justify-content: space-between;
+  }
 
-	.section-header {
-		flex-direction: column;
-		align-items: stretch;
-		gap: 0.75rem;
-	}
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
 
-	.section-header .btn {
-		width: 100%;
-	}
+  .section-header .btn {
+    width: 100%;
+  }
 
-	.task-counts {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 0.5rem;
-		width: 100%;
-	}
+  .task-counts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+  }
 
-	.task-counts-label {
-		grid-column: 1 / -1;
-	}
+  .task-counts-label {
+    grid-column: 1 / -1;
+  }
 
-	.task-count {
-		text-align: center;
-	}
+  .task-count {
+    text-align: center;
+  }
 
-	.task-filters {
-		flex-direction: column;
-	}
+  .task-filters {
+    flex-direction: column;
+  }
 
-	.filter-select {
-		width: 100%;
-		max-width: none;
-	}
+  .filter-select {
+    width: 100%;
+    max-width: none;
+  }
 
-	.team-header-meta .team-members-count {
-		font-size: 1.3em;
-	}
+  .team-header-meta .team-members-count {
+    font-size: 1.3em;
+  }
 
-	.members-list {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 0.75rem;
-	}
+  .members-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
 
-	.member-card {
-		display: grid;
-		grid-template-columns: 32px 1fr auto;
-		grid-template-rows: auto auto;
-		align-items: center;
-		width: 100%;
-		padding: 0.35rem;
-	}
+  .member-card {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    width: 100%;
+    padding: 0.35rem;
+  }
 
-	.member-avatar {
-		grid-column: 1;
-		grid-row: 1;
-		width: 32px;
-		height: 32px;
-	}
+  .member-avatar {
+    grid-column: 1;
+    grid-row: 1;
+    width: 32px;
+    height: 32px;
+  }
 
-	.member-name {
-		grid-column: 2;
-		grid-row: 1;
-		min-width: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
+  .member-name {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
-	.member-role {
-		grid-row: 2;
-		width: fit-content;
-		font-size: 0.75rem;
-	}
+  .member-role {
+    grid-row: 2;
+    width: fit-content;
+    font-size: 0.75rem;
+  }
 }
