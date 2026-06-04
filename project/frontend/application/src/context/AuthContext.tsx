@@ -461,6 +461,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const markAsRead = (id: number) => {
+    const notif = notifications.find(n => n.id === id);
+    if (notif?.status_read) return;
+
     api.readNotification(id).then(() => {
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, status_read: true } : n))

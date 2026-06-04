@@ -60,6 +60,7 @@ export const readNotification = async (userId: number, notificationId: number) =
 		where: {
 			id: notificationId,
 			user_id_receiver: userId,
+			status_read: false,
 		},
 	});
 
