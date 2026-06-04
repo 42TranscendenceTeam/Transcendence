@@ -78,7 +78,7 @@ export const sendMessageController = async (req: AuthRequest, res: Response) => 
 
 	res.status(201).json(request);
 
-	emitWithRetries(getIO(), 'chat message', chatId, content).catch(() => {});
+	emitWithRetries(getIO(), 'chat message', chatId, request).catch(() => {});
 
 };
 
