@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { getMe, updateMe, searchUsers, getUserById, toggle2FA } from './users.service.js';
+import { getMe, updateMe, searchUsers, getUserById, getUserState, toggle2FA } from './users.service.js';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import type { UpdateUserDTO } from './users.types.js';
 
@@ -44,3 +44,11 @@ export const toggle2FAController = async (req: AuthRequest, res: Response) => {
 
   return res.json(result);
 }
+
+export const getUserStateController = async (req: Request, res: Response) => {
+  const id = Number(req.params.id);
+
+  const user = await getUserState(id);
+
+  return res.json(user);
+};
