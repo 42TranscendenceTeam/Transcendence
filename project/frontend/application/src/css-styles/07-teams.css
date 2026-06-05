@@ -200,7 +200,7 @@
   align-items: center;
   gap: 0.65rem;
   min-width: 200px;
-  background: var(--btn-background);
+  background: var(--sidebar-background);
   border: var(--task-border);
   border-radius: 0.75rem;
   padding: 0.7rem 2.5rem 0.7rem 1.5rem;
