@@ -70,7 +70,7 @@ export const sendTeamMessageController = async (req: AuthRequest, res: Response)
 
 	res.status(201).json(request);
 
-	emitWithRetries(getIO(), 'team message', String(teamId), content).catch(() => {});
+	emitWithRetries(getIO(), 'team message', String(teamId), request).catch(() => {});
 
 };
 

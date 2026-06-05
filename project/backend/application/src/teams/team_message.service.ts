@@ -14,6 +14,7 @@ export const getTeamSentMessages = async (userId: number, teamId: number, amount
 
 		select: {
 			id: true,
+			sender_id: true,
 			content: true,
 			sent_at: true
 		},
@@ -27,6 +28,7 @@ export const getTeamSentMessages = async (userId: number, teamId: number, amount
 
 	const message_list = messages.map((directMessage) => ({
 		id: directMessage.id,
+		sender_id: directMessage.sender_id,
 		content: directMessage.content,
 		sent_at: directMessage.sent_at,
 	}));
