@@ -27,29 +27,32 @@
 /* Login Button in Logged Out Feed Page */
 .welcome-user {
   position: fixed;
-  top: 0.75rem;
-  left: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: var(--bg-card);
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
+  top: 1.5rem;
+  left: 1.5rem;
   z-index: 101;
-  transition: box-shadow 0.3s ease;
-  text-decoration: none;
+  padding: 0.75rem 1.8rem 0.75rem 1.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: var(--text-primary);
+  background: var(--gradient-primary);
+  border: 1px solid var(--btn-border-hover);
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.35);
+  border-radius: 0.5rem;
+  transition: background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .welcome-user:hover {
-  box-shadow: 0 0 12px var(--neon-purple), 0 0 20px var(--neon-blue);
+  background: rgba(9, 12, 24, 0.45);
+  border-color: rgba(139, 92, 246, 0.45);
+  text-decoration: none;
 }
 
 .welcome-avatar {
-  width: 32px;
-  height: 32px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  color: var(--text-secondary);
 }
 
 .welcome-text {
@@ -89,7 +92,7 @@
 .auth-topbar-btn {
   font-weight: 600;
   height: 40px;
-  padding: 0 1.15rem;
+  padding: 0.75rem 1.5rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -103,6 +106,29 @@
   background: linear-gradient(135deg, #a855f7 0%, #7c5cff 45%, #4f8cff 100%);
   box-shadow: 0 0 24px rgba(139, 92, 246, 0.35);
   text-decoration: none;
+}
+
+.feed-auth-actions {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 101;
+}
+
+.legal-layout-card {
+  width: 100%;
+  max-width: 750px;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  align-self: flex-start;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  background: rgba(21, 24, 40, 0.72);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-primary-glow);
+  backdrop-filter: blur(18px);
 }
 
 /* Login Form */
@@ -150,6 +176,7 @@
 .auth-card .label {
   color: var(--text-primary);
   font-size: 0.85em;
+  margin-bottom: 0.5em;
 }
 
 .auth-card .input::placeholder {
@@ -267,7 +294,7 @@
 .legal-page {
   margin: 0 auto;
   border-radius: 1rem;
-  max-width: 750px;
+  /*max-width: 750px;*/
 }
 
 .legal-title {

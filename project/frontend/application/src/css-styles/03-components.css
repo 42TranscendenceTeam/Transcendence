@@ -1,4 +1,4 @@
-/* Base button style (shared by all buttons) */
+/* Base button style */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -12,7 +12,7 @@
   outline: none;
 }
 
-/* Primary action button (highlighted) */
+/* Primary action button */
 .btn-primary {
   min-width: 100px;
   height: 42px;
@@ -23,14 +23,33 @@
   transition: all 0.2s ease;
 }
 
-/* Primary button hover animation */
 .btn-primary:hover {
   background: var(--btn-background-hover);
   border-color: var(--btn-border-hover);
   box-shadow: var(--btn-box-shadow-hover);
 }
 
-/* Pending state button (green, used for join request sent) */
+/* Button Accent Type  */
+.btn-accent {
+  font-size: 0.95em;
+  font-weight: 400;
+  min-width: 120px;
+  height: 42px;
+  gap: 0.45rem;
+  color: white;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.85);
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.25);
+}
+
+.btn-accent:hover {
+  background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent) 100%);
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.35);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+/* Pending state button */
 .btn-pending {
   min-width: 100px;
   height: 42px;
@@ -56,40 +75,13 @@
   cursor: pointer;
 }
 
-/* Hover state */
 .btn-danger-actions:hover {
   background: rgba(68, 32, 40, 0.9);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 0 18px rgba(244, 63, 94, 0.35);
   border-color: rgba(244, 63, 94, 0.95);
 }
 
-/*
- * Outline danger button
- */
-.btn-outline-danger {
-  background: rgba(42, 20, 28, 0.45);
-  border: 1px solid var(--error);
-  color: var(--error);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.65rem;
-  cursor: pointer;
-  box-shadow: var(--box-shadow);
-  transition: all 0.2s ease;
-}
-
-/*
- * Outline danger button hover
- */
-.btn-outline-danger:hover {
-  background: var(--error);
-  border-color: rgba(248, 113, 113, 0.85);
-  color: var(--text-primary);
-  box-shadow: var(--box-shadow);
-}
-
-/*
- * Danger button
- */
+/* Danger button */
 .btn-danger {
   background: var(--error);
   color: white;
@@ -100,9 +92,6 @@
   transition: all 0.2s ease;
 }
 
-/*
- * Danger button hover
- */
 .btn-danger:hover {
   background: var(--error);
 }
@@ -114,7 +103,6 @@
   border: 1px solid var(--border);
 }
 
-/* Secondary button hover effect */
 .btn-secondary:hover {
   background: var(--bg-card-hover);
   border-color: var(--border-light);
@@ -179,24 +167,4 @@
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-secondary);
-}
-
-/* Button Accents */
-.btn-accent {
-  font-size: 0.95em;
-  font-weight: 400;
-  min-width: 120px;
-  height: 42px;
-  gap: 0.45rem;
-  color: white;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-hover) 100%);
-  border: 1px solid rgba(139, 92, 246, 0.85);
-  box-shadow: 0 0 18px rgba(139, 92, 246, 0.25);
-}
-
-.btn-accent:hover {
-  background: linear-gradient(135deg, var(--accent-hover) 0%, var(--accent) 100%);
-  box-shadow: 0 0 24px rgba(139, 92, 246, 0.35);
-  transform: translateY(-1px);
-  text-decoration: none;
 }

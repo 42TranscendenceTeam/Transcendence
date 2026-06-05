@@ -153,7 +153,7 @@ function Friends() {
           </div>
         </div>
 
-        <button className="btn btn-primary btn-accent" onClick={() => setShowAddFriendModal(true)}>
+        <button className="btn btn-accent" onClick={() => setShowAddFriendModal(true)}>
           + {t('friends.addFriend')}
         </button>
       </div>

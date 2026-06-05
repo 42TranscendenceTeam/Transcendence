@@ -333,49 +333,6 @@
   font-weight: 600;
 }
 
-
-/* Mobile Friends Page */
-@media (max-width: 480px) {
-
-  .friends-header {
-    padding-top: 0.6em;
-    padding-bottom: 1.5em;
-  }
-
-  .friend-card,
-  .request-card {
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
-  .friend-avatar {
-    width: 44px;
-    height: 44px;
-  }
-
-  .friend-info,
-  .request-username {
-    flex: 1;
-    min-width: calc(100% - 60px);
-  }
-
-  .friend-card .btn,
-  .request-card .btn {
-    padding: 0.45em;
-    max-width: 130px;
-    flex: 0 1 45%;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .add-member-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
-  }
-}
-
-
 /* ========================================
       Notifications Page
   ======================================== */
@@ -549,33 +506,8 @@
   flex-shrink: 0;
 }
 
-/* ========================================
-      Friends Page Mobile
-  ======================================== */
-
-@media (max-width: 767px) {
-  .friends-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 480px) {
-  .friends-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .friends-search-wrapper {
-    max-width: none;
-  }
-
-  .friends-list {
-    grid-template-columns: 1fr;
-  }
-}
-
 /*
- * Text center utility (WHY EVEN USE THIS??)
+ * Text center utility
  */
 .text-center {
   text-align: center;

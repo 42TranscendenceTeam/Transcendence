@@ -44,7 +44,13 @@ function PrivacyPolicy() {
     </section>
   );
 
-  return (
+  return user ? (
+    <ProfileLayout>
+      <div className="legal-layout-card">
+        {pageContent}
+      </div>
+    </ProfileLayout>
+  ) : (
     <AuthLayout>{pageContent}</AuthLayout>
   );
 }

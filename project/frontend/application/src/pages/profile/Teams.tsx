@@ -97,7 +97,7 @@ function Teams() {
       <div className="teams-header">
         <h1 className="profile-page-title">{t('teams.title')}</h1>
         <div className="teams-header-buttons">
-          <button className="btn btn-primary btn-accent btn-small" onClick={() => setShowCreateModal(true)}>
+          <button className="btn btn-accent" onClick={() => setShowCreateModal(true)}>
             + {t('teams.createTeam')}
           </button>
         </div>
@@ -108,37 +108,6 @@ function Teams() {
 
       {!loading && !error && (
         <div className="teams-content">
-          {pendingInvites.length > 0 && (
-            <div className="profile-section">
-              <h2 className="profile-section-title">{t('teams.pendingInvites')}</h2>
-              <div className="requests-list">
-                {pendingInvites.map((invite) => (
-                  <div key={invite.invite_id} className="request-card team-invite-card">
-                    <div className="request-info">
-                      <span className="request-username">{invite.team_name}</span>
-                      <span className="request-message">{invite.team_about}</span>
-                    </div>
-
-                    <div className="request-actions">
-                      <button
-                        className="btn btn-primary btn-small"
-                        onClick={() => acceptTeamInvite(invite.invite_id)}
-                      >
-                        {t('teams.accept')}
-                      </button>
-
-                      <button
-                        className="btn btn-danger-actions btn-small"
-                        onClick={() => rejectTeamInvite(invite.invite_id)}
-                      >
-                        {t('teams.reject')}
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           <p className="profile-page-subtitle">{t('teams.youAreIn') || 'You are in'} {teams.length} {t('teams.activeTeams') || 'active teams'}</p>
 
@@ -217,6 +186,39 @@ function Teams() {
               <p className="empty-hint">{t('teams.findCollaborators') || 'Find collaborators on the home page!'}</p>
             </div>
           )}
+
+          {pendingInvites.length > 0 && (
+            <div className="profile-section">
+              <h2 className="profile-section-title">{t('teams.pendingInvites')}</h2>
+              <div className="requests-list">
+                {pendingInvites.map((invite) => (
+                  <div key={invite.invite_id} className="request-card team-invite-card">
+                    <div className="request-info">
+                      <span className="request-username">{invite.team_name}</span>
+                      <span className="request-message">{invite.team_about}</span>
+                    </div>
+
+                    <div className="request-actions">
+                      <button
+                        className="btn btn-primary btn-small"
+                        onClick={() => acceptTeamInvite(invite.invite_id)}
+                      >
+                        {t('teams.accept')}
+                      </button>
+
+                      <button
+                        className="btn btn-danger-actions btn-small"
+                        onClick={() => rejectTeamInvite(invite.invite_id)}
+                      >
+                        {t('teams.reject')}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       )}
 

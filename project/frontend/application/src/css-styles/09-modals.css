@@ -18,6 +18,7 @@
   width: 70%;
   max-width: 700px;
   max-height: 90vh;
+  padding: 1em;
   overflow-y: auto;
   background: var(--task-gradient);
   border: var(--task-border);

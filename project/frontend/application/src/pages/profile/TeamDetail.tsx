@@ -582,7 +582,7 @@ function TeamDetail() {
       <div className="team-section">
         <div className="section-header">
           <h2 className="team-section-title">{t('teams.members')} ({team.members.length})</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="team-section-actions">
             {isLeader && (
               <button className="btn btn-primary btn-small" onClick={() => {
                 setEditTeamName(team.name);
@@ -639,7 +639,6 @@ function TeamDetail() {
                   className="member-avatar"
                 />
                 <Link to={`/profile/${request.user_id}`} className="member-name">{request.username}</Link>
-                <span className="member-role pending">{t('teams.pending')}</span>
                 <div className="member-actions">
                   <button
                     className="btn btn-primary btn-small"
@@ -648,7 +647,7 @@ function TeamDetail() {
                     {t('teams.accept')}
                   </button>
                   <button
-                    className="btn btn-secondary btn-small"
+                    className="btn btn-danger-actions btn-small"
                     onClick={() => handleRejectJoinRequest(request.request_id)}
                   >
                     {t('teams.reject')}
