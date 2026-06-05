@@ -164,9 +164,9 @@ function TeamDetail() {
     try {
       const users = await api.searchUsers('');
       setAllUsers(users);
-    } catch {
-      setErrorUsers('Failed to load users');
-    } finally {
+      } catch {
+      setErrorUsers(t('teams.failedToLoadUsers') || 'Failed to load users');
+      } finally {
       setLoadingUsers(false);
     }
   };
@@ -331,7 +331,17 @@ function TeamDetail() {
 
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTask.title.trim() || !canEdit) return;
+    if (!canEdit) return;
+    if (!newTask.title.trim()) {
+      showError(t('common.error'), t('teams.taskTitleRequired') || 'Title is required');
+      return;
+    }
+    
+    if (!newTask.description.trim()) {
+      showError(t('common.error'), t('tasks.pleaseAddDescription') || 'Please add a description');
+      return;
+    }
+
     try {
       const members = team.members.filter((m: Member) => newTask.assignedTo.includes(m.username));
       const createdTask = await api.createTask(team.id, {
@@ -343,7 +353,8 @@ function TeamDetail() {
       setTasks([...tasks, createdTask]);
       setNewTask({ title: '', description: '', assignedTo: [], status: 'open' });
       setShowTaskForm(false);
-    } catch {
+    } catch (err: any) {
+      showError(t('common.error'), err.message || t('tasks.failedToCreate') || 'Failed to create task');
     }
   };
 
@@ -433,18 +444,30 @@ function TeamDetail() {
     }
     const userToAdd = availableUsers.find((u) => u.username === selectedFriend);
     if (userToAdd) {
-      try {
-        await api.sendTeamInvite(team.id, userToAdd.id);
-      } catch {
-        setErrorUsers('Failed to send invite');
+      // Guard: Check if user already has a pending join request
+      if (joinRequests.some(r => r.user_id === userToAdd.id)) {
+        setErrorUsers(t('teams.userHasPendingRequest') || 'User already has a pending join request. Accept it instead.');
         return;
       }
-      addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: 'Member' }, 'Member');
-      setSelectedFriend('');
-      setShowAddMemberModal(false);
-      setSuccessMessage(t('teams.inviteSentSuccess'));
-      setSuccessReload(false);
-      setShowSuccessModal(true);
+      try {
+        // Pre-check for pending invites to this user if possible or handle catch gracefully
+        await api.sendTeamInvite(team.id, userToAdd.id);
+        
+        addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: 'Member' }, 'Member');
+        setSelectedFriend('');
+        setShowAddMemberModal(false);
+        setSuccessMessage(t('teams.inviteSentSuccess'));
+        setSuccessReload(false);
+        setShowSuccessModal(true);
+      } catch (err: any) {
+        if (err?.message?.includes('already exists')) {
+          setSuccessMessage(t('teams.alreadyInvited') || 'User already has a pending invite.');
+          setShowSuccessModal(true);
+          setShowAddMemberModal(false);
+        } else {
+          setErrorUsers(t('teams.failedToSendInvite') || 'Failed to send invite');
+        }
+      }
     }
   };
 
@@ -462,28 +485,40 @@ function TeamDetail() {
         (u) => u.username.toLowerCase() === manualUsername.trim().toLowerCase()
       );
       if (foundUser && !team.members.some((m) => m.id === foundUser.id)) {
-        try {
-          await api.sendTeamInvite(team.id, foundUser.id);
-        } catch {
-          setErrorUsers('Failed to send invite');
+        // Guard: Check if user already has a pending join request
+        if (joinRequests.some(r => r.user_id === foundUser.id)) {
+          setErrorUsers(t('teams.userHasPendingRequest') || 'User already has a pending join request. Accept it instead.');
+          setLoadingUsers(false);
           return;
         }
-        addTeamMember(team.id, {
-          id: foundUser.id,
-          username: foundUser.username,
-          avatar: getAvatarUrl(u.avatar_url),
-          role: 'Member',
-        }, 'Member');
-        setManualUsername('');
-        setShowAddMemberModal(false);
-        setSuccessMessage(t('teams.inviteSentSuccess'));
-        setSuccessReload(false);
-        setShowSuccessModal(true);
+        try {
+          await api.sendTeamInvite(team.id, foundUser.id);
+          
+          addTeamMember(team.id, {
+            id: foundUser.id,
+            username: foundUser.username,
+            avatar: getAvatarUrl(foundUser.avatar_url),
+            role: 'Member',
+          }, 'Member');
+          setManualUsername('');
+          setShowAddMemberModal(false);
+          setSuccessMessage(t('teams.inviteSentSuccess'));
+          setSuccessReload(false);
+          setShowSuccessModal(true);
+        } catch (err: any) {
+          if (err?.message?.includes('already exists')) {
+            setSuccessMessage(t('teams.alreadyInvited') || 'User already has a pending invite.');
+            setShowSuccessModal(true);
+            setShowAddMemberModal(false);
+          } else {
+            setErrorUsers(t('teams.failedToSendInvite') || 'Failed to send invite');
+          }
+        }
       } else {
-        setErrorUsers('User not found or already a member');
+        setErrorUsers(t('teams.userNotFoundOrMember') || 'User not found or already a member');
       }
     } catch {
-      setErrorUsers('Failed to find user');
+      setErrorUsers(t('teams.failedToFindUser') || 'Failed to find user');
     } finally {
       setLoadingUsers(false);
     }
@@ -581,7 +616,12 @@ function TeamDetail() {
               </button>
             )}
             {isLeader && (
-              <button className="btn btn-primary btn-small" onClick={() => setShowAddMemberModal(true)}>
+              <button className="btn btn-primary btn-small" onClick={() => {
+                setShowAddMemberModal(true);
+                setErrorUsers('');
+                setManualUsername('');
+                setSelectedFriend('');
+              }}>
                 + {t('teams.addMember') || 'Add Member'}
               </button>
             )}
@@ -671,7 +711,6 @@ function TeamDetail() {
               className="input"
               value={newTask.title}
               onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-              required
             />
             <textarea
               placeholder={t('tasks.description')}

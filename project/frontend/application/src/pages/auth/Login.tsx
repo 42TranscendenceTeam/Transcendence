@@ -63,6 +63,7 @@ function Login() {
         localStorage.setItem('authToken', result.token);
         window.location.href = '/';
       } catch (err: any) {
+        // Prevent default console error reporting for login failures
         setError(err.message || 'Login failed. Please check your credentials.');
       } finally {
         setLoading(false);

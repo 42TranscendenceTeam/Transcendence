@@ -146,23 +146,25 @@ function Notifications() {
     const teamName = extractTeamName(notification.type, notification.content);
     if (teamName) {
       try {
-        const teams = await api.getTeams();
-        const team = teams.find(t => t.name === teamName);
-        if (team) {
-          const membersData = await api.getTeamMembers(team.id);
-          const isMember = user?.id != null && membersData.member_list.some(m => m.id === user.id);
+        const teamsData = await api.getTeams();
+        const foundTeam = teamsData.find(t => t.name === teamName);
+        
+        if (foundTeam) {
+          // Check if user is already a member using api.getMyTeams for authoritative list
+          const myTeams = await api.getMyTeams();
+          const isMember = myTeams.some(mt => mt.id === foundTeam.id);
+          
           if (isMember) {
-            navigate(`/teams/${team.id}`);
+            navigate(`/teams/${foundTeam.id}`);
           } else {
-            showError(t('common.error'), t('teams.notFoundDesc'));
+            // Not a member yet, redirect to team list
             navigate('/profile/teams');
           }
         } else {
-          showError(t('common.error'), t('teams.notFoundDesc'));
           navigate('/profile/teams');
         }
-      } catch {
-        showError(t('common.error'), t('notifications.teamLoadFailed'));
+      } catch (err) {
+        console.error('Notification navigation failed:', err);
         navigate('/profile/teams');
       }
     } else {

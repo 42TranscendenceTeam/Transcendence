@@ -212,10 +212,17 @@
     "saveSettings": "Save Settings",
     "settingsUpdated": "Team settings updated",
     "failedToRemove": "Failed to remove member",
+    "alreadyInvited": "User already has a pending invite.",
+    "userHasPendingRequest": "User already has a pending join request. Accept it instead.",
+    "alreadyInTeam": "You are already a member of this team.",
     "teamFullTitle": "Team Full",
     "teamFull": "Team is already full",
     "failedToAcceptRequest": "Failed to accept join request",
     "failedToRejectRequest": "Failed to reject join request",
+    "failedToLoadUsers": "Failed to load users",
+    "failedToSendInvite": "Failed to send invite",
+    "userNotFoundOrMember": "User not found or already a member",
+    "failedToFindUser": "Failed to find user",
     "joinRequestRejected": "Join request rejected successfully",
     "joinRequestAccepted": "Join request accepted successfully"
   },
@@ -237,6 +244,7 @@
     "low": "Low",
     "medium": "Medium",
     "high": "High",
+    "pleaseAddDescription": "Please add a description",
     "noTasks": "No tasks found",
     "createFirst": "Create your first task!"
   },
@@ -275,7 +283,8 @@
     "alreadyFriends": "You are already friends.",
     "addFriendFailed": "Failed to send friend request.",
     "userNotFound": "User not found.",
-    "loadUsersFailed": "Failed to load users."
+    "loadUsersFailed": "Failed to load users.",
+    "friendNotFound": "This user is no longer in your friends list."
   },
   "chat": {
     "title": "Chat",

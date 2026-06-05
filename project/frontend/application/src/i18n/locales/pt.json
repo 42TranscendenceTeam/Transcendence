@@ -210,6 +210,9 @@
     "addTask": "Adicionar Tarefa",
     "memberRemovedSuccess": "Membro removido com sucesso",
     "inviteSentSuccess": "Convite enviado com sucesso",
+    "alreadyInvited": "O utilizador já tem um convite pendente.",
+    "userHasPendingRequest": "O utilizador já tem um pedido de entrada pendente. Aceite-o em vez de convidar.",
+    "alreadyInTeam": "Você já é um membro desta equipa.",
     "editTeam": "Editar equipa",
     "saveSettings": "Guardar alterações",
     "settingsUpdated": "Configurações da equipa atualizadas",
@@ -218,6 +221,10 @@
     "teamFull": "A equipa já está cheia",
     "failedToAcceptRequest": "Falha ao aceitar pedido de entrada",
     "failedToRejectRequest": "Falha ao rejeitar pedido de entrada",
+    "failedToLoadUsers": "Falha ao carregar utilizadores",
+    "failedToSendInvite": "Falha ao enviar convite",
+    "userNotFoundOrMember": "Utilizador não encontrado ou já é membro",
+    "failedToFindUser": "Falha ao encontrar utilizador",
     "joinRequestRejected": "Pedido de entrada rejeitado com sucesso",
     "joinRequestAccepted": "Pedido de entrada aceite com sucesso"
   },
@@ -239,6 +246,7 @@
     "low": "Baixa",
     "medium": "Média",
     "high": "Alta",
+    "pleaseAddDescription": "Por favor, adicione uma descrição",
     "noTasks": "Nenhuma tarefa encontrada",
     "createFirst": "Crie a sua primeira tarefa!"
   },
@@ -267,7 +275,8 @@
     "alreadyFriends": "Já são amigos.",
     "addFriendFailed": "Falha ao enviar pedido de amizade.",
     "userNotFound": "Utilizador não encontrado.",
-    "loadUsersFailed": "Falha ao carregar utilizadores."
+    "loadUsersFailed": "Falha ao carregar utilizadores.",
+    "friendNotFound": "Este utilizador já não está na sua lista de amigos."
   },
   "chat": {
     "title": "Chat",

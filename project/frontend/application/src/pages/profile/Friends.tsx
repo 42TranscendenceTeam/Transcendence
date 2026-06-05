@@ -76,11 +76,19 @@ function Friends() {
 
   const handleConfirmRemove = async () => {
     if (friendToRemove) {
+      // Pre-check: verify friend still exists in our list
+      if (!friends.some(f => f.id === friendToRemove.id)) {
+        showError(t('common.error'), t('friends.friendNotFound') || 'This user is no longer in your friends list.');
+        setShowRemoveModal(false);
+        setFriendToRemove(null);
+        return;
+      }
+
       try {
         await api.removeFriend(friendToRemove.id);
-        removeFriend(friendToRemove.id);
         fetchFriends();
-      } catch {
+      } catch (err: any) {
+        showError(t('common.error'), err?.message || t('friends.failedToRemove') || 'Failed to remove friend');
       }
       setShowRemoveModal(false);
       setFriendToRemove(null);

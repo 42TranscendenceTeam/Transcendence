@@ -587,7 +587,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to send join request');
+          throw new Error(error.error || error.message || 'Failed to send join request');
         });
       }
       return response.json();
@@ -604,7 +604,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to get join requests');
+          throw new Error(error.error || error.message || 'Failed to get join requests');
         });
       }
       return response.json();
@@ -621,7 +621,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to accept join request');
+          throw new Error(error.error || error.message || 'Failed to accept join request');
         });
       }
     });
@@ -637,7 +637,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to reject join request');
+          throw new Error(error.error || error.message || 'Failed to reject join request');
         });
       }
     });
@@ -654,7 +654,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to get team invites');
+          throw new Error(error.error || error.message || 'Failed to get team invites');
         });
       }
       return response.json();
@@ -671,7 +671,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to accept team invite');
+          throw new Error(error.error || error.message || 'Failed to accept team invite');
         });
       }
     });
@@ -687,7 +687,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to reject team invite');
+          throw new Error(error.error || error.message || 'Failed to reject team invite');
         });
       }
     });

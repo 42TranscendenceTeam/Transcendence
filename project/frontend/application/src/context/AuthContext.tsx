@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               fetchFriendRequests();
               fetchSentRequests();
             }
-            if (n.type === 'friend_request_accepted') {
+            if (n.type === 'friend_request_accepted' || n.type === 'friend_removed') {
               fetchFriends();
             }
             if (n.type === 'team_invite' || n.type === 'team_invite_accepted'
