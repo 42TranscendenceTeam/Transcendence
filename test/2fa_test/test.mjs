@@ -1,3 +1,4 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 const API = process.env.API_URL || 'https://localhost/api';
 
 let total = 0;
