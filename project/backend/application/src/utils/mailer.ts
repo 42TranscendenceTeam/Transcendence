@@ -1,13 +1,23 @@
-import { Resend } from "resend";
-import { RESEND_API_KEY } from "../config.js";
+import nodemailer from "nodemailer";
+import { SMTP_EMAIL, SMTP_PASSWORD } from "../config.js";
 
-const resend = new Resend(RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: SMTP_EMAIL,
+    pass: SMTP_PASSWORD,
+  },
+});
 
 export const send2FACode = async (email: string, code: string) => {
-  await resend.emails.send({
-    from: "Transcendence <onboarding@resend.dev>",
+  await transporter.sendMail({
+    from: `"Transcendence" <${SMTP_EMAIL}>`,
     to: email,
     subject: "Your 2FA Code",
-    html: `<p>Your login code is: <strong>${code}</strong></p>`,
+    html: `
+      <h3>Your verification code is:</h3>
+      <h1>${code}</h1>
+      <p><em>This code expires in 5 minutes.</em></p>
+    `,
   });
 };
