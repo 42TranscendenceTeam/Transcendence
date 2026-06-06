@@ -149,9 +149,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser({ ...user, ...updates });
   };
 
-  const toggle2FA = () => {
-    if (!user) return;
-    setUser({ ...user, twoFactorEnabled: !user.twoFactorEnabled });
+  const toggle2FA = async () => {
+    if (!user) return false;
+    const newState = !user.twoFactorEnabled;
+    try {
+      const result = await api.enable2FA(newState);
+      setUser({ ...user, twoFactorEnabled: result.two_factor_enabled });
+      return result.two_factor_enabled;
+    } catch (err) {
+      console.error('Failed to toggle 2FA:', err);
+      return false;
+    }
   };
 
   const leaveTeam = async (teamId: number) => {

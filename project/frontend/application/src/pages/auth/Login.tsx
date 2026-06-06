@@ -60,8 +60,13 @@ function Login() {
           return;
         }
         const result = await api.login({ email, password });
-        localStorage.setItem('authToken', result.token);
-        window.location.href = '/';
+        if (result.requires_2fa && result.temp_token) {
+          setTempToken(result.temp_token);
+          setShow2FA(true);
+        } else {
+          localStorage.setItem('authToken', result.token);
+          window.location.href = '/';
+        }
       } catch (err: any) {
         // Prevent default console error reporting for login failures
         setError(err.message || 'Login failed. Please check your credentials.');
@@ -77,6 +82,8 @@ function Login() {
     setLoading(true);
 
     try {
+const result = await api.verify2FA(tempToken, twoFactorCode);
+      localStorage.setItem('authToken', result.token);
       window.location.href = '/';
     } catch {
       setError('Invalid verification code. Please try again.');
