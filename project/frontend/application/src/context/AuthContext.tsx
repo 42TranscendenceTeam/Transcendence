@@ -7,7 +7,7 @@
  * Uses real backend API for authentication and user data.
  */
 
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, useRef, ReactNode } from 'react';
 import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest, TeamInvite, JoinRequestNotification, AppNotification } from '../types';
 import { api } from '../services/api';
 import { getAvatarUrl } from '../utils/avatar';
@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [teamRefreshTrigger, setTeamRefreshTrigger] = useState(0);
+  const [onlineFriendIds, setOnlineFriendIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const loadUser = async () => {
@@ -75,6 +76,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
+  const userRef = useRef(user);
+  userRef.current = user;
+
   useEffect(() => {
     if (user) {
       const token = localStorage.getItem('authToken');
@@ -100,7 +104,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }
             if (n.type === 'team_join_request' || n.type === 'team_join_request_accepted'
                 || n.type === 'team_join_request_rejected') {
-              if (user) fetchJoinRequestNotifications(user.id);
+              const u = userRef.current;
+              if (u) fetchJoinRequestNotifications(u.id);
             }
             if (n.type === 'team_invite_accepted' || n.type === 'team_removed'
                 || n.type === 'team_user_left' || n.type === 'team_join_request_accepted'
@@ -109,13 +114,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }
           };
           sock.on('notification:new', handler);
-          return () => sock.off('notification:new', handler);
+
+          const onlineHandler = (ids: number[]) => setOnlineFriendIds(new Set(ids));
+          const userOnlineHandler = (userId: number) => setOnlineFriendIds((prev) => new Set(prev).add(userId));
+          const userOfflineHandler = (userId: number) => setOnlineFriendIds((prev) => { const next = new Set(prev); next.delete(userId); return next; });
+          sock.on('online friends', onlineHandler);
+          sock.on('user online', userOnlineHandler);
+          sock.on('user offline', userOfflineHandler);
+
+          return () => {
+            sock.off('notification:new', handler);
+            sock.off('online friends', onlineHandler);
+            sock.off('user online', userOnlineHandler);
+            sock.off('user offline', userOfflineHandler);
+          };
         }
       }
     } else {
       disconnectSocket();
     }
-  }, [user]);
+  }, [!!user]);
 
   const logout = () => {
     localStorage.removeItem('authToken');
@@ -450,11 +468,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const fetchFriends = () => {
+    const currentFriendIds = new Set(friends.map(f => f.id));
     api.getFriends().then((friendList) => {
       setFriends(friendList);
       if (user) {
         setUser({ ...user, friends: friendList });
       }
+      friendList.forEach((f: Friend) => {
+        if (!currentFriendIds.has(f.id)) {
+          api.getUserOnline(f.id).then(d => {
+            if (d.Online) setOnlineFriendIds(prev => new Set(prev).add(f.id));
+          }).catch(() => {});
+        }
+      });
     }).catch((err) => {
       console.error('Failed to fetch friends:', err);
     });
@@ -640,6 +666,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       acceptTeamInvite,
       rejectTeamInvite,
       markNotificationsRead,
+      onlineFriendIds,
     }}>
       {children}
     </AuthContext.Provider>

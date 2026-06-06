@@ -226,6 +226,22 @@ export const api = {
     });
   },
 
+  // GET /users/:id/online - Returns user online status
+  getUserOnline(userId: number): Promise<{ Online: boolean }> {
+    return fetch(`${API_URL}/users/${userId}/online`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get user online status');
+      }
+      return response.json();
+    });
+  },
+
   // ========== USER PROFILE ==========
   getCurrentUser(): Promise<UserProfile> {
     return fetch(`${API_URL}/users/me`, {

@@ -28,7 +28,7 @@ function TeamDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, deleteTaskFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger } = useContext(AuthContext);
+  const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, deleteTaskFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger, onlineFriendIds } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
@@ -71,6 +71,7 @@ function TeamDetail() {
   const [openAssigneeTask, setOpenAssigneeTask] = useState<number | null>(null);
   const [downloadingFileId, setDownloadingFileId] = useState<number | null>(null);
   const formAssigneeRef = useRef<HTMLDivElement>(null);
+  const [memberOnlineStatus, setMemberOnlineStatus] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
     const fetchTeam = async () => {
@@ -88,6 +89,31 @@ function TeamDetail() {
     };
     fetchTeam();
   }, [id, teamRefreshTrigger]);
+
+  useEffect(() => {
+    if (!team?.members) return;
+    const nonFriendMembers = team.members.filter((m: Member) => m.id !== user?.id && !onlineFriendIds.has(m.id));
+    if (nonFriendMembers.length === 0) return;
+    nonFriendMembers.forEach((m: Member) => {
+      api.getUserOnline(m.id).then(d => {
+        setMemberOnlineStatus(prev => ({ ...prev, [m.id]: d.Online }));
+      }).catch(() => {});
+    });
+  }, [team?.members, user?.id]);
+
+  useEffect(() => {
+    if (!team?.members) return;
+    const poll = setInterval(() => {
+      const toCheck = team.members.filter((m: Member) => m.id !== user?.id && !onlineFriendIds.has(m.id));
+      if (toCheck.length === 0) return;
+      toCheck.forEach((m: Member) => {
+        api.getUserOnline(m.id).then(d => {
+          setMemberOnlineStatus(prev => ({ ...prev, [m.id]: d.Online }));
+        }).catch(() => {});
+      });
+    }, 5000);
+    return () => clearInterval(poll);
+  }, [team?.members, user?.id]);
 
   useEffect(() => {
     const fetchJoinRequests = async () => {
@@ -603,7 +629,10 @@ function TeamDetail() {
         <div className="members-list">
           {team.members.map((member) => (
             <div key={member.id} className="member-card">
-              <img src={member.avatar} alt={member.username} className="member-avatar" />
+              <div style={{ position: 'relative', display: 'inline-block' }}>
+                <img src={member.avatar} alt={member.username} className="member-avatar" />
+                <span className={`status-indicator ${(onlineFriendIds.has(member.id) || memberOnlineStatus[member.id] || member.id === user?.id) ? 'online' : 'offline'}`} style={{ position: 'absolute', bottom: 0, right: 0 }} />
+              </div>
               <Link to={`/profile/${member.id}`} className="member-name">{member.username}</Link>
               <span className={`member-role ${member.role.toLowerCase()}`}>{member.role}</span>
               {isLeader && member.id !== user.id && (
