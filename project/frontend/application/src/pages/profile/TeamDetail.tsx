@@ -461,9 +461,7 @@ function TeamDetail() {
         setShowSuccessModal(true);
       } catch (err: any) {
         if (err?.message?.includes('already exists')) {
-          setSuccessMessage(t('teams.alreadyInvited') || 'User already has a pending invite.');
-          setShowSuccessModal(true);
-          setShowAddMemberModal(false);
+          setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
         } else {
           setErrorUsers(t('teams.failedToSendInvite') || 'Failed to send invite');
         }
@@ -507,9 +505,7 @@ function TeamDetail() {
           setShowSuccessModal(true);
         } catch (err: any) {
           if (err?.message?.includes('already exists')) {
-            setSuccessMessage(t('teams.alreadyInvited') || 'User already has a pending invite.');
-            setShowSuccessModal(true);
-            setShowAddMemberModal(false);
+            setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
           } else {
             setErrorUsers(t('teams.failedToSendInvite') || 'Failed to send invite');
           }

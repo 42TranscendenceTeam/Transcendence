@@ -704,7 +704,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to send team invite');
+          throw new Error(error.error || error.message || 'Failed to send team invite');
         });
       }
     });
