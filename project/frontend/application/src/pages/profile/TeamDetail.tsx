@@ -14,6 +14,7 @@ import { useContext, useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 import { getAvatarUrl } from '../../utils/avatar';
 import { ALLOWED_TASK_EXTENSIONS } from '../../utils/fileValidation';
@@ -28,6 +29,7 @@ function TeamDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { showError } = useError();
   const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, deleteTaskFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -79,8 +81,7 @@ function TeamDetail() {
         setLoadingTeam(true);
         const teamData = await api.getTeam(parseInt(id));
         setTeam(teamData);
-      } catch (err) {
-        console.error('Failed to fetch team:', err);
+      } catch {
         setTeamError('Failed to load team');
       } finally {
         setLoadingTeam(false);
@@ -95,8 +96,7 @@ function TeamDetail() {
       try {
         const data = await api.getJoinRequests(parseInt(id));
         setJoinRequests(data.request_list || []);
-      } catch (err) {
-        console.error('Failed to fetch join requests:', err);
+      } catch {
       }
     };
     fetchJoinRequests();
@@ -118,8 +118,7 @@ function TeamDetail() {
           })
         );
         setTasks(tasksWithFiles);
-      } catch (err) {
-        console.error('Failed to fetch tasks:', err);
+      } catch {
       }
     };
     fetchTasks();
@@ -165,10 +164,9 @@ function TeamDetail() {
     try {
       const users = await api.searchUsers('');
       setAllUsers(users);
-    } catch (err) {
-      setErrorUsers('Failed to load users');
-      console.error(err);
-    } finally {
+      } catch {
+      setErrorUsers(t('teams.failedToLoadUsers') || 'Failed to load users');
+      } finally {
       setLoadingUsers(false);
     }
   };
@@ -233,9 +231,8 @@ function TeamDetail() {
     try {
       await api.deleteTeam(team.id);
       navigate('/profile/teams');
-    } catch (err) {
-      console.error('Failed to delete team:', err);
-      alert('Failed to delete team');
+    } catch {
+      showError('Error', 'Failed to delete team');
     }
   };
 
@@ -289,9 +286,8 @@ function TeamDetail() {
       setSuccessMessage(t('teams.settingsUpdated'));
       setSuccessReload(false);
       setShowSuccessModal(true);
-    } catch (err) {
-      console.error('Failed to update team settings:', err);
-      alert('Failed to update team settings');
+    } catch {
+      showError('Error', 'Failed to update team settings');
     }
   };
 
@@ -315,9 +311,8 @@ function TeamDetail() {
       setSuccessReload(false);
       setShowSuccessModal(true);
       fetchNotifications();
-    } catch (err) {
-      console.error('Failed to accept join request:', err);
-      alert(t('teams.failedToAcceptRequest'));
+    } catch {
+      showError('Error', t('teams.failedToAcceptRequest'));
     }
   };
 
@@ -329,15 +324,24 @@ function TeamDetail() {
       setSuccessReload(false);
       setShowSuccessModal(true);
       fetchNotifications();
-    } catch (err) {
-      console.error('Failed to reject join request:', err);
-      alert(t('teams.failedToRejectRequest'));
+    } catch {
+      showError('Error', t('teams.failedToRejectRequest'));
     }
   };
 
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTask.title.trim() || !canEdit) return;
+    if (!canEdit) return;
+    if (!newTask.title.trim()) {
+      showError(t('common.error'), t('teams.taskTitleRequired') || 'Title is required');
+      return;
+    }
+    
+    if (!newTask.description.trim()) {
+      showError(t('common.error'), t('tasks.pleaseAddDescription') || 'Please add a description');
+      return;
+    }
+
     try {
       const members = team.members.filter((m: Member) => newTask.assignedTo.includes(m.username));
       const createdTask = await api.createTask(team.id, {
@@ -349,8 +353,8 @@ function TeamDetail() {
       setTasks([...tasks, createdTask]);
       setNewTask({ title: '', description: '', assignedTo: [], status: 'open' });
       setShowTaskForm(false);
-    } catch (err) {
-      console.error('Failed to create task:', err);
+    } catch (err: any) {
+      showError(t('common.error'), err.message || t('tasks.failedToCreate') || 'Failed to create task');
     }
   };
 
@@ -360,8 +364,7 @@ function TeamDetail() {
       const updatedTask = await api.updateTaskStatus(taskId, newStatus);
       setTasks(tasks.map((t) => t.id === taskId ? updatedTask : t));
       updateTaskStatus(team.id, taskId, newStatus);
-    } catch (err) {
-      console.error('Failed to update task status:', err);
+    } catch {
     }
   };
 
@@ -372,8 +375,7 @@ function TeamDetail() {
       await api.updateTaskUsers(taskId, memberIds);
       setTasks(tasks.map((t) => t.id === taskId ? { ...t, assignedTo: selectedMembers.map(m => ({ id: m.id, username: m.username })) } : t));
       updateTaskAssignee(team.id, taskId, selectedMembers);
-    } catch (err) {
-      console.error('Failed to update task users:', err);
+    } catch {
     }
   };
 
@@ -383,8 +385,7 @@ function TeamDetail() {
       await Promise.all(files.map((f) => api.deleteTaskFile(f.id)));
       await api.deleteTask(taskId);
       setTasks(tasks.filter((t) => t.id !== taskId));
-    } catch (err) {
-      console.error('Failed to delete task:', err);
+    } catch {
     }
   };
 
@@ -443,18 +444,28 @@ function TeamDetail() {
     }
     const userToAdd = availableUsers.find((u) => u.username === selectedFriend);
     if (userToAdd) {
-      try {
-        await api.sendTeamInvite(team.id, userToAdd.id);
-      } catch {
-        setErrorUsers('Failed to send invite');
+      // Guard: Check if user already has a pending join request
+      if (joinRequests.some(r => r.user_id === userToAdd.id)) {
+        setErrorUsers(t('teams.userHasPendingRequest') || 'User already has a pending join request. Accept it instead.');
         return;
       }
-      addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: 'Member' }, 'Member');
-      setSelectedFriend('');
-      setShowAddMemberModal(false);
-      setSuccessMessage(t('teams.inviteSentSuccess'));
-      setSuccessReload(false);
-      setShowSuccessModal(true);
+      try {
+        // Pre-check for pending invites to this user if possible or handle catch gracefully
+        await api.sendTeamInvite(team.id, userToAdd.id);
+        
+        addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: 'Member' }, 'Member');
+        setSelectedFriend('');
+        setShowAddMemberModal(false);
+        setSuccessMessage(t('teams.inviteSentSuccess'));
+        setSuccessReload(false);
+        setShowSuccessModal(true);
+      } catch (err: any) {
+        if (err?.message?.includes('already exists')) {
+          setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
+        } else {
+          setErrorUsers(t('teams.failedToSendInvite') || 'Failed to send invite');
+        }
+      }
     }
   };
 
@@ -472,29 +483,38 @@ function TeamDetail() {
         (u) => u.username.toLowerCase() === manualUsername.trim().toLowerCase()
       );
       if (foundUser && !team.members.some((m) => m.id === foundUser.id)) {
-        try {
-          await api.sendTeamInvite(team.id, foundUser.id);
-        } catch {
-          setErrorUsers('Failed to send invite');
+        // Guard: Check if user already has a pending join request
+        if (joinRequests.some(r => r.user_id === foundUser.id)) {
+          setErrorUsers(t('teams.userHasPendingRequest') || 'User already has a pending join request. Accept it instead.');
+          setLoadingUsers(false);
           return;
         }
-        addTeamMember(team.id, {
-          id: foundUser.id,
-          username: foundUser.username,
-          avatar: getAvatarUrl(u.avatar_url),
-          role: 'Member',
-        }, 'Member');
-        setManualUsername('');
-        setShowAddMemberModal(false);
-        setSuccessMessage(t('teams.inviteSentSuccess'));
-        setSuccessReload(false);
-        setShowSuccessModal(true);
+        try {
+          await api.sendTeamInvite(team.id, foundUser.id);
+          
+          addTeamMember(team.id, {
+            id: foundUser.id,
+            username: foundUser.username,
+            avatar: getAvatarUrl(foundUser.avatar_url),
+            role: 'Member',
+          }, 'Member');
+          setManualUsername('');
+          setShowAddMemberModal(false);
+          setSuccessMessage(t('teams.inviteSentSuccess'));
+          setSuccessReload(false);
+          setShowSuccessModal(true);
+        } catch (err: any) {
+          if (err?.message?.includes('already exists')) {
+            setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
+          } else {
+            setErrorUsers(t('teams.failedToSendInvite') || 'Failed to send invite');
+          }
+        }
       } else {
-        setErrorUsers('User not found or already a member');
+        setErrorUsers(t('teams.userNotFoundOrMember') || 'User not found or already a member');
       }
-    } catch (err) {
-      setErrorUsers('Failed to find user');
-      console.error(err);
+    } catch {
+      setErrorUsers(t('teams.failedToFindUser') || 'Failed to find user');
     } finally {
       setLoadingUsers(false);
     }
@@ -513,9 +533,8 @@ function TeamDetail() {
       setSuccessMessage(t('teams.memberRemovedSuccess'));
       setSuccessReload(true);
       setShowSuccessModal(true);
-    } catch (err) {
-      console.error('Failed to remove member:', err);
-      alert(t('teams.failedToRemove') || 'Failed to remove member');
+    } catch {
+      showError('Error', t('teams.failedToRemove') || 'Failed to remove member');
     }
   };
 
@@ -531,8 +550,7 @@ function TeamDetail() {
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
-    } catch (err) {
-      console.error('Download failed:', err);
+    } catch {
     } finally {
       setDownloadingFileId(null);
     }
@@ -594,7 +612,12 @@ function TeamDetail() {
               </button>
             )}
             {isLeader && (
-              <button className="btn btn-primary btn-small" onClick={() => setShowAddMemberModal(true)}>
+              <button className="btn btn-primary btn-small" onClick={() => {
+                setShowAddMemberModal(true);
+                setErrorUsers('');
+                setManualUsername('');
+                setSelectedFriend('');
+              }}>
                 + {t('teams.addMember') || 'Add Member'}
               </button>
             )}
@@ -684,7 +707,6 @@ function TeamDetail() {
               className="input"
               value={newTask.title}
               onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-              required
             />
             <textarea
               placeholder={t('tasks.description')}

@@ -17,18 +17,20 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AuthLayout from '../../components/layouts/AuthLayout';
+import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 
 const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
 
 function Register() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { lng: 'en' });
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const { showError } = useError();
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,7 +71,7 @@ function Register() {
         setLoading(false);
       }
     } else {
-      alert('Registration is not yet implemented. Please use the 42 login option.');
+      showError('Info', 'Registration is not yet implemented. Please use the 42 login option.');
     }
   };
 

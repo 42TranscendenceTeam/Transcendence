@@ -47,6 +47,18 @@ export const register = async (data: RegisterDTO) => {
   };
 };
 
+export const checkEmail = async (email: string) => {
+  if (!email) {
+    throw new AppError('Email is required', 400);
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  return { exists: !!user };
+};
+
 export const login = async (data: LoginDTO) => {
   const { email, password } = data;
 

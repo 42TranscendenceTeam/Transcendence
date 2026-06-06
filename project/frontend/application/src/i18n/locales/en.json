@@ -41,7 +41,8 @@
       "verificationCode": "Verification Code",
       "verify": "Verify",
       "backToLogin": "Back to Login",
-      "signInWith42": "Sign in with 42"
+      "signInWith42": "Sign in with 42",
+      "userNotFound": "No account found with this email."
     },
     "register": {
       "title": "Register",
@@ -211,10 +212,17 @@
     "saveSettings": "Save Settings",
     "settingsUpdated": "Team settings updated",
     "failedToRemove": "Failed to remove member",
+    "alreadyInvited": "User already has a pending invite.",
+    "userHasPendingRequest": "User already has a pending join request. Accept it instead.",
+    "alreadyInTeam": "You are already a member of this team.",
     "teamFullTitle": "Team Full",
     "teamFull": "Team is already full",
     "failedToAcceptRequest": "Failed to accept join request",
     "failedToRejectRequest": "Failed to reject join request",
+    "failedToLoadUsers": "Failed to load users",
+    "failedToSendInvite": "Failed to send invite",
+    "userNotFoundOrMember": "User not found or already a member",
+    "failedToFindUser": "Failed to find user",
     "joinRequestRejected": "Join request rejected successfully",
     "joinRequestAccepted": "Join request accepted successfully"
   },
@@ -236,6 +244,7 @@
     "low": "Low",
     "medium": "Medium",
     "high": "High",
+    "pleaseAddDescription": "Please add a description",
     "noTasks": "No tasks found",
     "createFirst": "Create your first task!"
   },
@@ -270,7 +279,12 @@
     "chat": "Chat",
     "noReceivedRequests": "No pending requests",
     "noSentRequests": "No pending sent requests",
-    "friendRequestExists": "A pending friend request already exists."
+    "friendRequestExists": "A pending friend request already exists.",
+    "alreadyFriends": "You are already friends.",
+    "addFriendFailed": "Failed to send friend request.",
+    "userNotFound": "User not found.",
+    "loadUsersFailed": "Failed to load users.",
+    "friendNotFound": "This user is no longer in your friends list."
   },
   "chat": {
     "title": "Chat",
@@ -338,7 +352,8 @@
     "teamInviteRejected": "{{username}} declined your invite to join {{team}}.",
     "teamRemoved": "You were removed from the {{team}} team.",
     "teamUserLeft": "{{username}} left {{team}}.",
-    "teamDeleted": "The {{team}} team has been deleted by its owner."
+    "teamDeleted": "The {{team}} team has been deleted by its owner.",
+    "teamLoadFailed": "Failed to load team information."
   },
   "legal": {
     "privacy": {
