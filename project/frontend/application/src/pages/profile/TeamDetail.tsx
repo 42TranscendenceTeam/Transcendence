@@ -63,6 +63,7 @@ function TeamDetail() {
   const [teamError, setTeamError] = useState('');
   const [tasks, setTasks] = useState<any[]>([]);
   const [joinRequests, setJoinRequests] = useState<any[]>([]);
+  const [teamInvitesSent, setTeamInvitesSent] = useState<any[]>([]);
   const [showFileError, setShowFileError] = useState(false);
   const [fileErrorMessage, setFileErrorMessage] = useState('');
   const [showDeleteTaskConfirm, setShowDeleteTaskConfirm] = useState(false);
@@ -103,6 +104,18 @@ function TeamDetail() {
   }, [id, team?.role, teamRefreshTrigger]);
 
   useEffect(() => {
+    const fetchTeamInvitesSent = async () => {
+      if (!id || team?.role !== 'Leader') return;
+      try {
+        const data = await api.getTeamInvitesSent(parseInt(id));
+        setTeamInvitesSent(data || []);
+      } catch {
+      }
+    };
+    fetchTeamInvitesSent();
+  }, [id, team?.role, teamRefreshTrigger, showAddMemberModal]);
+
+  useEffect(() => {
     const fetchTasks = async () => {
       if (!id) return;
       try {
@@ -125,7 +138,7 @@ function TeamDetail() {
   }, [id, teamRefreshTrigger]);
 
   useEffect(() => {
-    if (showAddMemberModal && allUsers.length === 0) {
+    if (showAddMemberModal) {
       fetchUsers();
     }
   }, [showAddMemberModal]);
@@ -203,6 +216,7 @@ function TeamDetail() {
   const availableUsers = allUsers
     .filter((u) => u.id !== user.id)
     .filter((u) => !team.members.some((m) => m.id === u.id))
+    .filter((u) => !teamInvitesSent.some((inv) => inv.user_id === u.id))
     .map((u) => ({
       id: u.id,
       username: u.username,
@@ -449,8 +463,11 @@ function TeamDetail() {
         setErrorUsers(t('teams.userHasPendingRequest') || 'User already has a pending join request. Accept it instead.');
         return;
       }
+      if (teamInvitesSent.some(inv => inv.user_id === userToAdd.id)) {
+        setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
+        return;
+      }
       try {
-        // Pre-check for pending invites to this user if possible or handle catch gracefully
         await api.sendTeamInvite(team.id, userToAdd.id);
         
         addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: 'Member' }, 'Member');
@@ -486,6 +503,11 @@ function TeamDetail() {
         // Guard: Check if user already has a pending join request
         if (joinRequests.some(r => r.user_id === foundUser.id)) {
           setErrorUsers(t('teams.userHasPendingRequest') || 'User already has a pending join request. Accept it instead.');
+          setLoadingUsers(false);
+          return;
+        }
+        if (teamInvitesSent.some(inv => inv.user_id === foundUser.id)) {
+          setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
           setLoadingUsers(false);
           return;
         }

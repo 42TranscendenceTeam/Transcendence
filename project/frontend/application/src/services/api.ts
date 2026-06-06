@@ -725,6 +725,21 @@ export const api = {
     });
   },
 
+  getTeamInvitesSent(teamId: number): Promise<{ invite_id: number; sent_at: string; user_id: number }[]> {
+    return fetch(`${API_URL}/teams/${teamId}/invites-sent`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get team invites sent');
+      }
+      return response.json();
+    });
+  },
+
   // ========== TASKS ==========
   mapBackendTask(task: any): Task {
     return {
