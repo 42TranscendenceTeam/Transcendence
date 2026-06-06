@@ -15,7 +15,7 @@ import type { Message } from '../../types';
 function FriendChat() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-  const { user, sendFriendMessage } = useContext(AuthContext);
+  const { user, sendFriendMessage, onlineFriendIds } = useContext(AuthContext);
   
   const friendId = parseInt(id || '0');
   const friend = user?.friends.find((f) => f.id === friendId);
@@ -73,6 +73,7 @@ function FriendChat() {
         </Link>
         <div className="friend-chat-title">
           <img src={friend.avatar} alt={friend.username} className="friend-chat-avatar" />
+          <span className={`status-indicator ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`} />
           <Link to={`/profile/${friend.id}`}><h1>{friend.username}</h1></Link>
         </div>
       </div>
