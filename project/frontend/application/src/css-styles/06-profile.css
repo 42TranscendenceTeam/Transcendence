@@ -37,6 +37,25 @@
   align-items: center;
 }
 
+.profile-sidebar {
+  overflow-y: auto;
+}
+
+.profile-sidebar-nav {
+  flex-shrink: 0;
+}
+
+.profile-sidebar .bottom-nav {
+  position: static;
+  left: auto;
+  bottom: auto;
+  width: 100%;
+  margin-top: auto;
+  padding-left: 0.25rem;
+  flex-shrink: 0;
+  z-index: auto;
+}
+
 .profile-sidebar-header h2 {
   font-size: 1.5rem;
   font-weight: 600;

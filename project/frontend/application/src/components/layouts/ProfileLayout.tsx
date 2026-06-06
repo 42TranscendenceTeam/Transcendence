@@ -97,6 +97,7 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
               <span>{t('auth.logout')}</span>
             </button>
           </nav>
+          <BottomNav />
         </aside>
       )}
       {user && isMobileMenuOpen && (
@@ -169,7 +170,6 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
           </div>
         </div>
       )}
-      <BottomNav />
     </div>
   );
 }
