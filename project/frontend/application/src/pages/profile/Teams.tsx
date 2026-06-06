@@ -123,7 +123,7 @@ function Teams() {
 
                 <div className="team-meta">
                   <div className="team-meta-item">
-                    <span className="team-meta-label">Role</span>
+                    <span className="team-meta-label">{t('teams.role')}</span>
                     <span className={`team-role inline-center ${team.role?.toLowerCase()}`}>
                       {team.role}
                       {team.role?.toLowerCase() === 'leader' && (
@@ -137,7 +137,7 @@ function Teams() {
                   </div>
 
                   <div className="team-meta-item">
-                    <span className="team-meta-label">Status</span>
+                    <span className="team-meta-label">{t('teams.status')}</span>
                     <span className={`team-status ${team.status}`}>
                       {team.status === 'active'
                         ? t('teams.active')
@@ -148,7 +148,7 @@ function Teams() {
                   </div>
 
                   <div className="team-meta-item">
-                    <span className="team-meta-label">Members</span>
+                    <span className="team-meta-label">{t('teams.members')}</span>
                     <span className="team-meta-value">
                       <span className="team-meta-icon" aria-hidden="true">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
@@ -165,7 +165,7 @@ function Teams() {
                   </div>
 
                   <div className="team-meta-item">
-                    <span className="team-meta-label">Created</span>
+                    <span className="team-meta-label">{t('teams.created')}</span>
                     <span className="team-meta-value">
                       {team.created_at
                         ? new Date(team.created_at).toLocaleDateString('en-US', {

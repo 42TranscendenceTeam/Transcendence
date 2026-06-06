@@ -179,9 +179,7 @@ function Notifications() {
         <div>
           <h1 className="profile-page-title">{t('notifications.title')}</h1>
           <p className="profile-page-subtitle">
-            {t('notifications.subtitle', {
-              defaultValue: 'Stay up to date with friend requests, team activity, and account updates.',
-            })}
+            {t('notifications.subtitle')}
           </p>
         </div>
 

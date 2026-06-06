@@ -146,7 +146,7 @@ function Friends() {
             <input
               type="text"
               className="friends-search-input"
-              placeholder='Search friends...'
+              placeholder={t('teams.searchFriends')}
               value={friendSearch}
               onChange={(e) => setFriendSearch(e.target.value)}
             />
@@ -241,7 +241,7 @@ function Friends() {
                       {request.user.username}
                     </Link>
                     <span className="request-message">
-                      {t('friends.wantsToBeFriends', { defaultValue: 'Wants to be your friend' })}
+                      {t('teams.wantsToBeFriends')}
                     </span>
                   </div>
 
@@ -286,7 +286,7 @@ function Friends() {
                       {request.user.username}
                     </Link>
                     <span className="request-message">
-                      {t('friends.requestSent', { defaultValue: 'Request sent' })}
+                      {t('teams.requestSent')}
                     </span>
                   </div>
 

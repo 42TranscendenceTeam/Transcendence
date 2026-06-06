@@ -102,8 +102,8 @@
       "desc": "Gérez les paramètres de sécurité de votre compte",
       "twoFactor": "Authentification à deux facteurs",
       "twoFactorDesc": "Ajoutez une couche de sécurité supplémentaire à votre compte",
-      "enable": "Activer",
-      "disable": "Désactiver",
+      "enable": "Activé",
+      "disable": "Désactivé",
       "changePassword": "Changer le mot de passe",
       "currentPassword": "Mot de passe actuel",
       "newPassword": "Nouveau mot de passe",
@@ -218,7 +218,14 @@
     "failedToAcceptRequest": "Échec de l'acceptation de la demande d'adhésion",
     "failedToRejectRequest": "Échec du refus de la demande d'adhésion",
     "joinRequestRejected": "Demande d'adhésion refusée avec succès",
-    "joinRequestAccepted": "Demande d'adhésion acceptée avec succès"
+    "joinRequestAccepted": "Demande d'adhésion acceptée avec succès",
+    "searchFriends": "Rechercher des amis......",
+    "wantsToBeFriends": "Souhaite devenir votre ami",
+    "requestSent": "Demande d'amitié envoyée",
+    "role": "Rôle",
+    "status": "Statut",
+    "members": "Membres",
+    "created": "Créé"
   },
   "tasks": {
     "title": "Tâches",
@@ -331,7 +338,8 @@
     "teamInviteRejected": "{{username}} a refusé votre invitation à rejoindre {{team}}.",
     "teamRemoved": "Vous avez été retiré de l'équipe {{team}}.",
     "teamUserLeft": "{{username}} a quitté {{team}}.",
-    "teamDeleted": "L'équipe {{team}} a été supprimée par son propriétaire."
+    "teamDeleted": "L'équipe {{team}} a été supprimée par son propriétaire.",
+    "subtitle": "Restez informé des demandes d'amitié, de l'activité des équipes et des mises à jour du compte."
   },
   "legal": {
     "privacy": {

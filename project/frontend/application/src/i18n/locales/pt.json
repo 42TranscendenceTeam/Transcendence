@@ -102,8 +102,8 @@
       "desc": "Gerencie as definições de segurança da sua conta",
       "twoFactor": "Autenticação de Dois Fatores",
       "twoFactorDesc": "Adicione uma camada extra de segurança à sua conta",
-      "enable": "Ativar",
-      "disable": "Desativar",
+      "enable": "Ativado",
+      "disable": "Desativado",
       "changePassword": "Alterar Palavra-passe",
       "currentPassword": "Palavra-passe Atual",
       "newPassword": "Nova Palavra-passe",
@@ -218,7 +218,14 @@
     "failedToAcceptRequest": "Falha ao aceitar pedido de entrada",
     "failedToRejectRequest": "Falha ao rejeitar pedido de entrada",
     "joinRequestRejected": "Pedido de entrada rejeitado com sucesso",
-    "joinRequestAccepted": "Pedido de entrada aceite com sucesso"
+    "joinRequestAccepted": "Pedido de entrada aceite com sucesso",
+    "searchFriends": "Encontrar amigos...",
+    "wantsToBeFriends": "Quer ser teu amigo",
+    "requestSent": "Pedido enviado",
+    "role": "Função",
+    "status": "Estado",
+    "members": "Membros",
+    "created": "Criada"
   },
   "tasks": {
     "title": "Tarefas",
@@ -330,7 +337,8 @@
     "teamInviteRejected": "{{username}} recusou o seu convite para entrar em {{team}}.",
     "teamRemoved": "Foi removido da equipa {{team}}.",
     "teamUserLeft": "{{username}} saiu de {{team}}.",
-    "teamDeleted": "A equipa {{team}} foi eliminada pelo seu proprietário."
+    "teamDeleted": "A equipa {{team}} foi eliminada pelo seu proprietário.",
+    "subtitle": "Mantém-te a par dos pedidos de amizade, da atividade das equipas e das atualizações da conta."
   },
   "legal": {
     "privacy": {

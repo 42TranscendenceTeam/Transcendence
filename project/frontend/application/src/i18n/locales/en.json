@@ -103,8 +103,8 @@
       "desc": "Manage your account security settings",
       "twoFactor": "Two-Factor Authentication",
       "twoFactorDesc": "Add an extra layer of security to your account",
-      "enable": "Enable",
-      "disable": "Disable",
+      "enable": "Enabled",
+      "disable": "Disabled",
       "changePassword": "Change Password",
       "currentPassword": "Current Password",
       "newPassword": "New Password",
@@ -216,7 +216,14 @@
     "failedToAcceptRequest": "Failed to accept join request",
     "failedToRejectRequest": "Failed to reject join request",
     "joinRequestRejected": "Join request rejected successfully",
-    "joinRequestAccepted": "Join request accepted successfully"
+    "joinRequestAccepted": "Join request accepted successfully",
+    "searchFriends": "Search friends...",
+    "wantsToBeFriends": "Wants to be your friend",
+    "requestSent": "Request sent",
+    "role": "Role",
+    "status": "Status",
+    "members": "Members",
+    "created": "Created"
   },
   "tasks": {
     "title": "Tasks",
@@ -338,7 +345,8 @@
     "teamInviteRejected": "{{username}} declined your invite to join {{team}}.",
     "teamRemoved": "You were removed from the {{team}} team.",
     "teamUserLeft": "{{username}} left {{team}}.",
-    "teamDeleted": "The {{team}} team has been deleted by its owner."
+    "teamDeleted": "The {{team}} team has been deleted by its owner.",
+    "subtitle": "Stay up to date with friend requests, team activity, and account updates."
   },
   "legal": {
     "privacy": {
