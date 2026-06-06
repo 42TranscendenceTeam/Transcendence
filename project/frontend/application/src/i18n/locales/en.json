@@ -58,7 +58,8 @@
       "hasAccount": "Already have an account?",
       "login": "Login",
       "passwordMismatch": "Passwords do not match",
-      "passwordTooShort": "Password must be at least 8 characters"
+      "passwordTooShort": "Password must be at least 8 characters",
+      "success": "Account created successfully."
     },
     "logout": "Logout"
   },
