@@ -17,7 +17,8 @@ export const getSentMessages = async (userId: number, friendId: number, amount: 
 			receiver_id: true,
 			content: true,
 			status_read: true,
-			sent_at: true
+			sent_at: true,
+			sender_id: true //Vafernan addition to test
 		},
 		orderBy: {
 			sent_at: 'desc',
@@ -34,6 +35,7 @@ export const getSentMessages = async (userId: number, friendId: number, amount: 
 		content: directMessage.content,
 		status_read: directMessage.status_read,
 		sent_at: directMessage.sent_at,
+		sender_id: directMessage.sender_id, //Vafernan addition to test
 	}));
 
 	return {
@@ -56,7 +58,8 @@ export const getReceivedMessages = async (userId: number, friendId: number, amou
 			receiver_id: true,
 			content: true,
 			status_read: true,
-			sent_at: true
+			sent_at: true,
+			sender_id: true //Vafernan addition to test
 		},
 		orderBy: { 
 			sent_at: 'desc'
@@ -73,6 +76,7 @@ export const getReceivedMessages = async (userId: number, friendId: number, amou
 		content: directMessage.content,
 		status_read: directMessage.status_read,
 		sent_at: directMessage.sent_at,
+		sender_id: directMessage.sender_id, //Vafernan addition to test
 	}));
 
 	return {
@@ -97,7 +101,8 @@ export const getAllMessages = async (userId: number, friendId: number, amount: n
 			receiver_id: true,
 			content: true,
 			status_read: true,
-			sent_at: true
+			sent_at: true,
+			sender_id: true //Vafernan addition to test
 		},
 		orderBy: { 
 			sent_at: 'desc'
@@ -114,6 +119,7 @@ export const getAllMessages = async (userId: number, friendId: number, amount: n
 		content: directMessage.content,
 		status_read: directMessage.status_read,
 		sent_at: directMessage.sent_at,
+		sender_id: directMessage.sender_id, //Vafernan addition to test
 	}));
 
 	return {

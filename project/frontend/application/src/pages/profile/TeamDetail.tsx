@@ -17,7 +17,8 @@ import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { getAvatarUrl } from '../../utils/avatar';
 import { ALLOWED_TASK_EXTENSIONS } from '../../utils/fileValidation';
-import type { Task, Member, TaskFile } from '../../types';
+import { getSocket } from '../../services/socket';
+import type { Task, Member, TaskFile, Message } from '../../types';
 
 interface SearchUser {
   id: number;
@@ -28,7 +29,7 @@ function TeamDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, deleteTaskFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger, onlineFriendIds } = useContext(AuthContext);
+const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, deleteTaskFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger, updateUser, onlineFriendIds } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
@@ -71,24 +72,83 @@ function TeamDetail() {
   const [openAssigneeTask, setOpenAssigneeTask] = useState<number | null>(null);
   const [downloadingFileId, setDownloadingFileId] = useState<number | null>(null);
   const formAssigneeRef = useRef<HTMLDivElement>(null);
+
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const teamIdInt = parseInt(id || '0');
+
+  const fetchTeamData = async (silent = false) => {
+    if (!id) return;
+    try {
+      if (!silent) setLoadingTeam(true);
+      const teamData = await api.getTeam(parseInt(id));
+      const messagesData = await api.getTeamMessages(parseInt(id), 50);
+      
+      const formattedMessages: Message[] = messagesData.message_list.map((m: any) => {
+        const sender = teamData.members.find((member: any) => member.id === m.sender_id) || 
+                      (teamData.owner.id === m.sender_id ? teamData.owner : null);
+        return {
+          id: m.id,
+          text: m.content,
+          sender: sender ? { id: sender.id, username: sender.username, avatar: sender.avatar } : { id: m.sender_id, username: 'Unknown', avatar: '' },
+          timestamp: m.sent_at
+        };
+      }).reverse();
+
+      setTeam({
+        ...teamData,
+        chat: formattedMessages
+      });
+    } catch (err) {
+      console.error('Failed to fetch team:', err);
+      if (!silent) setTeamError('Failed to load team');
+    } finally {
+      if (!silent) setLoadingTeam(false);
+    }
+  };
+
   const [memberOnlineStatus, setMemberOnlineStatus] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
-    const fetchTeam = async () => {
-      if (!id) return;
-      try {
-        setLoadingTeam(true);
-        const teamData = await api.getTeam(parseInt(id));
-        setTeam(teamData);
-      } catch (err) {
-        console.error('Failed to fetch team:', err);
-        setTeamError('Failed to load team');
-      } finally {
-        setLoadingTeam(false);
-      }
-    };
-    fetchTeam();
-  }, [id, teamRefreshTrigger]);
+    fetchTeamData();
+  }, [id]);
+
+  useEffect(() => {
+    if (team) {
+      fetchTeamData(true);
+    }
+  }, [teamRefreshTrigger]);
+
+  useEffect(() => {
+    if (!teamIdInt) return;
+
+    const socket = getSocket();
+    if (socket) {
+      socket.emit('join team chat', teamIdInt, (res: any) => {
+        console.log('Joined team chat:', res);
+      });
+
+      const handleNewTeamMessage = (content: string, ack?: (ok: boolean) => void) => {
+        if (ack) ack(true);
+        fetchTeamData(true);
+      };
+
+      socket.on('team message', handleNewTeamMessage);
+
+      return () => {
+        socket.emit('leave team chat', teamIdInt, (res: any) => {
+          console.log('Left team chat:', res);
+        });
+        socket.off('team message', handleNewTeamMessage);
+      };
+    }
+  }, [teamIdInt]);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [team?.chat]);
 
   useEffect(() => {
     if (!team?.members) return;
@@ -265,16 +325,23 @@ function TeamDetail() {
     }
   };
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!chatMessage.trim() || !canEdit) return;
-    const message = {
+    if (!chatMessage.trim() || !canEdit || !team) return;
+    const message: Message = {
       id: Date.now(),
       text: chatMessage,
       sender: { id: user.id, username: user.username, avatar: user.avatar },
       timestamp: new Date().toISOString(),
     };
-    addChatMessage(team.id, message);
+
+    // Update local state immediately for better UX
+    setTeam((prev: any) => ({
+      ...prev,
+      chat: [...(prev?.chat || []), message]
+    }));
+
+    await addChatMessage(team.id, message);
     setChatMessage('');
   };
 
@@ -964,6 +1031,7 @@ function TeamDetail() {
             ) : (
               <p className="chat-empty">{t('teams.noMessages')}. {t('teams.startConversation')}</p>
             )}
+            <div ref={messagesEndRef} />
           </div>
           <form onSubmit={handleSendMessage} className="chat-input-container">
             <input
