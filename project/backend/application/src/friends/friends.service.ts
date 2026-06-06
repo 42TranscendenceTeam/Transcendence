@@ -290,11 +290,25 @@ export const cancelFriendRequest = async (userId: number, requestId: number) => 
 	if (!request)
 		throw new AppError("Friend request not found.", 404);
 
+	const canceller = await prisma.user.findUnique({
+		where: { id: userId },
+		select: { username: true },
+	});
+
 	const cancelled = await prisma.friendRequest.delete({
 		where: {
 			id: request.id,
 		},
 	});
+
+	await createNotification(
+		request.receiver_id,
+		'friend_request_cancelled',
+		request.id,
+		'friend_request',
+		userId,
+		`${canceller?.username ?? 'Someone'} cancelled their friend request.`,
+	);
 
 	return cancelled;
 };

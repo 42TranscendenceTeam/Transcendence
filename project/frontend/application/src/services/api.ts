@@ -991,6 +991,21 @@ export const api = {
     });
   },
 
+  // DELETE /friends/requests/:id - Cancels a sent friend request
+  cancelFriendRequest(requestId: number): Promise<void> {
+    return fetch(`${API_URL}/friends/requests/${requestId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to cancel friend request');
+      }
+    });
+  },
+
   // GET /friends/requests/sent - Returns pending friend requests sent
   // Response: { request_id, status, sent_at, user: {id, username, avatar_url} }
   getSentFriendRequests(): Promise<FriendRequest[]> {

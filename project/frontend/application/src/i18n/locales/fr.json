@@ -270,6 +270,7 @@
     "chat": "Discuter",
     "noReceivedRequests": "Aucune demande en attente",
     "noSentRequests": "Aucune demande envoyée en attente",
+    "requestSent": "Demande envoyée",
     "friendRequestExists": "Une demande d'ami est déjà en attente."
   },
   "chat": {

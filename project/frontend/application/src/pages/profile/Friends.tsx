@@ -20,7 +20,7 @@ interface SearchUser {
 
 function Friends() {
   const { t } = useTranslation();
-  const { user, removeFriend, addFriend, friendRequests, sentRequests, friends, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests, fetchSentRequests, fetchFriends } = useContext(AuthContext);
+  const { user, removeFriend, addFriend, friendRequests, sentRequests, friends, acceptFriendRequest, rejectFriendRequest, cancelSentFriendRequest, fetchFriendRequests, fetchSentRequests, fetchFriends } = useContext(AuthContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [friendToRemove, setFriendToRemove] = useState<Friend | null>(null);
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
@@ -295,6 +295,7 @@ function Friends() {
                     <button
                       className="friend-card-menu"
                       aria-label={t('friends.remove')}
+                      onClick={() => cancelSentFriendRequest(request.request_id)}
                     >
                       ×
                     </button>

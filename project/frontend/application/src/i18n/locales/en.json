@@ -277,6 +277,7 @@
     "chat": "Chat",
     "noReceivedRequests": "No pending requests",
     "noSentRequests": "No pending sent requests",
+    "requestSent": "Request sent",
     "friendRequestExists": "A pending friend request already exists."
   },
   "chat": {
