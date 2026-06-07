@@ -8,6 +8,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useContext, useEffect, ReactNode } from 'react';
 import { AuthProvider, AuthContext } from './context/AuthContext';
+import { ErrorProvider } from './context/ErrorContext';
 import Feed from './pages/feed/Feed';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
@@ -48,6 +49,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 function App() {
   return (
     <AuthProvider> {/* Provides authentication context to the entire app. */}
+      <ErrorProvider>
       <Router> {/* Enables navigation, /login, /profile, etc. */}
         <Routes> {/* Container for all routes. */}
           <Route
@@ -154,6 +156,7 @@ function App() {
           />
         </Routes>
       </Router>
+      </ErrorProvider>
     </AuthProvider>
   );
 }

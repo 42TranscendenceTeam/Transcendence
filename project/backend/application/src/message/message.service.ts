@@ -13,6 +13,8 @@ export const getSentMessages = async (userId: number, friendId: number, amount: 
 		},
 		select: {
 			id: true,
+			sender_id: true,
+			receiver_id: true,
 			content: true,
 			status_read: true,
 			sent_at: true
@@ -27,6 +29,8 @@ export const getSentMessages = async (userId: number, friendId: number, amount: 
 
 	const message_list = messages.map((directMessage) => ({
 		id: directMessage.id,
+		sender_id: directMessage.sender_id,
+		receiver_id: directMessage.receiver_id,
 		content: directMessage.content,
 		status_read: directMessage.status_read,
 		sent_at: directMessage.sent_at,
@@ -48,6 +52,8 @@ export const getReceivedMessages = async (userId: number, friendId: number, amou
 		},
 		select: {
 			id: true,
+			sender_id: true,
+			receiver_id: true,
 			content: true,
 			status_read: true,
 			sent_at: true
@@ -62,6 +68,8 @@ export const getReceivedMessages = async (userId: number, friendId: number, amou
 
 	const message_list = messages.map((directMessage) => ({
 		id: directMessage.id,
+		sender_id: directMessage.sender_id,
+		receiver_id: directMessage.receiver_id,
 		content: directMessage.content,
 		status_read: directMessage.status_read,
 		sent_at: directMessage.sent_at,
@@ -85,6 +93,8 @@ export const getAllMessages = async (userId: number, friendId: number, amount: n
 		},
 		select: {
 			id: true,
+			sender_id: true,
+			receiver_id: true,
 			content: true,
 			status_read: true,
 			sent_at: true
@@ -99,6 +109,8 @@ export const getAllMessages = async (userId: number, friendId: number, amount: n
 
 	const message_list = messages.map((directMessage) => ({
 		id: directMessage.id,
+		sender_id: directMessage.sender_id,
+		receiver_id: directMessage.receiver_id,
 		content: directMessage.content,
 		status_read: directMessage.status_read,
 		sent_at: directMessage.sent_at,
@@ -115,7 +127,7 @@ export const sendMessage = async (userId: number, friendId: number, message: str
 
 	// NOTE: Uncomment this if messages to yourself are not allowed
 	// if (userId === friendId)
-	// 	throw new AppError("Can't send a friend request to yourself.", 400);
+	// 	throw new AppError("Can't send a message to yourself.", 400);
 
 	const receiver = await prisma.user.findUnique({
 		where: {

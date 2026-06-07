@@ -2,8 +2,11 @@ import { Server } from 'socket.io';
 import type { Server as HTTPServer } from 'http';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config.js';
+import { getFriends } from '../friends/friends.service.js';
 
 let io: Server;
+
+var onlineUsers = new Map<number, Set<string>>();
 
 interface EventResponse {
 	status: String
@@ -44,6 +47,22 @@ export const initSocket = (httpServer: HTTPServer) => {
 
 		console.log(`User ${userId} connected with socket ${socket.id}`);
 
+		if (!onlineUsers.has(userId))
+			onlineUsers.set(userId, new Set());
+
+		onlineUsers.get(userId)!.add(socket.id);
+
+		getFriends(userId).then(friends => {
+			const friendsIds = friends.map(f => f.id);
+
+			if (onlineUsers.get(userId)!.size === 1) 
+					friendsIds.forEach(fid => io.to(`user:${fid}`).emit('user online', userId));
+
+			const onlineFriendsIds = friendsIds.filter(fid => onlineUsers.has(fid));
+			socket.emit('online friends', onlineFriendsIds);
+				
+		}).catch(err => console.error('Failed on connect:', err));
+
 		socket.on('join chat', async (userId: number, friendId: number, callback: ({ status }: EventResponse) => void) => {
 			var chatId = "";
 
@@ -80,9 +99,22 @@ export const initSocket = (httpServer: HTTPServer) => {
 			callback({ status: 'team chat leave acknownledged' });
 		});
 
-		socket.on('disconnect', () => {
+		socket.on('disconnect', async () => {
 			console.log(`User ${userId} disconnected`);
+
+			const sockets = onlineUsers.get(userId);
+			if (sockets) {
+				sockets.delete(socket.id);
+				if (sockets.size === 0) {
+					onlineUsers.delete(userId);
+
+					getFriends(userId).then(friends => {
+						friends.map(f => f.id).forEach(fid => io.to(`user:${fid}`).emit('user offline', userId));
+					}).catch(err => console.error('Failed on disconnect:', err));
+				}
+			}
 		});
+
 	});
 
 	return io;
@@ -93,4 +125,11 @@ export const getIO = () => {
 		throw new Error('Socket.IO not initialized.');
 
 	return io;
+};
+
+export const getOnlineUsers = () => {
+	if (!onlineUsers)
+		throw new Error('onlineUsers is not initialized.');
+
+	return onlineUsers;
 };

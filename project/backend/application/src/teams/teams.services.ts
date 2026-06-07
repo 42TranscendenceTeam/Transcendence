@@ -573,6 +573,31 @@ export const getTeamInvites = async (userId: number) => {
 	return invite_list;
 };
 
+// Get list of team invites sent
+export const getTeamInvitesSent = async (teamId: number) => {
+
+	const invitesSent = await prisma.teamInvite.findMany({
+		where: {
+			team_id: teamId,
+			status: 'pending',
+		},
+		select: {
+			id: true,
+			created_at: true,
+			user_id: true,
+		}
+	});
+
+	const invite_sent_list = invitesSent.map((invite) => ({
+		invite_id: invite.id,
+		sent_at: invite.created_at,
+		user_id: invite.user_id,
+	}));
+
+	return invite_sent_list;
+};
+
+
 // Send invite from team to user
 export const sendTeamInvite = async (userId: number, teamId: number, receiverId: number) => {
 

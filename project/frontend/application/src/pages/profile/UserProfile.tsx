@@ -10,6 +10,7 @@ function UserProfile() {
   const { userId } = useParams<{ userId: string }>();
   const [profile, setProfile] = useState<UserProfileResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(false);
 
   const fetchProfile = useCallback(() => {
     if (!userId) return;
@@ -21,6 +22,19 @@ function UserProfile() {
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
+
+  useEffect(() => {
+    if (!userId) return;
+    api.getUserOnline(Number(userId))
+      .then((data) => setIsOnline(data.Online))
+      .catch(() => { });
+    const poll = setInterval(() => {
+      api.getUserOnline(Number(userId))
+        .then((data) => setIsOnline(data.Online))
+        .catch(() => { });
+    }, 5000);
+    return () => clearInterval(poll);
+  }, [userId]);
 
   useEffect(() => {
     const handleVisibility = () => {
@@ -59,7 +73,14 @@ function UserProfile() {
           />
 
           <div className="profile-header-info">
-            <h1 className="profile-username">{profile.username}</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <h1 className="profile-username">{profile.username}</h1>
+              <span className={`status-indicator ${isOnline ? 'online' : 'offline'}`} />
+              <span className={`friend-status ${isOnline ? 'online' : 'offline'}`}>
+                {isOnline ? t('common.online') : t('common.offline')}
+              </span>
+            </div>
+
             <p className="profile-email">{profile.email}</p>
             {profile.bio && <p className="profile-description">{profile.bio}</p>}
           </div>
@@ -127,7 +148,7 @@ function UserProfile() {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

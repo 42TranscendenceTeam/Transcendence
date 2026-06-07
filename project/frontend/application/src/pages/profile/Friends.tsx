@@ -9,6 +9,7 @@ import { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 import { getAvatarUrl } from '../../utils/avatar';
 import type { Friend } from '../../types';
@@ -20,7 +21,8 @@ interface SearchUser {
 
 function Friends() {
   const { t } = useTranslation();
-  const { user, removeFriend, addFriend, friendRequests, sentRequests, friends, acceptFriendRequest, rejectFriendRequest, cancelSentFriendRequest, fetchFriendRequests, fetchSentRequests, fetchFriends } = useContext(AuthContext);
+  const { showError } = useError();
+  const { user, removeFriend, addFriend, friendRequests, sentRequests, friends, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests, fetchSentRequests, fetchFriends, cancelSentFriendRequest, onlineFriendIds } = useContext(AuthContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [friendToRemove, setFriendToRemove] = useState<Friend | null>(null);
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
@@ -28,8 +30,6 @@ function Friends() {
   const [manualUsername, setManualUsername] = useState('');
   const [allUsers, setAllUsers] = useState<SearchUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
-  const [errorUsers, setErrorUsers] = useState('');
-  const [friendSearch, setFriendSearch] = useState('');
 
   useEffect(() => {
     fetchFriendRequests();
@@ -45,13 +45,11 @@ function Friends() {
 
   const fetchUsers = async () => {
     setLoadingUsers(true);
-    setErrorUsers('');
     try {
       const users = await api.searchUsers('');
       setAllUsers(users);
-    } catch (err) {
-      setErrorUsers('Failed to load users');
-      console.error(err);
+    } catch {
+      showError(t('common.error'), t('friends.loadUsersFailed'));
     } finally {
       setLoadingUsers(false);
     }
@@ -78,12 +76,19 @@ function Friends() {
 
   const handleConfirmRemove = async () => {
     if (friendToRemove) {
+      // Pre-check: verify friend still exists in our list
+      if (!friends.some(f => f.id === friendToRemove.id)) {
+        showError(t('common.error'), t('friends.friendNotFound') || 'This user is no longer in your friends list.');
+        setShowRemoveModal(false);
+        setFriendToRemove(null);
+        return;
+      }
+
       try {
         await api.removeFriend(friendToRemove.id);
-        removeFriend(friendToRemove.id);
         fetchFriends();
-      } catch (err) {
-        console.error('Failed to remove friend:', err);
+      } catch (err: any) {
+        showError(t('common.error'), err?.message || t('friends.failedToRemove') || 'Failed to remove friend');
       }
       setShowRemoveModal(false);
       setFriendToRemove(null);
@@ -94,6 +99,14 @@ function Friends() {
     if (!selectedUser) return;
     const userToAdd = availableUsers.find((u) => u.username === selectedUser);
     if (userToAdd) {
+      if (friends.some((f) => f.id === userToAdd.id)) {
+        showError(t('common.error'), t('friends.alreadyFriends'));
+        return;
+      }
+      if (sentRequests.some((r) => r.user.id === userToAdd.id)) {
+        showError(t('common.error'), t('friends.friendRequestExists'));
+        return;
+      }
       try {
         await api.addFriend(userToAdd.id);
         fetchSentRequests();
@@ -101,8 +114,7 @@ function Friends() {
         setShowAddFriendModal(false);
       } catch (err) {
         const msg = err instanceof Error ? err.message : '';
-        setErrorUsers(msg.includes('already exists') ? t('friends.friendRequestExists') : (msg || 'Failed to send friend request'));
-        console.error(err);
+        showError(t('common.error'), msg || t('friends.addFriendFailed'));
       }
     }
   };
@@ -110,24 +122,30 @@ function Friends() {
   const handleAddManual = async () => {
     if (!manualUsername.trim()) return;
     setLoadingUsers(true);
-    setErrorUsers('');
     try {
       const users = await api.searchUsers(manualUsername.trim());
       const foundUser = users.find(
         (u) => u.username.toLowerCase() === manualUsername.trim().toLowerCase()
       );
       if (foundUser) {
+        if (friends.some((f) => f.id === foundUser.id)) {
+          showError(t('common.error'), t('friends.alreadyFriends'));
+          return;
+        }
+        if (sentRequests.some((r) => r.user.id === foundUser.id)) {
+          showError(t('common.error'), t('friends.friendRequestExists'));
+          return;
+        }
         await api.addFriend(foundUser.id);
         fetchSentRequests();
         setManualUsername('');
         setShowAddFriendModal(false);
       } else {
-        setErrorUsers('User not found');
+        showError(t('common.error'), t('friends.userNotFound'));
       }
     } catch (err) {
       const msg = err instanceof Error ? err.message : '';
-      setErrorUsers(msg.includes('already exists') ? t('friends.friendRequestExists') : (msg || 'Failed to send friend request'));
-      console.error(err);
+      showError(t('common.error'), msg || t('friends.addFriendFailed'));
     } finally {
       setLoadingUsers(false);
     }
@@ -162,7 +180,7 @@ function Friends() {
         <div className="friends-section-header">
           <div className="friends-section-title">
             <span className="friends-section-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
                 <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
               </svg>
             </span>
@@ -187,23 +205,24 @@ function Friends() {
                 >
                   ×
                 </button>
-
-                <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
-
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                  <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
+                  <span
+                    className={`status-indicator ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`}
+                    style={{ position: 'absolute', bottom: 0, right: 0 }}
+                  />
+                </div>
                 <div className="friend-info">
                   <Link to={`/profile/${friend.id}`} className="friend-name">
                     {friend.username}
                   </Link>
-
-                  <span className={`friend-status ${friend.isOnline ? 'online' : 'offline'}`}>
-                    {friend.isOnline ? t('common.online') : t('common.offline')}
+                  <span className={`friend-status ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`}>
+                    {onlineFriendIds.has(friend.id) ? t('common.online') : t('common.offline')}
                   </span>
                 </div>
-
                 <Link
                   to={`/profile/friends/${friend.id}`}
-                  className="btn btn-secondary btn-small friend-chat-btn"
-                >
+                  className="btn btn-secondary btn-small friend-chat-btn" >
                   💬 {t('friends.chat')}
                 </Link>
               </div>
@@ -375,8 +394,6 @@ function Friends() {
                   </button>
                 </div>
               </div>
-
-              {errorUsers && <p className="error-text">{errorUsers}</p>}
 
               {availableUsers.length === 0 && friends.length > 0 && !loadingUsers && (
                 <p className="empty-hint text-center">{t('friends.noUsersToAdd') || 'No users available to add'}</p>

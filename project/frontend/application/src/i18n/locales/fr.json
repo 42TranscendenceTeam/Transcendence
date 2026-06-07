@@ -41,7 +41,8 @@
       "verificationCode": "Code de vérification",
       "verify": "Vérifier",
       "backToLogin": "Retour à la connexion",
-      "signInWith42": "Se connecter avec 42"
+      "signInWith42": "Se connecter avec 42",
+      "userNotFound": "Aucun compte trouvé avec cet email."
     },
     "register": {
       "title": "Inscription",
@@ -209,6 +210,9 @@
     "addTask": "Ajouter une tâche",
     "memberRemovedSuccess": "Membre supprimé avec succès",
     "inviteSentSuccess": "Invitation envoyée avec succès",
+    "alreadyInvited": "L'utilisateur a déjà une invitation en attente.",
+    "userHasPendingRequest": "L'utilisateur a déjà une demande d'adhésion en attente. Acceptez-la plutôt.",
+    "alreadyInTeam": "Vous êtes déjà membre de cette équipe.",
     "editTeam": "Modifier l'équipe",
     "saveSettings": "Enregistrer les modifications",
     "settingsUpdated": "Paramètres de l'équipe mis à jour",
@@ -217,6 +221,10 @@
     "teamFull": "L'équipe est déjà complète",
     "failedToAcceptRequest": "Échec de l'acceptation de la demande d'adhésion",
     "failedToRejectRequest": "Échec du refus de la demande d'adhésion",
+    "failedToLoadUsers": "Échec du chargement des utilisateurs",
+    "failedToSendInvite": "Échec de l'envoi de l'invitation",
+    "userNotFoundOrMember": "Utilisateur non trouvé ou déjà membre",
+    "failedToFindUser": "Échec de la recherche de l'utilisateur",
     "joinRequestRejected": "Demande d'adhésion refusée avec succès",
     "joinRequestAccepted": "Demande d'adhésion acceptée avec succès",
     "searchFriends": "Rechercher des amis......",
@@ -245,6 +253,7 @@
     "low": "Basse",
     "medium": "Moyenne",
     "high": "Haute",
+    "pleaseAddDescription": "Veuillez ajouter une description",
     "noTasks": "Aucune tâche trouvée",
     "createFirst": "Créez votre première tâche !"
   },
@@ -271,7 +280,11 @@
     "noReceivedRequests": "Aucune demande en attente",
     "noSentRequests": "Aucune demande envoyée en attente",
     "requestSent": "Demande envoyée",
-    "friendRequestExists": "Une demande d'ami est déjà en attente."
+    "friendRequestExists": "Une demande d'ami est déjà en attente.",
+    "alreadyFriends": "Vous êtes déjà amis.",
+    "addFriendFailed": "Échec de l'envoi de la demande d'ami.",
+    "userNotFound": "Utilisateur non trouvé.",
+    "loadUsersFailed": "Échec du chargement des utilisateurs."
   },
   "chat": {
     "title": "Discussion",
@@ -340,6 +353,7 @@
     "teamRemoved": "Vous avez été retiré de l'équipe {{team}}.",
     "teamUserLeft": "{{username}} a quitté {{team}}.",
     "teamDeleted": "L'équipe {{team}} a été supprimée par son propriétaire.",
+    "teamLoadFailed": "Échec du chargement des informations de l'équipe.",
     "subtitle": "Restez informé des demandes d'amitié, de l'activité des équipes et des mises à jour du compte."
   },
   "legal": {

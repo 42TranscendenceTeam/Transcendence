@@ -41,7 +41,8 @@
       "verificationCode": "Código de Verificação",
       "verify": "Verificar",
       "backToLogin": "Voltar ao Login",
-      "signInWith42": "Entrar com 42"
+      "signInWith42": "Entrar com 42",
+      "userNotFound": "Nenhuma conta encontrada com este email."
     },
     "register": {
       "title": "Registar",
@@ -209,6 +210,9 @@
     "addTask": "Adicionar Tarefa",
     "memberRemovedSuccess": "Membro removido com sucesso",
     "inviteSentSuccess": "Convite enviado com sucesso",
+    "alreadyInvited": "O utilizador já tem um convite pendente.",
+    "userHasPendingRequest": "O utilizador já tem um pedido de entrada pendente. Aceite-o em vez de convidar.",
+    "alreadyInTeam": "Você já é um membro desta equipa.",
     "editTeam": "Editar equipa",
     "saveSettings": "Guardar alterações",
     "settingsUpdated": "Configurações da equipa atualizadas",
@@ -217,6 +221,10 @@
     "teamFull": "A equipa já está cheia",
     "failedToAcceptRequest": "Falha ao aceitar pedido de entrada",
     "failedToRejectRequest": "Falha ao rejeitar pedido de entrada",
+    "failedToLoadUsers": "Falha ao carregar utilizadores",
+    "failedToSendInvite": "Falha ao enviar convite",
+    "userNotFoundOrMember": "Utilizador não encontrado ou já é membro",
+    "failedToFindUser": "Falha ao encontrar utilizador",
     "joinRequestRejected": "Pedido de entrada rejeitado com sucesso",
     "joinRequestAccepted": "Pedido de entrada aceite com sucesso",
     "searchFriends": "Encontrar amigos...",
@@ -245,6 +253,7 @@
     "low": "Baixa",
     "medium": "Média",
     "high": "Alta",
+    "pleaseAddDescription": "Por favor, adicione uma descrição",
     "noTasks": "Nenhuma tarefa encontrada",
     "createFirst": "Crie a sua primeira tarefa!"
   },
@@ -270,7 +279,12 @@
     "noReceivedRequests": "Sem pedidos pendentes",
     "noSentRequests": "Sem pedidos enviados pendentes",
     "requestSent": "Pedido enviado",
-    "friendRequestExists": "Já existe um pedido de amizade pendente."
+    "friendRequestExists": "Já existe um pedido de amizade pendente.",
+    "alreadyFriends": "Já são amigos.",
+    "addFriendFailed": "Falha ao enviar pedido de amizade.",
+    "userNotFound": "Utilizador não encontrado.",
+    "loadUsersFailed": "Falha ao carregar utilizadores.",
+    "friendNotFound": "Este utilizador já não está na sua lista de amigos."
   },
   "chat": {
     "title": "Chat",
@@ -339,6 +353,7 @@
     "teamRemoved": "Foi removido da equipa {{team}}.",
     "teamUserLeft": "{{username}} saiu de {{team}}.",
     "teamDeleted": "A equipa {{team}} foi eliminada pelo seu proprietário.",
+    "teamLoadFailed": "Falha ao carregar informações da equipa.",
     "subtitle": "Mantém-te a par dos pedidos de amizade, da atividade das equipas e das atualizações da conta."
   },
   "legal": {

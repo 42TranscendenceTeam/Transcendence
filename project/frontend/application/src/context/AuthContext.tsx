@@ -7,7 +7,7 @@
  * Uses real backend API for authentication and user data.
  */
 
-import { createContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, useRef, ReactNode } from 'react';
 import type { AuthContextType, User, Team, Task, Member, Message, Friend, TeamData, FriendRequest, TeamInvite, JoinRequestNotification, AppNotification } from '../types';
 import { api } from '../services/api';
 import { getAvatarUrl } from '../utils/avatar';
@@ -32,6 +32,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [teamRefreshTrigger, setTeamRefreshTrigger] = useState(0);
+  const [onlineFriendIds, setOnlineFriendIds] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     const loadUser = async () => {
@@ -70,10 +71,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   useEffect(() => {
-    const handleFocus = () => fetchNotifications();
+    const handleFocus = () => {
+      const token = localStorage.getItem('authToken');
+      if (token) fetchNotifications();
+    };
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
   }, []);
+
+  const userRef = useRef(user);
+  userRef.current = user;
 
   useEffect(() => {
     if (user) {
@@ -92,7 +99,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
               fetchFriendRequests();
               fetchSentRequests();
             }
-            if (n.type === 'friend_request_accepted') {
+            if (n.type === 'friend_request_accepted' || n.type === 'friend_removed') {
               fetchFriends();
             }
             if (n.type === 'team_invite' || n.type === 'team_invite_accepted'
@@ -101,7 +108,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }
             if (n.type === 'team_join_request' || n.type === 'team_join_request_accepted'
                 || n.type === 'team_join_request_rejected') {
-              if (user) fetchJoinRequestNotifications(user.id);
+              const u = userRef.current;
+              if (u) fetchJoinRequestNotifications(u.id);
             }
             if (n.type === 'team_invite_accepted' || n.type === 'team_removed'
                 || n.type === 'team_user_left' || n.type === 'team_join_request_accepted'
@@ -110,13 +118,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }
           };
           sock.on('notification:new', handler);
-          return () => sock.off('notification:new', handler);
+
+          const onlineHandler = (ids: number[]) => setOnlineFriendIds(new Set(ids));
+          const userOnlineHandler = (userId: number) => setOnlineFriendIds((prev) => new Set(prev).add(userId));
+          const userOfflineHandler = (userId: number) => setOnlineFriendIds((prev) => { const next = new Set(prev); next.delete(userId); return next; });
+          sock.on('online friends', onlineHandler);
+          sock.on('user online', userOnlineHandler);
+          sock.on('user offline', userOfflineHandler);
+
+          return () => {
+            sock.off('notification:new', handler);
+            sock.off('online friends', onlineHandler);
+            sock.off('user online', userOnlineHandler);
+            sock.off('user offline', userOfflineHandler);
+          };
         }
       }
     } else {
       disconnectSocket();
     }
-  }, [user]);
+  }, [!!user]);
 
   const logout = () => {
     localStorage.removeItem('authToken');
@@ -142,7 +163,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser({ ...user, teams: updatedTeams });
       fetchNotifications();
     } catch (err) {
-      console.error('Failed to leave team:', err);
       throw err;
     }
   };
@@ -191,8 +211,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return team;
       });
       setUser({ ...user, teams: updatedTeams });
-    } catch (err) {
-      console.error('Failed to update task status:', err);
+    } catch {
     }
   };
 
@@ -211,8 +230,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return team;
       });
       setUser({ ...user, teams: updatedTeams });
-    } catch (err) {
-      console.error('Failed to add task:', err);
+    } catch {
     }
   };
 
@@ -240,7 +258,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
       setUser({ ...user, teams: updatedTeams });
     } catch (err) {
-      console.error('Failed to upload file:', err);
       throw err;
     }
   };
@@ -265,7 +282,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
       setUser({ ...user, teams: updatedTeams });
     } catch (err) {
-      console.error('Failed to delete file:', err);
       throw err;
     }
   };
@@ -288,8 +304,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return team;
       });
       setUser({ ...user, teams: updatedTeams });
-    } catch (err) {
-      console.error('Failed to update task assignee:', err);
+    } catch {
     }
   };
 
@@ -341,7 +356,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
       setUser({ ...user, teams: updatedTeams });
     } catch (err) {
-      console.error('Failed to remove team member:', err);
       throw err;
     }
   };
@@ -375,7 +389,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         teams: [...user.teams, team],
       });
     } catch (err) {
-      console.error('Failed to create team:', err);
       throw err;
     }
   };
@@ -390,7 +403,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
       setUser({ ...user, teams: updatedTeams });
     } catch (err) {
-      console.error('Failed to update team status:', err);
       throw err;
     }
   };
@@ -415,9 +427,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const fetchFriendRequests = () => {
     api.getFriendRequests().then((requests) => {
       setFriendRequests(requests);
-    }).catch((err) => {
-      console.error('Failed to fetch friend requests:', err);
-    });
+    }).catch(() => {});
   };
 
   const acceptFriendRequest = (requestId: number) => {
@@ -426,9 +436,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       fetchFriendRequests();
       fetchFriends();
       fetchNotifications();
-    }).catch((err) => {
-      console.error('Failed to accept friend request:', err);
-    });
+    }).catch(() => {});
   };
 
   const rejectFriendRequest = (requestId: number) => {
@@ -437,9 +445,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       fetchFriendRequests();
       fetchSentRequests();
       fetchNotifications();
-    }).catch((err) => {
-      console.error('Failed to reject friend request:', err);
-    });
+    }).catch(() => {});
   };
 
   const cancelSentFriendRequest = (requestId: number) => {
@@ -454,21 +460,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const fetchSentRequests = () => {
     api.getSentFriendRequests().then((requests) => {
       setSentRequests(requests);
-    }).catch((err) => {
-      console.error('Failed to fetch sent requests:', err);
-    });
+    }).catch(() => {});
   };
 
-  const fetchFriends = () => {
-    api.getFriends().then((friendList) => {
-      setFriends(friendList);
-      if (user) {
-        setUser({ ...user, friends: friendList });
-      }
-    }).catch((err) => {
-      console.error('Failed to fetch friends:', err);
-    });
-  };
+   const fetchFriends = () => {
+     const currentFriendIds = new Set(friends.map(f => f.id));
+     api.getFriends().then((friendList) => {
+       setFriends(friendList);
+       if (user) {
+         setUser({ ...user, friends: friendList });
+       }
+       friendList.forEach((f: Friend) => {
+         if (!currentFriendIds.has(f.id)) {
+           api.getUserOnline(f.id).then(d => {
+             if (d.Online) setOnlineFriendIds(prev => new Set(prev).add(f.id));
+           }).catch(() => {});
+         }
+       });
+     }).catch(() => {});
+   };
 
   const removeFriend = (friendId: number) => {
     api.removeFriend(friendId).then(() => {
@@ -476,21 +486,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (user) {
         setUser({ ...user, friends: user.friends.filter((f) => f.id !== friendId) });
       }
-    }).catch((err) => {
-      console.error('Failed to remove friend:', err);
-    });
+    }).catch(() => {});
   };
 
   const fetchNotifications = () => {
     api.getNotifications().then((list) => {
       setNotifications(list);
       setUnreadCount(list.filter((n) => !n.status_read).length);
-    }).catch((err) => {
-      console.error('Failed to fetch notifications:', err);
-    });
+    }).catch(() => {});
   };
 
   const markAsRead = (id: number) => {
+    const notif = notifications.find(n => n.id === id);
+    if (notif?.status_read) return;
+
     api.readNotification(id).then(() => {
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, status_read: true } : n))
@@ -507,9 +516,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     api.readAllNotifications().then(() => {
       setNotifications((prev) => prev.map((n) => ({ ...n, status_read: true })));
       setUnreadCount(0);
-    }).catch((err) => {
-      console.error('Failed to mark all as read:', err);
-    });
+    }).catch(() => {});
   };
 
   const deleteNotification = (id: number) => {
@@ -521,27 +528,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
         return prev.filter((n) => n.id !== id);
       });
-    }).catch((err) => {
-      console.error('Failed to delete notification:', err);
-    });
+    }).catch(() => {});
   };
 
   const deleteAllNotifications = () => {
     api.deleteAllNotifications().then(() => {
       setNotifications([]);
       setUnreadCount(0);
-    }).catch((err) => {
-      console.error('Failed to delete all notifications:', err);
-    });
+    }).catch(() => {});
   };
 
   const fetchTeamInvites = () => {
     api.getTeamInvites().then((invites) => {
       setTeamInvites(invites);
       setUnreadNotifications(invites.length + joinRequestNotifications.length);
-    }).catch((err) => {
-      console.error('Failed to fetch team invites:', err);
-    });
+    }).catch(() => {});
   };
 
   const fetchJoinRequestNotifications = async (userId?: number) => {
@@ -572,8 +573,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       );
       setJoinRequestNotifications(allRequests);
       setUnreadNotifications(teamInvites.length + allRequests.length);
-    } catch (err) {
-      console.error('Failed to fetch join request notifications:', err);
+    } catch {
     }
   };
 
@@ -583,9 +583,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUnreadNotifications((prev) => Math.max(0, prev - 1));
       fetchNotifications();
       setTimeout(() => window.location.reload(), 300);
-    }).catch((err) => {
-      console.error('Failed to accept team invite:', err);
-    });
+    }).catch(() => {});
   };
 
   const rejectTeamInvite = (inviteId: number) => {
@@ -593,9 +591,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setTeamInvites(teamInvites.filter((i) => i.invite_id !== inviteId));
       setUnreadNotifications((prev) => Math.max(0, prev - 1));
       fetchNotifications();
-    }).catch((err) => {
-      console.error('Failed to reject team invite:', err);
-    });
+    }).catch(() => {});
   };
 
   const markNotificationsRead = () => {
@@ -651,6 +647,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       acceptTeamInvite,
       rejectTeamInvite,
       markNotificationsRead,
+      onlineFriendIds,
     }}>
       {children}
     </AuthContext.Provider>
