@@ -195,13 +195,11 @@ function FriendChat() {
             groupConsecutiveMessages(chat, user?.id).map((group) =>
               group.messages.map((msg, idx) => (
                 <div key={msg.id} className={`friend-chat-message ${group.isOwn ? 'own' : ''} ${idx > 0 ? 'grouped' : ''}`}>
-                  {idx === 0 && (
+                  <div className="chat-message-header">
                     <img src={group.isOwn ? user?.avatar : msg.sender.avatar} alt={msg.sender.username} className="chat-avatar" />
-                  )}
-                  <div className="friend-chat-message-content">
-                    {idx === 0 && (
-                      <Link to={`/profile/${msg.sender.id}`} className="chat-username">{msg.sender.username}</Link>
-                    )}
+                    <Link to={`/profile/${msg.sender.id}`} className="chat-username">{msg.sender.username}</Link>
+                  </div>
+                  <div className="chat-message-body">
                     <span className="chat-time">{formatTime(msg.timestamp)}</span>
                     <p className="chat-text">{msg.text}</p>
                   </div>
