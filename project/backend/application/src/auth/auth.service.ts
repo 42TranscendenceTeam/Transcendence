@@ -133,7 +133,7 @@ export const verify2FA = async (tempToken: string, code: string) => {
     throw new AppError("User not found", 404);
   }
 
-  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET); //TODO - vafernan test to ensure login token with 2fa
+  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET);
 
   return {
     user: {
