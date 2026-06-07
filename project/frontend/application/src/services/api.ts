@@ -291,7 +291,7 @@ checkEmail(email: string): Promise<{ exists: boolean }> {
       email: data.email,
       avatar: getAvatarUrl(data.avatar_url),
       description: data.bio || '',
-      twoFactorEnabled: false,
+      twoFactorEnabled: data.two_factor_enabled || false,
       friends: [],
       teams: [],
       globalChat: [],

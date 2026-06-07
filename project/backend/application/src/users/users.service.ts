@@ -14,6 +14,7 @@ export const getMe = async (userId: number) => {
       username: true,
       bio: true,
       avatar_url: true,
+      two_factor_enabled: true,
     },
   });
 

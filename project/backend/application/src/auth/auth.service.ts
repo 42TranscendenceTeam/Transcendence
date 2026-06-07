@@ -89,6 +89,7 @@ export const login = async (data: LoginDTO) => {
       {
         userId: user.id,
         twoFactorCode: code,
+        type: "2fa"
       },
       JWT_SECRET,
       { expiresIn: "5m" }
