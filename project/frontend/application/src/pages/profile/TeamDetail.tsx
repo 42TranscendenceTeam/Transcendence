@@ -19,6 +19,7 @@ import { getAvatarUrl } from '../../utils/avatar';
 import { ALLOWED_TASK_EXTENSIONS } from '../../utils/fileValidation';
 import { getSocket } from '../../services/socket';
 import type { Task, Member, TaskFile, Message } from '../../types';
+import { groupConsecutiveMessages } from '../../utils/messageUtils';
 
 interface SearchUser {
   id: number;
@@ -1018,16 +1019,22 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
         <div className="chat-container">
           <div className="chat-messages">
             {team.chat && team.chat.length > 0 ? (
-              team.chat.map((msg) => (
-                <div key={msg.id} className={`chat-message ${msg.sender.username === user.username ? 'own' : ''}`}>
-                  <img src={msg.sender.avatar} alt={msg.sender.username} className="chat-avatar" />
-                  <div className="chat-content">
-                    <Link to={`/profile/${msg.sender.id}`} className="chat-username">{msg.sender.username}</Link>
-                    <span className="chat-time">{formatTime(msg.timestamp)}</span>
-                    <p className="chat-text">{msg.text}</p>
+              groupConsecutiveMessages(team.chat, user.id).map((group) =>
+                group.messages.map((msg, idx) => (
+                  <div key={msg.id} className={`chat-message ${group.isOwn ? 'own' : ''} ${idx > 0 ? 'grouped' : ''}`}>
+                    {idx === 0 && (
+                      <img src={msg.sender.avatar} alt={msg.sender.username} className="chat-avatar" />
+                    )}
+                    <div className="chat-content">
+                      {idx === 0 && (
+                        <Link to={`/profile/${msg.sender.id}`} className="chat-username">{msg.sender.username}</Link>
+                      )}
+                      <span className="chat-time">{formatTime(msg.timestamp)}</span>
+                      <p className="chat-text">{msg.text}</p>
+                    </div>
                   </div>
-                </div>
-              ))
+                ))
+              )
             ) : (
               <p className="chat-empty">{t('teams.noMessages')}. {t('teams.startConversation')}</p>
             )}

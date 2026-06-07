@@ -505,9 +505,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
         });
         return { ...prev, friends: updatedFriends };
       });
-      if (user) {
-        setUser({ ...user, friends: friendList });
-      }
       friendList.forEach((f: Friend) => {
         if (!currentFriendIds.has(f.id)) {
           api.getUserOnline(f.id).then(d => {

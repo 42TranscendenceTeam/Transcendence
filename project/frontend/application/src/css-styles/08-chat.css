@@ -1,4 +1,22 @@
 /*
+ * Grouped messages (consecutive from same sender)
+ */
+.chat-message.grouped,
+.friend-chat-message.grouped {
+  margin-top: -0.375rem;
+}
+
+.chat-message.grouped .chat-avatar,
+.friend-chat-message.grouped .chat-avatar {
+  visibility: hidden;
+}
+
+.chat-message.grouped .chat-username,
+.friend-chat-message.grouped .chat-username {
+  visibility: hidden;
+}
+
+/*
  * Chat placeholder
  */
 .chat-placeholder {

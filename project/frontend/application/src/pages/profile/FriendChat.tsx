@@ -13,11 +13,12 @@ import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { getSocket } from '../../services/socket';
 import type { Message } from '../../types';
+import { groupConsecutiveMessages } from '../../utils/messageUtils';
 
 function FriendChat() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
-const { user, sendFriendMessage, updateUser, onlineFriendIds } = useContext(AuthContext);
+  const { user, sendFriendMessage, updateUser, onlineFriendIds } = useContext(AuthContext);
   
   const friendId = parseInt(id || '0');
   const friend = user?.friends.find((f) => f.id === friendId);
@@ -28,7 +29,6 @@ const { user, sendFriendMessage, updateUser, onlineFriendIds } = useContext(Auth
   useEffect(() => {
     if (!user || !friendId) return;
 
-    // Join chat room
     const socket = getSocket();
     if (socket) {
       socket.emit('join chat', user.id, friendId, (res: any) => {
@@ -37,7 +37,6 @@ const { user, sendFriendMessage, updateUser, onlineFriendIds } = useContext(Auth
 
       const handleNewMessage = (content: string, ack?: (ok: boolean) => void) => {
         if (ack) ack(true);
-        // Refresh messages
         fetchHistory();
       };
 
@@ -61,9 +60,11 @@ const { user, sendFriendMessage, updateUser, onlineFriendIds } = useContext(Auth
         return {
           id: m.id,
           text: m.content,
-          sender: isOwn 
-            ? { id: user?.id || 0, username: user?.username || '', avatar: user?.avatar || '' }
-            : { id: friendId, username: friend?.username || '', avatar: friend?.avatar || '' },
+          sender: {
+            id: m.sender_id,
+            username: isOwn ? (user?.username || '') : (friend?.username || ''),
+            avatar: isOwn ? (user?.avatar || '') : (friend?.avatar || ''),
+          },
           timestamp: m.sent_at
         };
       }).reverse();
@@ -145,21 +146,22 @@ const { user, sendFriendMessage, updateUser, onlineFriendIds } = useContext(Auth
       <div className="friend-chat-container">
         <div className="friend-chat-messages">
           {chat.length > 0 ? (
-            chat.map((msg) => {
-              const isOwn = Number(msg.sender.id) === Number(user?.id);
-              return (
-                <div key={msg.id} className={`friend-chat-message ${isOwn ? 'own' : ''}`}>
-                  {!isOwn && (
-                    <img src={msg.sender.avatar || friend.avatar} alt={msg.sender.username} className="chat-avatar" />
+            groupConsecutiveMessages(chat, user?.id).map((group) =>
+              group.messages.map((msg, idx) => (
+                <div key={msg.id} className={`friend-chat-message ${group.isOwn ? 'own' : ''} ${idx > 0 ? 'grouped' : ''}`}>
+                  {idx === 0 && (
+                    <img src={group.isOwn ? user?.avatar : msg.sender.avatar} alt={msg.sender.username} className="chat-avatar" />
                   )}
                   <div className="friend-chat-message-content">
-                    {!isOwn && <Link to={`/profile/${msg.sender.id}`} className="chat-username">{msg.sender.username}</Link>}
+                    {idx === 0 && (
+                      <Link to={`/profile/${msg.sender.id}`} className="chat-username">{msg.sender.username}</Link>
+                    )}
                     <span className="chat-time">{formatTime(msg.timestamp)}</span>
                     <p className="chat-text">{msg.text}</p>
                   </div>
                 </div>
-              );
-            })
+              ))
+            )
           ) : (
             <p className="chat-empty">{t('teams.noMessages')}. {t('teams.startConversation')}</p>
           )}
