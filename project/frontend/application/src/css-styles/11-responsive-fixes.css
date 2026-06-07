@@ -526,7 +526,6 @@
     padding: 1rem;
     min-width: 0;
     text-align: center;
-    min-width: 0;
   }
 
   .member-avatar {
@@ -648,5 +647,134 @@
 
   .modal-body {
     padding: 1rem;
+  }
+}
+
+
+/* ========================================
+      Intermediate Breakpoint Fix
+======================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+  .profile-main {
+    margin-left: 190px;
+    width: calc(100% - 190px);
+    padding: 2rem 1rem;
+  }
+
+  .profile-main>* {
+    max-width: 100%;
+  }
+
+  .profile-main>.team-detail-page {
+    max-width: 100%;
+  }
+
+  .team-detail-page {
+    width: 100%;
+    padding: 0;
+  }
+
+  .feed-layout {
+    padding-right: 0;
+  }
+
+  .feed-sidebar {
+    display: none;
+  }
+
+  .profile-sidebar {
+    display: flex;
+    width: 190px;
+    padding: 1.25rem 0.75rem;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo-img {
+    width: 105%;
+    margin-left: -0.5em;
+  }
+
+  .profile-sidebar-nav-item {
+    gap: 0.55rem;
+    padding: 0.65rem 0.45rem;
+    font-size: 0.78rem;
+  }
+
+  .profile-sidebar .bottom-nav {
+    display: flex;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .mobile-menu-toggle,
+  .mobile-menu-overlay {
+    display: none;
+  }
+
+  .profile-top-actions {
+    display: none;
+  }
+
+  .profile-stats-grid,
+  .friends-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .team-card {
+    grid-template-columns: 1fr;
+  }
+
+  .team-title {
+    font-size: 1.7rem;
+  }
+
+  .team-objective {
+    font-size: 0.9rem;
+  }
+
+  .btn-remove-member {
+    position: absolute;
+    top: 1.5rem;
+    right: 0.5rem;
+  }
+
+  .members-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .member-card {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .task-counts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .task-counts-label {
+    grid-column: 1 / -1;
+  }
+
+  .task-filters {
+    margin-top: 2.5rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .section-header .btn {
+    width: 100%;
   }
 }
