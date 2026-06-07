@@ -51,7 +51,7 @@ export const getUnreadNotifications = async (userId: number) => {
 	});
 
 	return notifications;
-}; 
+};
 
 // Reads a specific notification with id
 export const readNotification = async (userId: number, notificationId: number) => {

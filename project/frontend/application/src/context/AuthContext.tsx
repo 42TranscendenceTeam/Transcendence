@@ -157,7 +157,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser({ ...user, twoFactorEnabled: result.two_factor_enabled });
       return result.two_factor_enabled;
     } catch (err) {
-      console.error('Failed to toggle 2FA:', err);
       return false;
     }
   };
