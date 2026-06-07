@@ -777,4 +777,15 @@
   .section-header .btn {
     width: 100%;
   }
+
+  .auth-content {
+    position: relative;
+    inset: auto;
+    padding: 1.25rem;
+    align-items: center;
+  }
+
+  body:not(:has(.profile-sidebar)) .feed-layout {
+    padding-top: 4rem;
+  }
 }
