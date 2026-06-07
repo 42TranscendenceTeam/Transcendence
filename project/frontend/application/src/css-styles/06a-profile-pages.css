@@ -160,7 +160,22 @@
 }
 
 .friend-status.offline {
-  color: var(--text-secondary);
+  color: var(--error);
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-indicator.online {
+  color: var(--success);
+}
+
+.status-indicator.offline {
+  color: var(--error);
 }
 
 .friend-chat-btn {
