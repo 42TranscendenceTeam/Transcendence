@@ -22,7 +22,7 @@ interface SearchUser {
 function Friends() {
   const { t } = useTranslation();
   const { showError } = useError();
-  const { user, removeFriend, addFriend, friendRequests, sentRequests, friends, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests, fetchSentRequests, fetchFriends } = useContext(AuthContext);
+  const { user, removeFriend, addFriend, friendRequests, sentRequests, friends, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests, fetchSentRequests, fetchFriends, onlineFriendIds } = useContext(AuthContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [friendToRemove, setFriendToRemove] = useState<Friend | null>(null);
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
@@ -168,11 +168,14 @@ function Friends() {
           <div className="friends-list">
             {friends.map((friend) => (
               <div key={friend.id} className="friend-card">
-                <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                  <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
+                  <span className={`status-indicator ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`} style={{ position: 'absolute', bottom: 0, right: 0 }} />
+                </div>
                 <div className="friend-info">
                   <Link to={`/profile/${friend.id}`} className="friend-name">{friend.username}</Link>
-                  <span className={`friend-status ${friend.isOnline ? 'online' : 'offline'}`}>
-                    {friend.isOnline ? t('common.online') : t('common.offline')}
+                  <span className={`friend-status ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`}>
+                    {onlineFriendIds.has(friend.id) ? t('common.online') : t('common.offline')}
                   </span>
                 </div>
                 <Link

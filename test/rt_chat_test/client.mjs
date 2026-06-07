@@ -193,7 +193,7 @@ async function main() {
 
   // Listeners — each resolves only on the expected cross-delivery marker
   socketA.on('chat message', (msg, ack) => {
-    if (typeof msg === 'string' && msg.includes(markers.b2adm) && !wsRecv.a_dm) {
+    if (typeof msg === 'object' && msg.content.includes(markers.b2adm) && !wsRecv.a_dm) {
       wsRecv.a_dm = true;
       console.log('  A received DM from B');
       if (typeof ack === 'function') ack(true);
@@ -201,7 +201,7 @@ async function main() {
     }
   });
   socketB.on('chat message', (msg, ack) => {
-    if (typeof msg === 'string' && msg.includes(markers.a2bdm) && !wsRecv.b_dm) {
+    if (typeof msg === 'object' && msg.content.includes(markers.a2bdm) && !wsRecv.b_dm) {
       wsRecv.b_dm = true;
       console.log('  B received DM from A');
       if (typeof ack === 'function') ack(true);
@@ -209,7 +209,7 @@ async function main() {
     }
   });
   socketA.on('team message', (msg, ack) => {
-    if (typeof msg === 'string' && msg.includes(markers.b2ateam) && !wsRecv.a_team) {
+    if (typeof msg === 'object' && msg.content.includes(markers.b2ateam) && !wsRecv.a_team) {
       wsRecv.a_team = true;
       console.log('  A received team msg from B');
       if (typeof ack === 'function') ack(true);
@@ -217,7 +217,7 @@ async function main() {
     }
   });
   socketB.on('team message', (msg, ack) => {
-    if (typeof msg === 'string' && msg.includes(markers.a2bteam) && !wsRecv.b_team) {
+    if (typeof msg === 'object' && msg.content.includes(markers.a2bteam) && !wsRecv.b_team) {
       wsRecv.b_team = true;
       console.log('  B received team msg from A');
       if (typeof ack === 'function') ack(true);

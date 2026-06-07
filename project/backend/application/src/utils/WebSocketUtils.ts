@@ -7,7 +7,7 @@ export const emitWithRetries = async (
 	io: Server,
 	event: string,
 	chatId: string,
-	content: string,
+	payload: object,
 	retries = MAX_RETRIES,
 ) => {
 		return new Promise<void>((resolve, reject) => {
@@ -17,7 +17,7 @@ export const emitWithRetries = async (
 			const sendEvent = () => {
 				attempts++;
 
-				io.to(chatId).emit(event, content, (ack: boolean) => {
+				io.to(chatId).emit(event, payload, (ack: boolean) => {
 					if (ack) {
 						console.log(`Acknowledgement received for event: ${event}`);
 						resolve();
