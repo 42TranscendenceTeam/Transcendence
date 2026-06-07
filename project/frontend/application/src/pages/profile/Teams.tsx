@@ -9,6 +9,7 @@ import { useContext, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { useError } from '../../context/ErrorContext';
 import { api, Team } from '../../services/api';
 
 const TEAM_DETAILS = [
@@ -26,6 +27,7 @@ const TEAM_DETAILS = [
 
 function Teams() {
   const { t } = useTranslation();
+  const { showError } = useError();
   const { user, createTeam, teamInvites, fetchTeamInvites, acceptTeamInvite, rejectTeamInvite, teamRefreshTrigger } = useContext(AuthContext);
   const [error, setError] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -73,9 +75,8 @@ function Teams() {
         details: newTeam.details,
       });
       api.getMyTeams().then((myTeams) => setTeams(myTeams)).catch(() => {});
-    } catch (err) {
-      console.error('Failed to create team:', err);
-      alert('Failed to create team');
+    } catch {
+      showError('Error', 'Failed to create team');
     }
     setNewTeam({ name: '', description: '', lookingFor: 2, details: [] });
     setShowCreateModal(false);

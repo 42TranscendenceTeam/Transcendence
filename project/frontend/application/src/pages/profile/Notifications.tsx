@@ -2,6 +2,7 @@ import { useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 import type { AppNotification } from '../../types';
 
@@ -134,6 +135,7 @@ function isTeamType(type: string): boolean {
 function Notifications() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showError } = useError();
   const { user, notifications, fetchNotifications, deleteAllNotifications, deleteNotification, markAsRead } = useContext(AuthContext);
 
   useEffect(() => {
@@ -144,16 +146,25 @@ function Notifications() {
     const teamName = extractTeamName(notification.type, notification.content);
     if (teamName) {
       try {
-        const teams = await api.getTeams();
-        const team = teams.find(t => t.name === teamName);
-        if (team) {
-          const membersData = await api.getTeamMembers(team.id);
-          const isMember = user?.id != null && membersData.member_list.some(m => m.id === user.id);
-          navigate(isMember ? `/teams/${team.id}` : '/profile/teams');
+        const teamsData = await api.getTeams();
+        const foundTeam = teamsData.find(t => t.name === teamName);
+        
+        if (foundTeam) {
+          // Check if user is already a member using api.getMyTeams for authoritative list
+          const myTeams = await api.getMyTeams();
+          const isMember = myTeams.some(mt => mt.id === foundTeam.id);
+          
+          if (isMember) {
+            navigate(`/teams/${foundTeam.id}`);
+          } else {
+            // Not a member yet, redirect to team list
+            navigate('/profile/teams');
+          }
         } else {
           navigate('/profile/teams');
         }
-      } catch {
+      } catch (err) {
+        console.error('Notification navigation failed:', err);
         navigate('/profile/teams');
       }
     } else {

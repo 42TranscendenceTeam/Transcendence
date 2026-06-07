@@ -174,6 +174,21 @@ export const api = {
     });
   },
 
+  checkEmail(email: string): Promise<{ exists: boolean }> {
+    return fetch(`${API_URL}/auth/check-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to check email');
+        });
+      }
+      return response.json();
+    });
+  },
+
   // ========== AVATAR UPLOAD ==========
   uploadAvatar(file: File): Promise<{ avatar_url: string }> {
     const formData = new FormData();
@@ -588,7 +603,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to send join request');
+          throw new Error(error.error || error.message || 'Failed to send join request');
         });
       }
       return response.json();
@@ -605,7 +620,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to get join requests');
+          throw new Error(error.error || error.message || 'Failed to get join requests');
         });
       }
       return response.json();
@@ -622,7 +637,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to accept join request');
+          throw new Error(error.error || error.message || 'Failed to accept join request');
         });
       }
     });
@@ -638,7 +653,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to reject join request');
+          throw new Error(error.error || error.message || 'Failed to reject join request');
         });
       }
     });
@@ -655,7 +670,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to get team invites');
+          throw new Error(error.error || error.message || 'Failed to get team invites');
         });
       }
       return response.json();
@@ -672,7 +687,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to accept team invite');
+          throw new Error(error.error || error.message || 'Failed to accept team invite');
         });
       }
     });
@@ -688,7 +703,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to reject team invite');
+          throw new Error(error.error || error.message || 'Failed to reject team invite');
         });
       }
     });
@@ -705,7 +720,7 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         return response.json().then((error) => {
-          throw new Error(error.message || 'Failed to send team invite');
+          throw new Error(error.error || error.message || 'Failed to send team invite');
         });
       }
     });
@@ -721,6 +736,21 @@ export const api = {
     }).then((response) => {
       if (!response.ok) {
         throw new Error('Failed to get team members');
+      }
+      return response.json();
+    });
+  },
+
+  getTeamInvitesSent(teamId: number): Promise<{ invite_id: number; sent_at: string; user_id: number }[]> {
+    return fetch(`${API_URL}/teams/${teamId}/invites-sent`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get team invites sent');
       }
       return response.json();
     });
