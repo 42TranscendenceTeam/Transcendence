@@ -103,8 +103,8 @@
       "desc": "Gérez les paramètres de sécurité de votre compte",
       "twoFactor": "Authentification à deux facteurs",
       "twoFactorDesc": "Ajoutez une couche de sécurité supplémentaire à votre compte",
-      "enable": "Activer",
-      "disable": "Désactiver",
+      "enable": "Activé",
+      "disable": "Désactivé",
       "changePassword": "Changer le mot de passe",
       "currentPassword": "Mot de passe actuel",
       "newPassword": "Nouveau mot de passe",
@@ -226,7 +226,14 @@
     "userNotFoundOrMember": "Utilisateur non trouvé ou déjà membre",
     "failedToFindUser": "Échec de la recherche de l'utilisateur",
     "joinRequestRejected": "Demande d'adhésion refusée avec succès",
-    "joinRequestAccepted": "Demande d'adhésion acceptée avec succès"
+    "joinRequestAccepted": "Demande d'adhésion acceptée avec succès",
+    "searchFriends": "Rechercher des amis......",
+    "wantsToBeFriends": "Souhaite devenir votre ami",
+    "requestSent": "Demande d'amitié envoyée",
+    "role": "Rôle",
+    "status": "Statut",
+    "members": "Membres",
+    "created": "Créé"
   },
   "tasks": {
     "title": "Tâches",
@@ -272,6 +279,7 @@
     "chat": "Discuter",
     "noReceivedRequests": "Aucune demande en attente",
     "noSentRequests": "Aucune demande envoyée en attente",
+    "requestSent": "Demande envoyée",
     "friendRequestExists": "Une demande d'ami est déjà en attente.",
     "alreadyFriends": "Vous êtes déjà amis.",
     "addFriendFailed": "Échec de l'envoi de la demande d'ami.",
@@ -345,7 +353,8 @@
     "teamRemoved": "Vous avez été retiré de l'équipe {{team}}.",
     "teamUserLeft": "{{username}} a quitté {{team}}.",
     "teamDeleted": "L'équipe {{team}} a été supprimée par son propriétaire.",
-    "teamLoadFailed": "Échec du chargement des informations de l'équipe."
+    "teamLoadFailed": "Échec du chargement des informations de l'équipe.",
+    "subtitle": "Restez informé des demandes d'amitié, de l'activité des équipes et des mises à jour du compte."
   },
   "legal": {
     "privacy": {
