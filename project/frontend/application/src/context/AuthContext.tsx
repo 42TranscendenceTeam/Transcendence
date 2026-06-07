@@ -495,7 +495,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
 
   const fetchFriends = () => {
     const currentFriendIds = new Set(friends.map(f => f.id));
-    api.getFriends().then((friendList) => {
+    return api.getFriends().then((friendList) => {
       setFriends(friendList);
       setUser((prev) => {
         if (!prev) return prev;

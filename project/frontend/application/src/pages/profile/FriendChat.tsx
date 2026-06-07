@@ -2,8 +2,6 @@
  * Friend Chat Page Component
  * 
  * Direct messaging with a friend.
- * 
- * TODO: Connect to real API when backend is ready
  */
 
 import { useContext, useState, useRef, useEffect } from 'react';
@@ -12,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import { getSocket } from '../../services/socket';
+import { getAvatarUrl } from '../../utils/avatar';
 import type { Message } from '../../types';
 import { groupConsecutiveMessages } from '../../utils/messageUtils';
 
@@ -22,6 +21,9 @@ function FriendChat() {
   
   const friendId = parseInt(id || '0');
   const friend = user?.friends.find((f) => f.id === friendId);
+  const [friendInfo, setFriendInfo] = useState<{ id: number; username: string; avatar: string } | null>(null);
+  const [isLoadingFriend, setIsLoadingFriend] = useState(true);
+  const [friendError, setFriendError] = useState(false);
   
   const [message, setMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -51,29 +53,64 @@ function FriendChat() {
     }
   }, [user?.id, friendId]);
 
+  useEffect(() => {
+    if (!friend && !friendInfo && !friendError) {
+      api.getUserProfile(friendId)
+        .then(data => {
+          setFriendInfo({
+            id: data.id,
+            username: data.username,
+            avatar: getAvatarUrl(data.avatar_url)
+          });
+          setIsLoadingFriend(false);
+        })
+        .catch(() => {
+          setFriendError(true);
+          setIsLoadingFriend(false);
+        });
+    } else if (friend) {
+      setIsLoadingFriend(false);
+    }
+  }, [friend, friendId, friendInfo, friendError]);
+
   const fetchHistory = async () => {
     if (!friendId) return;
+    if (!friendInfo && !friend) return;
     try {
       const history = await api.getFriendMessages(friendId, 50);
       const formattedMessages: Message[] = history.message_list.map((m: any) => {
         const isOwn = Number(m.sender_id) === Number(user?.id);
+        const chatFriend = friendInfo ?? friend;
         return {
           id: m.id,
           text: m.content,
           sender: {
             id: m.sender_id,
-            username: isOwn ? (user?.username || '') : (friend?.username || ''),
-            avatar: isOwn ? (user?.avatar || '') : (friend?.avatar || ''),
+            username: isOwn ? (user?.username || '') : (chatFriend?.username || ''),
+            avatar: isOwn ? (user?.avatar || '') : (chatFriend?.avatar || ''),
           },
           timestamp: m.sent_at
         };
       }).reverse();
 
       if (user) {
-        const updatedFriends = user.friends.map(f => {
-          if (f.id === friendId) return { ...f, chat: formattedMessages };
-          return f;
-        });
+        const existingFriend = user.friends.find(f => f.id === friendId);
+        let updatedFriends;
+        
+        if (existingFriend) {
+          updatedFriends = user.friends.map(f => {
+            if (f.id === friendId) return { ...f, chat: formattedMessages };
+            return f;
+          });
+        } else if (friendInfo) {
+          updatedFriends = [
+            ...user.friends,
+            { id: friendInfo.id, username: friendInfo.username, avatar: friendInfo.avatar, chat: formattedMessages }
+          ];
+        } else {
+          updatedFriends = user.friends;
+        }
+        
         updateUser({ friends: updatedFriends });
       }
     } catch (err) {
@@ -86,7 +123,7 @@ function FriendChat() {
     if (friendId) {
       api.markFriendMessagesRead(friendId).catch(console.error);
     }
-  }, [friendId]);
+  }, [friendId, friendInfo]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -94,7 +131,15 @@ function FriendChat() {
     }
   }, [friend?.chat]);
 
-  if (!friend) {
+  if (isLoadingFriend) {
+    return (
+      <div className="friend-chat-page">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (friendError || (!friend && !friendInfo)) {
     return (
       <div className="friend-chat-page">
         <h1>{t('friends.notFound') || 'Friend not found'}</h1>
@@ -103,6 +148,9 @@ function FriendChat() {
       </div>
     );
   }
+
+  const displayFriend = friend ?? friendInfo!;
+  const chat = friend?.chat || [];
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,8 +173,6 @@ function FriendChat() {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const chat = friend.chat || [];
-
   return (
     <div className="friend-chat-page">
       <div className="friend-chat-header">
@@ -137,9 +183,9 @@ function FriendChat() {
           {t('friends.backToFriends') || 'Back to Friends'}
         </Link>
         <div className="friend-chat-title">
-          <img src={friend.avatar} alt={friend.username} className="friend-chat-avatar" />
-          <span className={`status-indicator ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`} />
-          <Link to={`/profile/${friend.id}`}><h1>{friend.username}</h1></Link>
+          <img src={displayFriend.avatar} alt={displayFriend.username} className="friend-chat-avatar" />
+          <span className={`status-indicator ${onlineFriendIds.has(displayFriend.id) ? 'online' : 'offline'}`} />
+          <Link to={`/profile/${displayFriend.id}`}><h1>{displayFriend.username}</h1></Link>
         </div>
       </div>
 
