@@ -94,7 +94,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             if (!n.status_read) setUnreadCount((c) => c + 1);
 
             if (n.type === 'friend_request' || n.type === 'friend_request_accepted'
-                || n.type === 'friend_request_rejected') {
+                || n.type === 'friend_request_rejected'
+                || n.type === 'friend_request_cancelled') {
               fetchFriendRequests();
               fetchSentRequests();
             }
@@ -642,6 +643,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       fetchJoinRequestNotifications,
       acceptFriendRequest,
       rejectFriendRequest,
+      cancelSentFriendRequest,
       acceptTeamInvite,
       rejectTeamInvite,
       markNotificationsRead,

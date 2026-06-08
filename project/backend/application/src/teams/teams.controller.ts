@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import { AppError } from '../utils/AppError.js';
-import { getTeamsList, createTeam, getTeam, updateTeam, deleteTeam, getTeamMembers, removeTeamMember, getTeamJoinRequests, sendTeamJoinRequest, acceptJoinRequest, rejectJoinRequest, getTeamInvites, sendTeamInvite, acceptTeamInvite, rejectTeamInvite, leaveTeam } from './teams.services.js';
+import { getTeamsList, createTeam, getTeam, updateTeam, deleteTeam, getTeamMembers, removeTeamMember, getTeamJoinRequests, sendTeamJoinRequest, acceptJoinRequest, rejectJoinRequest, getTeamInvites, getTeamInvitesSent, sendTeamInvite, acceptTeamInvite, rejectTeamInvite, leaveTeam } from './teams.services.js';
 
 export const getTeamsListController = async (req: AuthRequest, res: Response) => {
 	const teamList = await getTeamsList();
@@ -133,6 +133,13 @@ export const rejectJoinRequestController = async (req: AuthRequest, res: Respons
 export const getTeamInvitesController = async (req: AuthRequest, res: Response) => {
 	const invites = await getTeamInvites(req.user!.id);
 	return res.json(invites);
+};
+
+export const getTeamInvitesSentController = async (req: AuthRequest, res: Response) => {
+	const teamId = Number(req.params.id);
+
+	const invites_sent = await getTeamInvitesSent(teamId);
+	return res.json(invites_sent);
 };
 
 export const sendTeamInviteController = async (req: AuthRequest, res: Response) => {

@@ -174,7 +174,7 @@ export const api = {
     });
   },
 
-checkEmail(email: string): Promise<{ exists: boolean }> {
+  checkEmail(email: string): Promise<{ exists: boolean }> {
     return fetch(`${API_URL}/auth/check-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -765,6 +765,21 @@ checkEmail(email: string): Promise<{ exists: boolean }> {
     });
   },
 
+  getTeamInvitesSent(teamId: number): Promise<{ invite_id: number; sent_at: string; user_id: number }[]> {
+    return fetch(`${API_URL}/teams/${teamId}/invites-sent`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get team invites sent');
+      }
+      return response.json();
+    });
+  },
+
   // ========== TASKS ==========
   mapBackendTask(task: any): Task {
     return {
@@ -1042,6 +1057,21 @@ checkEmail(email: string): Promise<{ exists: boolean }> {
     }).then((response) => {
       if (!response.ok) {
         throw new Error('Failed to reject friend request');
+      }
+    });
+  },
+
+  // DELETE /friends/requests/:id - Cancels a sent friend request
+  cancelFriendRequest(requestId: number): Promise<void> {
+    return fetch(`${API_URL}/friends/requests/${requestId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to cancel friend request');
       }
     });
   },

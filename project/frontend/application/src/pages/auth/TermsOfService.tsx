@@ -40,9 +40,15 @@ function TermsOfService() {
     </section>
   );
 
-    return (
-      <AuthLayout>{pageContent}</AuthLayout>
-    );
+  return user ? (
+    <ProfileLayout>
+      <div className="legal-layout-card">
+        {pageContent}
+      </div>
+    </ProfileLayout>
+  ) : (
+    <AuthLayout>{pageContent}</AuthLayout>
+  );
 }
 
 export default TermsOfService;

@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 import type { AuthRequest } from '../middleware/auth.middleware.js';
 import { AppError } from '../utils/AppError.js';
-import { getFriends, getSentFriendRequests, getReceivedFriendRequests, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, deleteFriend } from './friends.service.js';
+import { getFriends, getSentFriendRequests, getReceivedFriendRequests, sendFriendRequest, acceptFriendRequest, rejectFriendRequest, deleteFriend, cancelFriendRequest } from './friends.service.js';
 
 export const getFriendsController = async (req: AuthRequest, res: Response) => {
 	const friendList = await getFriends(req.user!.id);
@@ -47,6 +47,17 @@ export const rejectFriendRequestController = async (req: AuthRequest, res: Respo
 		throw new AppError("Mandatory valid request ID.", 400);
 
 	const request = await rejectFriendRequest(req.user!.id, requestId);
+
+	return res.status(200).json(request);
+};
+
+export const cancelFriendRequestController = async (req: AuthRequest, res: Response) => {
+	const requestId = Number(req.params.id);
+
+	if (Number.isNaN(requestId))
+		throw new AppError("Mandatory valid request ID.", 400);
+
+	const request = await cancelFriendRequest(req.user!.id, requestId);
 
 	return res.status(200).json(request);
 };

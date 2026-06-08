@@ -228,7 +228,14 @@
     "userNotFoundOrMember": "Utilizador não encontrado ou já é membro",
     "failedToFindUser": "Falha ao encontrar utilizador",
     "joinRequestRejected": "Pedido de entrada rejeitado com sucesso",
-    "joinRequestAccepted": "Pedido de entrada aceite com sucesso"
+    "joinRequestAccepted": "Pedido de entrada aceite com sucesso",
+    "searchFriends": "Encontrar amigos...",
+    "wantsToBeFriends": "Quer ser teu amigo",
+    "requestSent": "Pedido enviado",
+    "role": "Função",
+    "status": "Estado",
+    "members": "Membros",
+    "created": "Criada"
   },
   "tasks": {
     "title": "Tarefas",
@@ -273,6 +280,7 @@
     "chat": "Conversar",
     "noReceivedRequests": "Sem pedidos pendentes",
     "noSentRequests": "Sem pedidos enviados pendentes",
+    "requestSent": "Pedido enviado",
     "friendRequestExists": "Já existe um pedido de amizade pendente.",
     "alreadyFriends": "Já são amigos.",
     "addFriendFailed": "Falha ao enviar pedido de amizade.",
@@ -347,7 +355,8 @@
     "teamRemoved": "Foi removido da equipa {{team}}.",
     "teamUserLeft": "{{username}} saiu de {{team}}.",
     "teamDeleted": "A equipa {{team}} foi eliminada pelo seu proprietário.",
-    "teamLoadFailed": "Falha ao carregar informações da equipa."
+    "teamLoadFailed": "Falha ao carregar informações da equipa.",
+    "subtitle": "Mantém-te a par dos pedidos de amizade, da atividade das equipas e das atualizações da conta."
   },
   "legal": {
     "privacy": {

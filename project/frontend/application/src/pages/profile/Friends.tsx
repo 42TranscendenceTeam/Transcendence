@@ -1,6 +1,6 @@
 /**
  * Friends List Page Component
- * 
+ *
  * Displays user's friends list.
  * Uses real API for user search.
  */
@@ -21,8 +21,8 @@ interface SearchUser {
 
 function Friends() {
   const { t } = useTranslation();
-const { showError } = useError();
-  const { user, removeFriend, addFriend, friendRequests, sentRequests, friends, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests, fetchSentRequests, fetchFriends, onlineFriendIds } = useContext(AuthContext);
+  const { showError } = useError();
+  const { user, removeFriend, addFriend, friendRequests, sentRequests, friends, acceptFriendRequest, rejectFriendRequest, fetchFriendRequests, fetchSentRequests, fetchFriends, cancelSentFriendRequest, onlineFriendIds } = useContext(AuthContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [friendToRemove, setFriendToRemove] = useState<Friend | null>(null);
   const [showAddFriendModal, setShowAddFriendModal] = useState(false);
@@ -30,6 +30,7 @@ const { showError } = useError();
   const [manualUsername, setManualUsername] = useState('');
   const [allUsers, setAllUsers] = useState<SearchUser[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [friendSearch, setFriendSearch] = useState('');
 
   useEffect(() => {
     fetchFriendRequests();
@@ -151,14 +152,44 @@ const { showError } = useError();
     }
   };
 
+  const filteredFriends = friends.filter((friend) =>
+    friend.username.toLowerCase().includes(friendSearch.toLowerCase())
+  );
+
   return (
     <div className="friends-page">
       <div className="friends-header">
-        <h1 className="profile-page-title">{t('friends.title')}</h1>
+        <div>
+          <h1 className="profile-page-title">{t('friends.title')}</h1>
+          <div className="friends-search-wrapper">
+            <input
+              type="text"
+              className="friends-search-input"
+              placeholder={t('teams.searchFriends')}
+              value={friendSearch}
+              onChange={(e) => setFriendSearch(e.target.value)}
+            />
+          </div>
+        </div>
+
+        <button className="btn btn-accent" onClick={() => setShowAddFriendModal(true)}>
+          + {t('friends.addFriend')}
+        </button>
       </div>
 
       <div className="profile-section">
-        <h2 className="profile-section-title">{t('friends.myFriends')}</h2>
+        <div className="friends-section-header">
+          <div className="friends-section-title">
+            <span className="friends-section-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
+              </svg>
+            </span>
+            <h2 className="profile-section-title">{t('friends.myFriends')}</h2>
+            <span className="requests-count">{friends.length}</span>
+          </div>
+        </div>
+
         {friends.length === 0 ? (
           <div className="empty-state">
             <p>{t('friends.noFriends')}</p>
@@ -166,30 +197,35 @@ const { showError } = useError();
           </div>
         ) : (
           <div className="friends-list">
-            {friends.map((friend) => (
+            {filteredFriends.map((friend) => (
               <div key={friend.id} className="friend-card">
+                <button
+                  className="friend-card-menu"
+                  onClick={() => handleRemoveClick(friend)}
+                  aria-label={t('friends.remove')}
+                >
+                  ×
+                </button>
                 <div style={{ position: 'relative', display: 'inline-block' }}>
                   <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
-                  <span className={`status-indicator ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`} style={{ position: 'absolute', bottom: 0, right: 0 }} />
+                  <span
+                    className={`status-indicator ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`}
+                    style={{ position: 'absolute', bottom: 0, right: 0 }}
+                  />
                 </div>
                 <div className="friend-info">
-                  <Link to={`/profile/${friend.id}`} className="friend-name">{friend.username}</Link>
+                  <Link to={`/profile/${friend.id}`} className="friend-name">
+                    {friend.username}
+                  </Link>
                   <span className={`friend-status ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`}>
                     {onlineFriendIds.has(friend.id) ? t('common.online') : t('common.offline')}
                   </span>
                 </div>
                 <Link
                   to={`/profile/friends/${friend.id}`}
-                  className="btn btn-secondary btn-small"
-                >
-                  {t('friends.chat')}
+                  className="btn btn-secondary btn-small friend-chat-btn" >
+                  💬 {t('friends.chat')}
                 </Link>
-                <button
-                  className="btn btn-outline-danger btn-small"
-                  onClick={() => handleRemoveClick(friend)}
-                >
-                  {t('friends.remove')}
-                </button>
               </div>
             ))}
           </div>
@@ -199,34 +235,15 @@ const { showError } = useError();
       <div className="pending-requests-section">
         <div className="pending-requests-header">
           <h2 className="section-title">{t('friends.pendingRequests')}</h2>
-          <button className="btn btn-primary btn-small" onClick={() => setShowAddFriendModal(true)}>
-            + {t('friends.addFriend')}
-          </button>
-        </div>
 
-        <div className="sent-requests-subsection">
-          <h3 className="subsection-title">{t('friends.sentRequests')}</h3>
-          {sentRequests.length === 0 ? (
-            <p className="empty-hint">{t('friends.noSentRequests')}</p>
-          ) : (
-            <div className="requests-list">
-              {sentRequests.map((request) => (
-                <div key={request.request_id} className="request-card">
-                  <img
-                    src={getAvatarUrl(request.user.avatar_url)}
-                    alt={request.user.username}
-                    className="friend-avatar"
-                  />
-                  <Link to={`/profile/${request.user.id}`} className="request-username">{request.user.username}</Link>
-                  <span className="request-status">{t('friends.pending')}</span>
-                </div>
-              ))}
-            </div>
-          )}
+          <span className="requests-count">
+            {sentRequests.length + friendRequests.length}
+          </span>
         </div>
 
         <div className="received-requests-subsection">
           <h3 className="subsection-title">{t('friends.receivedRequests')}</h3>
+
           {friendRequests.length === 0 ? (
             <p className="empty-hint">{t('friends.noReceivedRequests')}</p>
           ) : (
@@ -238,19 +255,71 @@ const { showError } = useError();
                     alt={request.user.username}
                     className="friend-avatar"
                   />
-                  <Link to={`/profile/${request.user.id}`} className="request-username">{request.user.username}</Link>
-                  <button
-                    className="btn btn-primary btn-small"
-                    onClick={() => acceptFriendRequest(request.request_id)}
-                  >
-                    {t('friends.accept')}
-                  </button>
-                  <button
-                    className="btn btn-outline-danger btn-small"
-                    onClick={() => rejectFriendRequest(request.request_id)}
-                  >
-                    {t('friends.reject')}
-                  </button>
+
+                  <div className="request-info">
+                    <Link to={`/profile/${request.user.id}`} className="request-username">
+                      {request.user.username}
+                    </Link>
+                    <span className="request-message">
+                      {t('teams.wantsToBeFriends')}
+                    </span>
+                  </div>
+
+                  <div className="request-actions">
+                    <button
+                      className="btn btn-primary btn-small"
+                      onClick={() => acceptFriendRequest(request.request_id)}
+                    >
+                      {t('friends.accept')}
+                    </button>
+
+                    <button
+                      className="btn btn-danger-actions btn-small"
+                      onClick={() => rejectFriendRequest(request.request_id)}
+                    >
+                      {t('friends.reject')}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="sent-requests-subsection">
+          <h3 className="subsection-title">{t('friends.sentRequests')}</h3>
+
+          {sentRequests.length === 0 ? (
+            <p className="empty-hint">{t('friends.noSentRequests')}</p>
+          ) : (
+            <div className="requests-list">
+              {sentRequests.map((request) => (
+                <div key={request.request_id} className="request-card">
+                  <img
+                    src={getAvatarUrl(request.user.avatar_url)}
+                    alt={request.user.username}
+                    className="friend-avatar"
+                  />
+
+                  <div className="request-info">
+                    <Link to={`/profile/${request.user.id}`} className="request-username">
+                      {request.user.username}
+                    </Link>
+                    <span className="request-message">
+                      {t('teams.requestSent')}
+                    </span>
+                  </div>
+
+                  <div className="request-actions">
+                    <span className="request-status">{t('friends.pending')}</span>
+                    <button
+                      className="friend-card-menu"
+                      aria-label={t('friends.remove')}
+                      onClick={() => cancelSentFriendRequest(request.request_id)}
+                    >
+                      ×
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

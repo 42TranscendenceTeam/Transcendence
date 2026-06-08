@@ -1,12 +1,12 @@
 /**
  * Team Detail Page Component
- * 
+ *
  * Displays single team details including:
  * - Team info and members
  * - Tasks list
  * - Team chat
  * - Task creation/editing
- * 
+ *
  * Uses real API for user search when adding members.
  */
 
@@ -29,7 +29,7 @@ function TeamDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-const { showError } = useError();
+  const { showError } = useError();
   const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, deleteTaskFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger, onlineFriendIds } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -63,6 +63,7 @@ const { showError } = useError();
   const [teamError, setTeamError] = useState('');
   const [tasks, setTasks] = useState<any[]>([]);
   const [joinRequests, setJoinRequests] = useState<any[]>([]);
+  const [teamInvitesSent, setTeamInvitesSent] = useState<any[]>([]);
   const [showFileError, setShowFileError] = useState(false);
   const [fileErrorMessage, setFileErrorMessage] = useState('');
   const [showDeleteTaskConfirm, setShowDeleteTaskConfirm] = useState(false);
@@ -98,7 +99,7 @@ const { showError } = useError();
     nonFriendMembers.forEach((m: Member) => {
       api.getUserOnline(m.id).then(d => {
         setMemberOnlineStatus(prev => ({ ...prev, [m.id]: d.Online }));
-      }).catch(() => {});
+      }).catch(() => { });
     });
   }, [team?.members, user?.id]);
 
@@ -110,7 +111,7 @@ const { showError } = useError();
       toCheck.forEach((m: Member) => {
         api.getUserOnline(m.id).then(d => {
           setMemberOnlineStatus(prev => ({ ...prev, [m.id]: d.Online }));
-        }).catch(() => {});
+        }).catch(() => { });
       });
     }, 5000);
     return () => clearInterval(poll);
@@ -127,6 +128,18 @@ const { showError } = useError();
     };
     fetchJoinRequests();
   }, [id, team?.role, teamRefreshTrigger]);
+
+  useEffect(() => {
+    const fetchTeamInvitesSent = async () => {
+      if (!id || team?.role !== 'Leader') return;
+      try {
+        const data = await api.getTeamInvitesSent(parseInt(id));
+        setTeamInvitesSent(data || []);
+      } catch {
+      }
+    };
+    fetchTeamInvitesSent();
+  }, [id, team?.role, teamRefreshTrigger, showAddMemberModal]);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -151,7 +164,7 @@ const { showError } = useError();
   }, [id, teamRefreshTrigger]);
 
   useEffect(() => {
-    if (showAddMemberModal && allUsers.length === 0) {
+    if (showAddMemberModal) {
       fetchUsers();
     }
   }, [showAddMemberModal]);
@@ -229,6 +242,7 @@ const { showError } = useError();
   const availableUsers = allUsers
     .filter((u) => u.id !== user.id)
     .filter((u) => !team.members.some((m) => m.id === u.id))
+    .filter((u) => !teamInvitesSent.some((inv) => inv.user_id === u.id))
     .map((u) => ({
       id: u.id,
       username: u.username,
@@ -242,8 +256,8 @@ const { showError } = useError();
   });
 
   const handleLeaveTeam = () => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
         task.assignedTo?.some(a => a.id === user.id)
           ? { ...task, assignedTo: task.assignedTo.filter(a => a.id !== user.id) }
           : task
@@ -475,10 +489,14 @@ const { showError } = useError();
         setErrorUsers(t('teams.userHasPendingRequest') || 'User already has a pending join request. Accept it instead.');
         return;
       }
+      if (teamInvitesSent.some(inv => inv.user_id === userToAdd.id)) {
+        setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
+        return;
+      }
       try {
         // Pre-check for pending invites to this user if possible or handle catch gracefully
         await api.sendTeamInvite(team.id, userToAdd.id);
-        
+
         addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: 'Member' }, 'Member');
         setSelectedFriend('');
         setShowAddMemberModal(false);
@@ -515,9 +533,14 @@ const { showError } = useError();
           setLoadingUsers(false);
           return;
         }
+        if (teamInvitesSent.some(inv => inv.user_id === foundUser.id)) {
+          setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
+          setLoadingUsers(false);
+          return;
+        }
         try {
           await api.sendTeamInvite(team.id, foundUser.id);
-          
+
           addTeamMember(team.id, {
             id: foundUser.id,
             username: foundUser.username,
@@ -626,7 +649,7 @@ const { showError } = useError();
       <div className="team-section">
         <div className="section-header">
           <h2 className="team-section-title">{t('teams.members')} ({team.members.length})</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="team-section-actions">
             {isLeader && (
               <button className="btn btn-primary btn-small" onClick={() => {
                 setEditTeamName(team.name);
@@ -638,12 +661,15 @@ const { showError } = useError();
               </button>
             )}
             {isLeader && (
-              <button className="btn btn-primary btn-small" onClick={() => {
-                setShowAddMemberModal(true);
-                setErrorUsers('');
-                setManualUsername('');
-                setSelectedFriend('');
-              }}>
+              <button
+                className="btn btn-accent btn-small"
+                onClick={() => {
+                  setShowAddMemberModal(true);
+                  setErrorUsers('');
+                  setManualUsername('');
+                  setSelectedFriend('');
+                }}
+              >
                 + {t('teams.addMember') || 'Add Member'}
               </button>
             )}
@@ -691,7 +717,6 @@ const { showError } = useError();
                   className="member-avatar"
                 />
                 <Link to={`/profile/${request.user_id}`} className="member-name">{request.username}</Link>
-                <span className="member-role pending">{t('teams.pending')}</span>
                 <div className="member-actions">
                   <button
                     className="btn btn-primary btn-small"
@@ -700,7 +725,7 @@ const { showError } = useError();
                     {t('teams.accept')}
                   </button>
                   <button
-                    className="btn btn-secondary btn-small"
+                    className="btn btn-danger-actions btn-small"
                     onClick={() => handleRejectJoinRequest(request.request_id)}
                   >
                     {t('teams.reject')}
@@ -722,7 +747,7 @@ const { showError } = useError();
             <span className="task-count closed">{t('tasks.done')}: {taskCounts.closed}</span>
           </div>
           {canEdit && (
-            <button className="btn btn-primary btn-small" onClick={() => setShowTaskForm(!showTaskForm)}>
+            <button className="btn btn-accent btn-small" onClick={() => setShowTaskForm(!showTaskForm)}>
               {showTaskForm ? t('common.cancel') : '+ ' + t('tasks.createTask')}
             </button>
           )}
@@ -888,11 +913,11 @@ const { showError } = useError();
                 <span className="task-assigned">
                   {task.assignedTo && task.assignedTo.length > 0
                     ? task.assignedTo.map((a: { id: number; username: string }, i: number) => (
-                        <span key={a.id}>
-                          {i > 0 && ', '}
-                          <Link to={`/profile/${a.id}`}>{a.username}</Link>
-                        </span>
-                      ))
+                      <span key={a.id}>
+                        {i > 0 && ', '}
+                        <Link to={`/profile/${a.id}`}>{a.username}</Link>
+                      </span>
+                    ))
                     : '-'
                   }
                 </span>
@@ -913,24 +938,24 @@ const { showError } = useError();
                   title={t('teams.uploadFile')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fillRule="evenodd" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75z" clipRule="evenodd" />
-                    <path d="M12.53 16.28a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 011.06-1.06l4.5 4.5 4.5-4.5a.75.75 0 111.06 1.06l-4.5 4.5z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M12 21.75a.75.75 0 01-.75-.75V9.31l-3.22 3.22a.75.75 0 11-1.06-1.06l4.5-4.5a.75.75 0 011.06 0l4.5 4.5a.75.75 0 11-1.06 1.06l-3.22-3.22V21a.75.75 0 01-.75.75z"
+                      clipRule="evenodd"
+                    />
+                    <path d="M11.47 7.72a.75.75 0 011.06 0l4.5 4.5a.75.75 0 01-1.06 1.06l-4.5-4.5-4.5 4.5a.75.75 0 01-1.06-1.06l4.5-4.5z" />
                   </svg>
                   <span>{t('teams.uploadFile')}</span>
                 </button>
                 {task.files.length > 0 ? (
                   task.files.map((file: TaskFile) => (
-                    <span key={file.id} className="file-item">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="file-icon">
-                        <path fillRule="evenodd" d="M4.5 3.75a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 5a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 5a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75z" clipRule="evenodd" />
-                      </svg>
-                      <span
-                        className="file-link"
-                        onClick={() => handleDownload(file)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {downloadingFileId === file.id ? t('teams.downloading') || '...' : file.file_name}
-                      </span>
+                    <span key={file.id} className="file-item"><span
+                      className="file-link"
+                      onClick={() => handleDownload(file)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {downloadingFileId === file.id ? t('teams.downloading') || '...' : file.file_name}
+                    </span>
                       {canEdit && (
                         <button
                           type="button"
@@ -1069,8 +1094,8 @@ const { showError } = useError();
             <div className="modal-body">
               <p className="modal-message">{t('teams.confirmDelete') || 'Are you sure you want to delete this team? This action cannot be undone.'}</p>
               <div className="modal-actions">
-                <button className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>{t('common.cancel')}</button>
-                <button className="btn btn-danger" onClick={handleDeleteTeam}>{t('common.delete')}</button>
+                <button className="btn btn-secondary btn-small" onClick={() => setShowDeleteConfirm(false)}>{t('common.cancel')}</button>
+                <button className="btn btn-danger-actions btn-small" onClick={handleDeleteTeam}>{t('common.delete')}</button>
               </div>
             </div>
           </div>

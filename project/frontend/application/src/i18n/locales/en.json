@@ -94,7 +94,7 @@
       "confirmMessage": "Are you sure you want to save these changes?",
       "noChangesMessage": "No changes have been made to your profile.",
       "changesToSave": "Changes to be saved:",
-      "success": "Profile updated successfully!",
+      "success": "Profile updated successfully!",a
       "uploading": "Uploading...",
       "uploadTooLarge": "Image must be under 4.5MB",
       "uploadInvalidType": "Only JPG, PNG, GIF, and WebP allowed",
@@ -108,6 +108,8 @@
       "enable": "Enable",
       "disable": "Disable",
       "twoFactorEnabled": "Two-factor authentication enabled. The next time you log in, a code will be sent to your email.",
+      "enable": "Enabled",
+      "disable": "Disabled",
       "changePassword": "Change Password",
       "currentPassword": "Current Password",
       "newPassword": "New Password",
@@ -226,7 +228,14 @@
     "userNotFoundOrMember": "User not found or already a member",
     "failedToFindUser": "Failed to find user",
     "joinRequestRejected": "Join request rejected successfully",
-    "joinRequestAccepted": "Join request accepted successfully"
+    "joinRequestAccepted": "Join request accepted successfully",
+    "searchFriends": "Search friends...",
+    "wantsToBeFriends": "Wants to be your friend",
+    "requestSent": "Request sent",
+    "role": "Role",
+    "status": "Status",
+    "members": "Members",
+    "created": "Created"
   },
   "tasks": {
     "title": "Tasks",
@@ -250,7 +259,7 @@
     "noTasks": "No tasks found",
     "createFirst": "Create your first task!"
   },
-"friends": {
+  "friends": {
     "title": "Friends",
     "myFriends": "My Friends",
     "youHave": "You have",
@@ -281,6 +290,7 @@
     "chat": "Chat",
     "noReceivedRequests": "No pending requests",
     "noSentRequests": "No pending sent requests",
+    "requestSent": "Request sent",
     "friendRequestExists": "A pending friend request already exists.",
     "alreadyFriends": "You are already friends.",
     "addFriendFailed": "Failed to send friend request.",
@@ -355,7 +365,8 @@
     "teamRemoved": "You were removed from the {{team}} team.",
     "teamUserLeft": "{{username}} left {{team}}.",
     "teamDeleted": "The {{team}} team has been deleted by its owner.",
-    "teamLoadFailed": "Failed to load team information."
+    "teamLoadFailed": "Failed to load team information.",
+    "subtitle": "Stay up to date with friend requests, team activity, and account updates."
   },
   "legal": {
     "privacy": {
