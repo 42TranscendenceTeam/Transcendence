@@ -643,7 +643,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       fetchJoinRequestNotifications,
       acceptFriendRequest,
       rejectFriendRequest,
-      cancelSentFriendRequest,
       acceptTeamInvite,
       rejectTeamInvite,
       markNotificationsRead,
