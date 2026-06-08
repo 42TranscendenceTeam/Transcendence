@@ -71,7 +71,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   useEffect(() => {
-    const handleFocus = () => fetchNotifications();
+    const handleFocus = () => {
+      const token = localStorage.getItem('authToken');
+      if (token) fetchNotifications();
+    };
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
   }, []);
@@ -91,11 +94,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             if (!n.status_read) setUnreadCount((c) => c + 1);
 
             if (n.type === 'friend_request' || n.type === 'friend_request_accepted'
-                || n.type === 'friend_request_rejected') {
+                || n.type === 'friend_request_rejected'
+                || n.type === 'friend_request_cancelled') {
               fetchFriendRequests();
               fetchSentRequests();
             }
-            if (n.type === 'friend_request_accepted') {
+            if (n.type === 'friend_request_accepted' || n.type === 'friend_removed') {
               fetchFriends();
             }
             if (n.type === 'team_invite' || n.type === 'team_invite_accepted'
@@ -171,7 +175,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       setUser({ ...user, teams: updatedTeams });
       fetchNotifications();
     } catch (err) {
-      console.error('Failed to leave team:', err);
       throw err;
     }
   };
@@ -234,8 +237,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
         return team;
       });
       setUser({ ...user, teams: updatedTeams });
-    } catch (err) {
-      console.error('Failed to update task status:', err);
+    } catch {
     }
   };
 
@@ -254,8 +256,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
         return team;
       });
       setUser({ ...user, teams: updatedTeams });
-    } catch (err) {
-      console.error('Failed to add task:', err);
+    } catch {
     }
   };
 
@@ -283,7 +284,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       });
       setUser({ ...user, teams: updatedTeams });
     } catch (err) {
-      console.error('Failed to upload file:', err);
       throw err;
     }
   };
@@ -308,7 +308,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       });
       setUser({ ...user, teams: updatedTeams });
     } catch (err) {
-      console.error('Failed to delete file:', err);
       throw err;
     }
   };
@@ -331,8 +330,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
         return team;
       });
       setUser({ ...user, teams: updatedTeams });
-    } catch (err) {
-      console.error('Failed to update task assignee:', err);
+    } catch {
     }
   };
 
@@ -384,7 +382,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       });
       setUser({ ...user, teams: updatedTeams });
     } catch (err) {
-      console.error('Failed to remove team member:', err);
       throw err;
     }
   };
@@ -418,7 +415,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
         teams: [...user.teams, team],
       });
     } catch (err) {
-      console.error('Failed to create team:', err);
       throw err;
     }
   };
@@ -433,7 +429,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       });
       setUser({ ...user, teams: updatedTeams });
     } catch (err) {
-      console.error('Failed to update team status:', err);
       throw err;
     }
   };
@@ -458,9 +453,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
   const fetchFriendRequests = () => {
     api.getFriendRequests().then((requests) => {
       setFriendRequests(requests);
-    }).catch((err) => {
-      console.error('Failed to fetch friend requests:', err);
-    });
+    }).catch(() => {});
   };
 
   const acceptFriendRequest = (requestId: number) => {
@@ -469,9 +462,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       fetchFriendRequests();
       fetchFriends();
       fetchNotifications();
-    }).catch((err) => {
-      console.error('Failed to accept friend request:', err);
-    });
+    }).catch(() => {});
   };
 
   const rejectFriendRequest = (requestId: number) => {
@@ -480,8 +471,15 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       fetchFriendRequests();
       fetchSentRequests();
       fetchNotifications();
+    }).catch(() => {});
+  };
+
+  const cancelSentFriendRequest = (requestId: number) => {
+    api.cancelFriendRequest(requestId).then(() => {
+      setSentRequests(sentRequests.filter((r) => r.request_id !== requestId));
+      fetchNotifications();
     }).catch((err) => {
-      console.error('Failed to reject friend request:', err);
+      console.error('Failed to cancel friend request:', err);
     });
   };
 
@@ -523,21 +521,20 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       if (user) {
         setUser({ ...user, friends: user.friends.filter((f) => f.id !== friendId) });
       }
-    }).catch((err) => {
-      console.error('Failed to remove friend:', err);
-    });
+    }).catch(() => {});
   };
 
   const fetchNotifications = () => {
     api.getNotifications().then((list) => {
       setNotifications(list);
       setUnreadCount(list.filter((n) => !n.status_read).length);
-    }).catch((err) => {
-      console.error('Failed to fetch notifications:', err);
-    });
+    }).catch(() => {});
   };
 
   const markAsRead = (id: number) => {
+    const notif = notifications.find(n => n.id === id);
+    if (notif?.status_read) return;
+
     api.readNotification(id).then(() => {
       setNotifications((prev) =>
         prev.map((n) => (n.id === id ? { ...n, status_read: true } : n))
@@ -554,9 +551,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
     api.readAllNotifications().then(() => {
       setNotifications((prev) => prev.map((n) => ({ ...n, status_read: true })));
       setUnreadCount(0);
-    }).catch((err) => {
-      console.error('Failed to mark all as read:', err);
-    });
+    }).catch(() => {});
   };
 
   const deleteNotification = (id: number) => {
@@ -568,27 +563,21 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
         }
         return prev.filter((n) => n.id !== id);
       });
-    }).catch((err) => {
-      console.error('Failed to delete notification:', err);
-    });
+    }).catch(() => {});
   };
 
   const deleteAllNotifications = () => {
     api.deleteAllNotifications().then(() => {
       setNotifications([]);
       setUnreadCount(0);
-    }).catch((err) => {
-      console.error('Failed to delete all notifications:', err);
-    });
+    }).catch(() => {});
   };
 
   const fetchTeamInvites = () => {
     api.getTeamInvites().then((invites) => {
       setTeamInvites(invites);
       setUnreadNotifications(invites.length + joinRequestNotifications.length);
-    }).catch((err) => {
-      console.error('Failed to fetch team invites:', err);
-    });
+    }).catch(() => {});
   };
 
   const fetchJoinRequestNotifications = async (userId?: number) => {
@@ -619,8 +608,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       );
       setJoinRequestNotifications(allRequests);
       setUnreadNotifications(teamInvites.length + allRequests.length);
-    } catch (err) {
-      console.error('Failed to fetch join request notifications:', err);
+    } catch {
     }
   };
 
@@ -630,9 +618,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       setUnreadNotifications((prev) => Math.max(0, prev - 1));
       fetchNotifications();
       setTimeout(() => window.location.reload(), 300);
-    }).catch((err) => {
-      console.error('Failed to accept team invite:', err);
-    });
+    }).catch(() => {});
   };
 
   const rejectTeamInvite = (inviteId: number) => {
@@ -640,9 +626,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       setTeamInvites(teamInvites.filter((i) => i.invite_id !== inviteId));
       setUnreadNotifications((prev) => Math.max(0, prev - 1));
       fetchNotifications();
-    }).catch((err) => {
-      console.error('Failed to reject team invite:', err);
-    });
+    }).catch(() => {});
   };
 
   const markNotificationsRead = () => {
@@ -694,6 +678,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       fetchJoinRequestNotifications,
       acceptFriendRequest,
       rejectFriendRequest,
+      cancelSentFriendRequest,
       acceptTeamInvite,
       rejectTeamInvite,
       markNotificationsRead,

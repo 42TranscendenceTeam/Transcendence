@@ -1,12 +1,12 @@
 /**
  * Team Detail Page Component
- * 
+ *
  * Displays single team details including:
  * - Team info and members
  * - Tasks list
  * - Team chat
  * - Task creation/editing
- * 
+ *
  * Uses real API for user search when adding members.
  */
 
@@ -14,6 +14,7 @@ import { useContext, useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 import { getAvatarUrl } from '../../utils/avatar';
 import { ALLOWED_TASK_EXTENSIONS } from '../../utils/fileValidation';
@@ -30,7 +31,8 @@ function TeamDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, deleteTaskFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger, updateUser, onlineFriendIds } = useContext(AuthContext);
+const { showError } = useError();
+  const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, deleteTaskFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger, updateUser, onlineFriendIds } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [chatMessage, setChatMessage] = useState('');
@@ -63,6 +65,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
   const [teamError, setTeamError] = useState('');
   const [tasks, setTasks] = useState<any[]>([]);
   const [joinRequests, setJoinRequests] = useState<any[]>([]);
+  const [teamInvitesSent, setTeamInvitesSent] = useState<any[]>([]);
   const [showFileError, setShowFileError] = useState(false);
   const [fileErrorMessage, setFileErrorMessage] = useState('');
   const [showDeleteTaskConfirm, setShowDeleteTaskConfirm] = useState(false);
@@ -158,7 +161,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
     nonFriendMembers.forEach((m: Member) => {
       api.getUserOnline(m.id).then(d => {
         setMemberOnlineStatus(prev => ({ ...prev, [m.id]: d.Online }));
-      }).catch(() => {});
+      }).catch(() => { });
     });
   }, [team?.members, user?.id]);
 
@@ -170,7 +173,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       toCheck.forEach((m: Member) => {
         api.getUserOnline(m.id).then(d => {
           setMemberOnlineStatus(prev => ({ ...prev, [m.id]: d.Online }));
-        }).catch(() => {});
+        }).catch(() => { });
       });
     }, 5000);
     return () => clearInterval(poll);
@@ -182,12 +185,23 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       try {
         const data = await api.getJoinRequests(parseInt(id));
         setJoinRequests(data.request_list || []);
-      } catch (err) {
-        console.error('Failed to fetch join requests:', err);
+      } catch {
       }
     };
     fetchJoinRequests();
   }, [id, team?.role, teamRefreshTrigger]);
+
+  useEffect(() => {
+    const fetchTeamInvitesSent = async () => {
+      if (!id || team?.role !== 'Leader') return;
+      try {
+        const data = await api.getTeamInvitesSent(parseInt(id));
+        setTeamInvitesSent(data || []);
+      } catch {
+      }
+    };
+    fetchTeamInvitesSent();
+  }, [id, team?.role, teamRefreshTrigger, showAddMemberModal]);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -205,15 +219,14 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
           })
         );
         setTasks(tasksWithFiles);
-      } catch (err) {
-        console.error('Failed to fetch tasks:', err);
+      } catch {
       }
     };
     fetchTasks();
   }, [id, teamRefreshTrigger]);
 
   useEffect(() => {
-    if (showAddMemberModal && allUsers.length === 0) {
+    if (showAddMemberModal) {
       fetchUsers();
     }
   }, [showAddMemberModal]);
@@ -252,9 +265,8 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
     try {
       const users = await api.searchUsers('');
       setAllUsers(users);
-    } catch (err) {
-      setErrorUsers('Failed to load users');
-      console.error(err);
+    } catch {
+      setErrorUsers(t('teams.failedToLoadUsers') || 'Failed to load users');
     } finally {
       setLoadingUsers(false);
     }
@@ -292,6 +304,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
   const availableUsers = allUsers
     .filter((u) => u.id !== user.id)
     .filter((u) => !team.members.some((m) => m.id === u.id))
+    .filter((u) => !teamInvitesSent.some((inv) => inv.user_id === u.id))
     .map((u) => ({
       id: u.id,
       username: u.username,
@@ -305,8 +318,8 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
   });
 
   const handleLeaveTeam = () => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
+    setTasks(prevTasks =>
+      prevTasks.map(task =>
         task.assignedTo?.some(a => a.id === user.id)
           ? { ...task, assignedTo: task.assignedTo.filter(a => a.id !== user.id) }
           : task
@@ -320,9 +333,8 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
     try {
       await api.deleteTeam(team.id);
       navigate('/profile/teams');
-    } catch (err) {
-      console.error('Failed to delete team:', err);
-      alert('Failed to delete team');
+    } catch {
+      showError('Error', 'Failed to delete team');
     }
   };
 
@@ -383,9 +395,8 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       setSuccessMessage(t('teams.settingsUpdated'));
       setSuccessReload(false);
       setShowSuccessModal(true);
-    } catch (err) {
-      console.error('Failed to update team settings:', err);
-      alert('Failed to update team settings');
+    } catch {
+      showError('Error', 'Failed to update team settings');
     }
   };
 
@@ -409,9 +420,8 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       setSuccessReload(false);
       setShowSuccessModal(true);
       fetchNotifications();
-    } catch (err) {
-      console.error('Failed to accept join request:', err);
-      alert(t('teams.failedToAcceptRequest'));
+    } catch {
+      showError('Error', t('teams.failedToAcceptRequest'));
     }
   };
 
@@ -423,15 +433,24 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       setSuccessReload(false);
       setShowSuccessModal(true);
       fetchNotifications();
-    } catch (err) {
-      console.error('Failed to reject join request:', err);
-      alert(t('teams.failedToRejectRequest'));
+    } catch {
+      showError('Error', t('teams.failedToRejectRequest'));
     }
   };
 
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newTask.title.trim() || !canEdit) return;
+    if (!canEdit) return;
+    if (!newTask.title.trim()) {
+      showError(t('common.error'), t('teams.taskTitleRequired') || 'Title is required');
+      return;
+    }
+
+    if (!newTask.description.trim()) {
+      showError(t('common.error'), t('tasks.pleaseAddDescription') || 'Please add a description');
+      return;
+    }
+
     try {
       const members = team.members.filter((m: Member) => newTask.assignedTo.includes(m.username));
       const createdTask = await api.createTask(team.id, {
@@ -443,8 +462,8 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       setTasks([...tasks, createdTask]);
       setNewTask({ title: '', description: '', assignedTo: [], status: 'open' });
       setShowTaskForm(false);
-    } catch (err) {
-      console.error('Failed to create task:', err);
+    } catch (err: any) {
+      showError(t('common.error'), err.message || t('tasks.failedToCreate') || 'Failed to create task');
     }
   };
 
@@ -454,8 +473,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       const updatedTask = await api.updateTaskStatus(taskId, newStatus);
       setTasks(tasks.map((t) => t.id === taskId ? updatedTask : t));
       updateTaskStatus(team.id, taskId, newStatus);
-    } catch (err) {
-      console.error('Failed to update task status:', err);
+    } catch {
     }
   };
 
@@ -466,8 +484,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       await api.updateTaskUsers(taskId, memberIds);
       setTasks(tasks.map((t) => t.id === taskId ? { ...t, assignedTo: selectedMembers.map(m => ({ id: m.id, username: m.username })) } : t));
       updateTaskAssignee(team.id, taskId, selectedMembers);
-    } catch (err) {
-      console.error('Failed to update task users:', err);
+    } catch {
     }
   };
 
@@ -477,8 +494,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       await Promise.all(files.map((f) => api.deleteTaskFile(f.id)));
       await api.deleteTask(taskId);
       setTasks(tasks.filter((t) => t.id !== taskId));
-    } catch (err) {
-      console.error('Failed to delete task:', err);
+    } catch {
     }
   };
 
@@ -537,18 +553,31 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
     }
     const userToAdd = availableUsers.find((u) => u.username === selectedFriend);
     if (userToAdd) {
-      try {
-        await api.sendTeamInvite(team.id, userToAdd.id);
-      } catch {
-        setErrorUsers('Failed to send invite');
+      // Guard: Check if user already has a pending join request
+      if (joinRequests.some(r => r.user_id === userToAdd.id)) {
+        setErrorUsers(t('teams.userHasPendingRequest') || 'User already has a pending join request. Accept it instead.');
         return;
       }
-      addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: 'Member' }, 'Member');
-      setSelectedFriend('');
-      setShowAddMemberModal(false);
-      setSuccessMessage(t('teams.inviteSentSuccess'));
-      setSuccessReload(false);
-      setShowSuccessModal(true);
+      if (teamInvitesSent.some(inv => inv.user_id === userToAdd.id)) {
+        setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
+        return;
+      }
+      try {
+        await api.sendTeamInvite(team.id, userToAdd.id);
+
+        addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: 'Member' }, 'Member');
+        setSelectedFriend('');
+        setShowAddMemberModal(false);
+        setSuccessMessage(t('teams.inviteSentSuccess'));
+        setSuccessReload(false);
+        setShowSuccessModal(true);
+      } catch (err: any) {
+        if (err?.message?.includes('already exists')) {
+          setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
+        } else {
+          setErrorUsers(t('teams.failedToSendInvite') || 'Failed to send invite');
+        }
+      }
     }
   };
 
@@ -566,29 +595,43 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
         (u) => u.username.toLowerCase() === manualUsername.trim().toLowerCase()
       );
       if (foundUser && !team.members.some((m) => m.id === foundUser.id)) {
-        try {
-          await api.sendTeamInvite(team.id, foundUser.id);
-        } catch {
-          setErrorUsers('Failed to send invite');
+        // Guard: Check if user already has a pending join request
+        if (joinRequests.some(r => r.user_id === foundUser.id)) {
+          setErrorUsers(t('teams.userHasPendingRequest') || 'User already has a pending join request. Accept it instead.');
+          setLoadingUsers(false);
           return;
         }
-        addTeamMember(team.id, {
-          id: foundUser.id,
-          username: foundUser.username,
-          avatar: getAvatarUrl(u.avatar_url),
-          role: 'Member',
-        }, 'Member');
-        setManualUsername('');
-        setShowAddMemberModal(false);
-        setSuccessMessage(t('teams.inviteSentSuccess'));
-        setSuccessReload(false);
-        setShowSuccessModal(true);
+        if (teamInvitesSent.some(inv => inv.user_id === foundUser.id)) {
+          setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
+          setLoadingUsers(false);
+          return;
+        }
+        try {
+          await api.sendTeamInvite(team.id, foundUser.id);
+
+          addTeamMember(team.id, {
+            id: foundUser.id,
+            username: foundUser.username,
+            avatar: getAvatarUrl(foundUser.avatar_url),
+            role: 'Member',
+          }, 'Member');
+          setManualUsername('');
+          setShowAddMemberModal(false);
+          setSuccessMessage(t('teams.inviteSentSuccess'));
+          setSuccessReload(false);
+          setShowSuccessModal(true);
+        } catch (err: any) {
+          if (err?.message?.includes('already exists')) {
+            setErrorUsers(t('teams.alreadyInvited') || 'User already has a pending invite.');
+          } else {
+            setErrorUsers(t('teams.failedToSendInvite') || 'Failed to send invite');
+          }
+        }
       } else {
-        setErrorUsers('User not found or already a member');
+        setErrorUsers(t('teams.userNotFoundOrMember') || 'User not found or already a member');
       }
-    } catch (err) {
-      setErrorUsers('Failed to find user');
-      console.error(err);
+    } catch {
+      setErrorUsers(t('teams.failedToFindUser') || 'Failed to find user');
     } finally {
       setLoadingUsers(false);
     }
@@ -607,9 +650,8 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       setSuccessMessage(t('teams.memberRemovedSuccess'));
       setSuccessReload(true);
       setShowSuccessModal(true);
-    } catch (err) {
-      console.error('Failed to remove member:', err);
-      alert(t('teams.failedToRemove') || 'Failed to remove member');
+    } catch {
+      showError('Error', t('teams.failedToRemove') || 'Failed to remove member');
     }
   };
 
@@ -625,8 +667,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
-    } catch (err) {
-      console.error('Download failed:', err);
+    } catch {
     } finally {
       setDownloadingFileId(null);
     }
@@ -676,7 +717,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
       <div className="team-section">
         <div className="section-header">
           <h2 className="team-section-title">{t('teams.members')} ({team.members.length})</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="team-section-actions">
             {isLeader && (
               <button className="btn btn-primary btn-small" onClick={() => {
                 setEditTeamName(team.name);
@@ -688,7 +729,15 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
               </button>
             )}
             {isLeader && (
-              <button className="btn btn-primary btn-small" onClick={() => setShowAddMemberModal(true)}>
+              <button
+                className="btn btn-accent btn-small"
+                onClick={() => {
+                  setShowAddMemberModal(true);
+                  setErrorUsers('');
+                  setManualUsername('');
+                  setSelectedFriend('');
+                }}
+              >
                 + {t('teams.addMember') || 'Add Member'}
               </button>
             )}
@@ -736,7 +785,6 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
                   className="member-avatar"
                 />
                 <Link to={`/profile/${request.user_id}`} className="member-name">{request.username}</Link>
-                <span className="member-role pending">{t('teams.pending')}</span>
                 <div className="member-actions">
                   <button
                     className="btn btn-primary btn-small"
@@ -745,7 +793,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
                     {t('teams.accept')}
                   </button>
                   <button
-                    className="btn btn-secondary btn-small"
+                    className="btn btn-danger-actions btn-small"
                     onClick={() => handleRejectJoinRequest(request.request_id)}
                   >
                     {t('teams.reject')}
@@ -767,7 +815,7 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
             <span className="task-count closed">{t('tasks.done')}: {taskCounts.closed}</span>
           </div>
           {canEdit && (
-            <button className="btn btn-primary btn-small" onClick={() => setShowTaskForm(!showTaskForm)}>
+            <button className="btn btn-accent btn-small" onClick={() => setShowTaskForm(!showTaskForm)}>
               {showTaskForm ? t('common.cancel') : '+ ' + t('tasks.createTask')}
             </button>
           )}
@@ -781,7 +829,6 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
               className="input"
               value={newTask.title}
               onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-              required
             />
             <textarea
               placeholder={t('tasks.description')}
@@ -934,11 +981,11 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
                 <span className="task-assigned">
                   {task.assignedTo && task.assignedTo.length > 0
                     ? task.assignedTo.map((a: { id: number; username: string }, i: number) => (
-                        <span key={a.id}>
-                          {i > 0 && ', '}
-                          <Link to={`/profile/${a.id}`}>{a.username}</Link>
-                        </span>
-                      ))
+                      <span key={a.id}>
+                        {i > 0 && ', '}
+                        <Link to={`/profile/${a.id}`}>{a.username}</Link>
+                      </span>
+                    ))
                     : '-'
                   }
                 </span>
@@ -959,24 +1006,24 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
                   title={t('teams.uploadFile')}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path fillRule="evenodd" d="M12 2.25a.75.75 0 01.75.75v11.69l3.22-3.22a.75.75 0 111.06 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 111.06-1.06l3.22 3.22V3a.75.75 0 01.75-.75z" clipRule="evenodd" />
-                    <path d="M12.53 16.28a.75.75 0 01-1.06 0l-4.5-4.5a.75.75 0 011.06-1.06l4.5 4.5 4.5-4.5a.75.75 0 111.06 1.06l-4.5 4.5z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M12 21.75a.75.75 0 01-.75-.75V9.31l-3.22 3.22a.75.75 0 11-1.06-1.06l4.5-4.5a.75.75 0 011.06 0l4.5 4.5a.75.75 0 11-1.06 1.06l-3.22-3.22V21a.75.75 0 01-.75.75z"
+                      clipRule="evenodd"
+                    />
+                    <path d="M11.47 7.72a.75.75 0 011.06 0l4.5 4.5a.75.75 0 01-1.06 1.06l-4.5-4.5-4.5 4.5a.75.75 0 01-1.06-1.06l4.5-4.5z" />
                   </svg>
                   <span>{t('teams.uploadFile')}</span>
                 </button>
                 {task.files.length > 0 ? (
                   task.files.map((file: TaskFile) => (
-                    <span key={file.id} className="file-item">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="file-icon">
-                        <path fillRule="evenodd" d="M4.5 3.75a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 5a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75zm0 5a.75.75 0 01.75-.75h10.5a.75.75 0 010 1.5H5.25a.75.75 0 01-.75-.75z" clipRule="evenodd" />
-                      </svg>
-                      <span
-                        className="file-link"
-                        onClick={() => handleDownload(file)}
-                        style={{ cursor: 'pointer' }}
-                      >
-                        {downloadingFileId === file.id ? t('teams.downloading') || '...' : file.file_name}
-                      </span>
+                    <span key={file.id} className="file-item"><span
+                      className="file-link"
+                      onClick={() => handleDownload(file)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {downloadingFileId === file.id ? t('teams.downloading') || '...' : file.file_name}
+                    </span>
                       {canEdit && (
                         <button
                           type="button"
@@ -1120,8 +1167,8 @@ const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, 
             <div className="modal-body">
               <p className="modal-message">{t('teams.confirmDelete') || 'Are you sure you want to delete this team? This action cannot be undone.'}</p>
               <div className="modal-actions">
-                <button className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>{t('common.cancel')}</button>
-                <button className="btn btn-danger" onClick={handleDeleteTeam}>{t('common.delete')}</button>
+                <button className="btn btn-secondary btn-small" onClick={() => setShowDeleteConfirm(false)}>{t('common.cancel')}</button>
+                <button className="btn btn-danger-actions btn-small" onClick={handleDeleteTeam}>{t('common.delete')}</button>
               </div>
             </div>
           </div>
