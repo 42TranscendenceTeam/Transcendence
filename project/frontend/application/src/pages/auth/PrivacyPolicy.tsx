@@ -12,8 +12,8 @@ import AuthLayout from '../../components/layouts/AuthLayout';
 import ProfileLayout from '../../components/layouts/ProfileLayout';
 
 function PrivacyPolicy() {
-  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation(undefined, { lng: user ? undefined : 'en' });
 
   const pageContent = (
     <section className="legal-page">
@@ -44,7 +44,13 @@ function PrivacyPolicy() {
     </section>
   );
 
-  return (
+  return user ? (
+    <ProfileLayout>
+      <div className="legal-layout-card">
+        {pageContent}
+      </div>
+    </ProfileLayout>
+  ) : (
     <AuthLayout>{pageContent}</AuthLayout>
   );
 }

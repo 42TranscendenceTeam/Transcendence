@@ -1,0 +1,791 @@
+/* ========================================
+          Mobile Global Layout
+======================================== */
+@media (max-width: 767px) {
+  .profile-layout {
+    background-attachment: scroll;
+  }
+
+  .profile-main {
+    margin-left: 0;
+    width: 100%;
+    padding: 1rem;
+    padding-bottom: 4.5rem;
+  }
+
+  .profile-main>* {
+    max-width: 100%;
+  }
+
+  .profile-main-feed {
+    justify-content: center;
+  }
+}
+
+/* ========================================
+              Mobile Menu
+======================================== */
+.mobile-menu-toggle,
+.mobile-menu-overlay {
+  display: none;
+}
+
+@media (max-width: 767px) {
+
+  .profile-sidebar {
+    display: none;
+  }
+
+  .mobile-menu-toggle {
+    display: flex;
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    width: 42px;
+    height: 42px;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border);
+    background: var(--sidebar-background);
+    color: var(--text-primary);
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    z-index: 250;
+  }
+
+  .mobile-menu-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(3px);
+    z-index: 300;
+  }
+
+  .mobile-menu-panel {
+    width: min(240px, 85vw);
+    height: 100%;
+    background: var(--sidebar-background);
+    border-right: 1px solid rgba(148, 163, 184, 0.12);
+    padding: 1.5rem 1rem;
+    padding-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .mobile-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    color: var(--text-primary);
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+  }
+
+  .mobile-menu-close {
+    color: var(--text-primary);
+    font-size: 1.75rem;
+  }
+
+  .mobile-menu-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .mobile-menu-nav-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.75rem 0.5rem;
+    border-radius: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    text-align: left;
+  }
+
+  .mobile-menu-nav-item:hover {
+    background: var(--bg-card-hover);
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+
+  .mobile-menu-nav-item.active {
+    background: var(--sidebar-gradient);
+    color: var(--text-primary);
+    border: var(--sidebar-border);
+    box-shadow: var(--sidebar-box-shadow);
+  }
+
+  .mobile-menu-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    margin-right: 0;
+  }
+
+  .mobile-menu-nav-item.active .mobile-menu-icon {
+    color: var(--sidebar-icon-color);
+  }
+
+  .profile-stats-grid {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+/* ========================================
+          Feed Page Mobile
+======================================== */
+@media (max-width: 767px) {
+
+  .feed-layout {
+    padding-top: 4rem;
+    padding-right: 0;
+  }
+
+  .feed-main {
+    padding: 1.25rem 0 3rem;
+  }
+
+  .feed-header-container,
+  .feed-main {
+    max-width: 100%;
+  }
+
+  .feed-title {
+    padding-left: 0.5rem;
+  }
+
+  .feed-subtitle {
+    padding-left: 0.5rem;
+  }
+
+  .task-card {
+    padding: 1.25rem;
+    border-radius: 1rem;
+  }
+
+  .task-header {
+    margin-bottom: 1.1rem;
+  }
+
+  .task-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .task-title {
+    font-size: 1.25rem;
+    line-height: 1.25;
+    margin-bottom: 0.6rem;
+  }
+
+  .task-description {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin-bottom: 0.9rem;
+  }
+
+  .task-author {
+    font-size: 1.1em;
+  }
+
+  .task-timestamp {
+    font-size: 0.8em;
+  }
+
+  .task-tags {
+    gap: 0.35rem;
+    margin-top: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .task-tag {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.65rem;
+  }
+
+  .task-footer {
+    gap: 1rem;
+    padding-top: 0.25rem;
+  }
+
+  .task-footer .btn {
+    min-width: 100px;
+  }
+}
+
+/* ========================================
+          Auth Pages Mobile
+======================================== */
+@media (max-width: 767px) {
+
+  .auth-layout {
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .auth-content {
+    position: relative;
+    inset: auto;
+    padding: 1.25rem;
+    align-items: center;
+  }
+
+  .auth-card {
+    width: 100%;
+    min-width: 0;
+    padding: 1.25rem;
+  }
+
+  .auth-topbar {
+    padding: 0 1rem;
+  }
+
+  .auth-topbar-logo img {
+    width: 180px;
+  }
+
+  .auth-topbar-actions span {
+    display: none;
+  }
+
+  .auth-topbar-btn {
+    height: 38px;
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .auth-social-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-user {
+    height: 38px;
+    min-width: 126px;
+    padding: 0.65rem 1rem;
+    gap: 0.5rem;
+  }
+
+  .welcome-avatar {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* ========================================
+    Profile Pages Mobile
+======================================== */
+@media (max-width: 767px) {
+
+  .profile-top-actions {
+    display: none;
+  }
+
+  .profile-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1.25rem;
+  }
+
+  .profile-header-main {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .profile-header-info {
+    text-align: center;
+  }
+
+  .profile-avatar-large {
+    width: 96px;
+    height: 96px;
+  }
+
+  .profile-username {
+    font-size: 1.5rem;
+  }
+
+  .profile-edit-btn {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .profile-stat-card {
+    align-items: center;
+  }
+
+  .profile-stat-info {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .profile-stat-value,
+  .profile-stat-label {
+    display: inline-flex;
+  }
+
+  .profile-stat-subtext {
+    flex-basis: 100%;
+    width: 100%;
+    margin-top: 0.35rem;
+  }
+
+  .team-card {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .team-meta {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+}
+
+/* ========================================
+          Friends Page Mobile
+======================================== */
+@media (max-width: 767px) {
+
+  .friends-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .friends-search-wrapper {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .friends-list {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .request-card {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    padding: 1em;
+  }
+
+  .request-actions {
+    grid-column: 1 / -1;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .request-actions .btn {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* ========================================
+          General Teams Page
+======================================== */
+@media (max-width: 767px) {
+
+  .teams-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.75rem;
+    padding-top: 0.5em;
+  }
+
+  .teams-header h1,
+  .teams-header h2 {
+    margin: 0;
+  }
+
+  .teams-header-buttons {
+    display: flex;
+    width: 100%;
+    gap: 1rem;
+  }
+
+  .teams-header-buttons .btn {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* ========================================
+          Specific Team Page
+======================================== */
+@media (max-width: 767px) {
+
+  .profile-main>.team-detail-page {
+    max-width: 100%;
+  }
+
+  .team-detail-page {
+    width: 100%;
+    padding: 0;
+  }
+
+  .team-detail-page .team-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .team-header {
+    padding: 1em;
+  }
+
+  .team-header-content {
+    min-width: 0;
+  }
+
+  .team-title {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    text-align: left;
+    padding-right: 3rem;
+  }
+
+  .team-objective {
+    font-size: 0.8rem;
+    text-align: left;
+    max-width: 100%;
+  }
+
+  .team-header-meta {
+    justify-content: space-between;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .section-header .btn {
+    width: 100%;
+  }
+
+  .task-counts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .task-counts-label {
+    grid-column: 1 / -1;
+  }
+
+  .task-count {
+    text-align: center;
+  }
+
+  .task-filters {
+    margin-top: 2.5rem;
+    flex-direction: column;
+  }
+
+  .filter-select {
+    width: 100%;
+    max-width: none;
+  }
+
+  .team-header-meta .team-members-count {
+    font-size: 1.3em;
+  }
+
+  .members-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .member-card {
+    background: var(--sidebar-background);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .member-avatar {
+    width: 48px;
+    height: 48px;
+  }
+
+  .member-name {
+    font-size: 0.95rem;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .member-role {
+    grid-row: 2;
+    width: fit-content;
+    font-size: 0.75rem;
+  }
+
+  .btn-remove-member {
+    position: absolute;
+    top: 1.5rem;
+    right: 0.5rem;
+  }
+}
+
+/* Teams Tasks Mobile */
+@media (max-width: 767px) {
+
+  .task-form-row {
+    flex-direction: column;
+  }
+
+  .task-form-row select,
+  .task-form-row .btn,
+  .task-form-row .assignee-dropdown-wrapper {
+    width: 100%;
+  }
+
+  .task-form-row .btn {
+    min-height: 35px;
+  }
+
+}
+
+/* ========================================
+           Member Requests
+======================================== */
+@media (max-width: 767px) {
+
+  .member-actions {
+    width: 100%;
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .member-actions .btn {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .add-member-row,
+  .remove-member-actions,
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .add-member-row .btn,
+  .remove-member-actions .btn,
+  .modal-actions .btn {
+    width: 100%;
+  }
+}
+
+/* ========================================
+           Legal Links Mobile
+======================================== */
+@media (max-width: 767px) {
+  .bottom-nav {
+    display: none;
+  }
+
+  .mobile-menu-legal-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(148, 163, 184, 0.12);
+    width: 100%;
+  }
+
+  .mobile-menu-legal-item {
+    padding: 0.45rem 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+}
+
+/* ========================================
+           Modals on Mobile
+======================================== */
+@media (max-width: 767px) {
+  .modal-overlay {
+    padding: 1rem;
+    align-items: flex-start;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: none;
+    max-height: calc(100vh - 2rem);
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .modal-body {
+    padding: 1rem;
+  }
+}
+
+
+/* ========================================
+      Intermediate Breakpoint Fix
+======================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+
+  .profile-main {
+    margin-left: 190px;
+    width: calc(100% - 190px);
+    padding: 2rem 1rem;
+  }
+
+  .profile-main>* {
+    max-width: 100%;
+  }
+
+  .profile-main>.team-detail-page {
+    max-width: 100%;
+  }
+
+  .team-detail-page {
+    width: 100%;
+    padding: 0;
+  }
+
+  .feed-layout {
+    padding-right: 0;
+  }
+
+  .feed-sidebar {
+    display: none;
+  }
+
+  .profile-sidebar {
+    display: flex;
+    width: 190px;
+    padding: 1.25rem 0.75rem;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo-img {
+    width: 105%;
+    margin-left: -0.5em;
+  }
+
+  .profile-sidebar-nav-item {
+    gap: 0.55rem;
+    padding: 0.65rem 0.45rem;
+    font-size: 0.78rem;
+  }
+
+  .profile-sidebar .bottom-nav {
+    display: flex;
+    width: 100%;
+    margin-top: auto;
+  }
+
+  .mobile-menu-toggle,
+  .mobile-menu-overlay {
+    display: none;
+  }
+
+  .profile-top-actions {
+    display: none;
+  }
+
+  .profile-stats-grid,
+  .friends-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .team-card {
+    grid-template-columns: 1fr;
+  }
+
+  .team-title {
+    font-size: 1.7rem;
+  }
+
+  .team-objective {
+    font-size: 0.9rem;
+  }
+
+  .btn-remove-member {
+    position: absolute;
+    top: 1.5rem;
+    right: 0.5rem;
+  }
+
+  .members-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+
+  .member-card {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    min-width: 0;
+    text-align: center;
+  }
+
+  .task-counts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .task-counts-label {
+    grid-column: 1 / -1;
+  }
+
+  .task-filters {
+    margin-top: 2.5rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .section-header .btn {
+    width: 100%;
+  }
+
+  .auth-content {
+    position: relative;
+    inset: auto;
+    padding: 1.25rem;
+    align-items: center;
+  }
+
+  body:not(:has(.profile-sidebar)) .feed-layout {
+    padding-top: 4rem;
+  }
+}

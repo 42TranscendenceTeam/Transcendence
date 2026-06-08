@@ -2,6 +2,7 @@ import { useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 import type { AppNotification } from '../../types';
 
@@ -134,6 +135,7 @@ function isTeamType(type: string): boolean {
 function Notifications() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { showError } = useError();
   const { user, notifications, fetchNotifications, deleteAllNotifications, deleteNotification, markAsRead } = useContext(AuthContext);
 
   useEffect(() => {
@@ -144,16 +146,25 @@ function Notifications() {
     const teamName = extractTeamName(notification.type, notification.content);
     if (teamName) {
       try {
-        const teams = await api.getTeams();
-        const team = teams.find(t => t.name === teamName);
-        if (team) {
-          const membersData = await api.getTeamMembers(team.id);
-          const isMember = user?.id != null && membersData.member_list.some(m => m.id === user.id);
-          navigate(isMember ? `/teams/${team.id}` : '/profile/teams');
+        const teamsData = await api.getTeams();
+        const foundTeam = teamsData.find(t => t.name === teamName);
+        
+        if (foundTeam) {
+          // Check if user is already a member using api.getMyTeams for authoritative list
+          const myTeams = await api.getMyTeams();
+          const isMember = myTeams.some(mt => mt.id === foundTeam.id);
+          
+          if (isMember) {
+            navigate(`/teams/${foundTeam.id}`);
+          } else {
+            // Not a member yet, redirect to team list
+            navigate('/profile/teams');
+          }
         } else {
           navigate('/profile/teams');
         }
-      } catch {
+      } catch (err) {
+        console.error('Notification navigation failed:', err);
         navigate('/profile/teams');
       }
     } else {
@@ -165,11 +176,29 @@ function Notifications() {
   const friendNotifications = notifications.filter((n) => isFriendType(n.type));
   const teamNotifications = notifications.filter((n) => isTeamType(n.type));
 
+  const unreadFriendNotifications = friendNotifications.filter(
+    (notification) => !notification.status_read
+  ).length;
+
+  const unreadTeamNotifications = teamNotifications.filter(
+    (notification) => !notification.status_read
+  ).length;
+
   return (
     <div className="notifications-page">
       <div className="notifications-header">
-        <h1 className="profile-page-title">{t('notifications.title')}</h1>
-        <button className="btn btn-outline-danger btn-small" onClick={deleteAllNotifications}>
+        <div>
+          <h1 className="profile-page-title">{t('notifications.title')}</h1>
+          <p className="profile-page-subtitle">
+            {t('notifications.subtitle')}
+          </p>
+        </div>
+
+        <button className="btn btn-danger-actions" onClick={deleteAllNotifications}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style={{ width: '0.875rem', height: '0.875rem' }}>
+            <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
+          </svg>
+
           {t('notifications.deleteAll')}
         </button>
       </div>
@@ -180,6 +209,11 @@ function Notifications() {
             <path d={FRIEND_ICON} />
           </svg>
           {t('notifications.friendNotifications')}
+          {unreadFriendNotifications > 0 && (
+            <span className="notifications-section-count">
+              {unreadFriendNotifications}
+            </span>
+          )}
         </h2>
         {friendNotifications.length === 0 ? (
           <p className="empty-hint">{t('notifications.noFriendNotifications')}</p>
@@ -189,16 +223,26 @@ function Notifications() {
               <Link
                 key={notification.id}
                 to="/profile/friends"
-                className={'team-card' + (!notification.status_read ? ' notification-unread' : '')}
+                className={`notification-item${!notification.status_read ? ' unread' : ''}`}
                 onClick={() => markAsRead(notification.id)}
               >
-                <div className="team-info">
-                  <span className="team-name">{getNotificationText(notification.type, notification.content, t)}</span>
-                  <span className="team-role">{getRelativeTime(notification.created_at, t)}</span>
+                <div className="notification-item-content">
+                  <span className="notification-item-text">
+                    {getNotificationText(notification.type, notification.content, t)}
+                  </span>
+
+                  <span className="notification-item-time">
+                    {getRelativeTime(notification.created_at, t)}
+                  </span>
                 </div>
+
                 <button
-                  className="btn btn-outline-danger btn-small"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); deleteNotification(notification.id); }}
+                  className="btn btn-danger-actions btn-small"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    deleteNotification(notification.id);
+                  }}
                 >
                   {t('notifications.delete')}
                 </button>
@@ -214,6 +258,11 @@ function Notifications() {
             <path d={TEAM_ICON} />
           </svg>
           {t('notifications.teamNotifications')}
+          {unreadTeamNotifications > 0 && (
+            <span className="notifications-section-count">
+              {unreadTeamNotifications}
+            </span>
+          )}
         </h2>
         {teamNotifications.length === 0 ? (
           <p className="empty-hint">{t('notifications.noTeamNotifications')}</p>
@@ -222,17 +271,25 @@ function Notifications() {
             {teamNotifications.map((notification) => (
               <div
                 key={notification.id}
-                className={'team-card' + (!notification.status_read ? ' notification-unread' : '')}
-                style={{ cursor: 'pointer' }}
+                className={`notification-item${!notification.status_read ? ' unread' : ''}`}
                 onClick={() => handleTeamNotificationClick(notification)}
               >
-                <div className="team-info">
-                  <span className="team-name">{getNotificationText(notification.type, notification.content, t)}</span>
-                  <span className="team-role">{getRelativeTime(notification.created_at, t)}</span>
+                <div className="notification-item-content">
+                  <span className="notification-item-text">
+                    {getNotificationText(notification.type, notification.content, t)}
+                  </span>
+                  <span className="notification-item-time">
+                    {getRelativeTime(notification.created_at, t)}
+                  </span>
                 </div>
+
                 <button
-                  className="btn btn-outline-danger btn-small"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); deleteNotification(notification.id); }}
+                  className="btn btn-danger-actions btn-small"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    deleteNotification(notification.id);
+                  }}
                 >
                   {t('notifications.delete')}
                 </button>

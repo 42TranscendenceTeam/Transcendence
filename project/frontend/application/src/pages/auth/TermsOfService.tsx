@@ -12,8 +12,8 @@ import AuthLayout from '../../components/layouts/AuthLayout';
 import ProfileLayout from '../../components/layouts/ProfileLayout';
 
 function TermsOfService() {
-  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation(undefined, { lng: user ? undefined : 'en' });
 
   const pageContent = (
     <section className="legal-page">
@@ -40,9 +40,15 @@ function TermsOfService() {
     </section>
   );
 
-    return (
-      <AuthLayout>{pageContent}</AuthLayout>
-    );
+  return user ? (
+    <ProfileLayout>
+      <div className="legal-layout-card">
+        {pageContent}
+      </div>
+    </ProfileLayout>
+  ) : (
+    <AuthLayout>{pageContent}</AuthLayout>
+  );
 }
 
 export default TermsOfService;

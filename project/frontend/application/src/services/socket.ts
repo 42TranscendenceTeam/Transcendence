@@ -15,8 +15,7 @@ export function connectSocket(token: string) {
     reconnection: true,
   });
 
-  socket.on('connect_error', (err) => {
-    console.error('Socket connection error:', err.message);
+  socket.on('connect_error', () => {
   });
 }
 

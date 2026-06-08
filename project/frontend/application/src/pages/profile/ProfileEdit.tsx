@@ -14,7 +14,7 @@ import LanguageSelector from '../../components/LanguageSelector';
 
 function ProfileEdit() {
   const { t, i18n } = useTranslation();
-  const { user, updateUser } = useContext(AuthContext);
+  const { user, updateUser, toggle2FA } = useContext(AuthContext);
 
   const initialUsername = user?.username || '';
   const initialEmail = user?.email || '';
@@ -133,6 +133,27 @@ function ProfileEdit() {
         </div>
 
         <div className="form-group">
+          <label className="label">{t('profile.security.twoFactor')}</label>
+          <div className="security-section profile-edit-security-section">
+            <p className="security-description">
+              {t('profile.security.twoFactorDesc')}
+            </p>
+            <div className="security-toggle">
+              <label className="security-toggle-label">
+                <input
+                  type="checkbox"
+                  checked={user.twoFactorEnabled}
+                  onChange={toggle2FA}
+                />
+                <span className="toggle-text">
+                  {user.twoFactorEnabled ? t('profile.security.enable') : t('profile.security.disable')}
+                </span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className="form-group">
           <label className="label">{t('profile.edit.currentAvatar')}</label>
           <div className="avatar-preview">
             <img src={avatarUrl || user.avatar} alt="Avatar preview" />
@@ -166,7 +187,7 @@ function ProfileEdit() {
           </div>
         </div>
 
-        <button type="submit" className="btn btn-primary">{t('profile.edit.saveChanges')}</button>
+        <button type="submit" className="btn btn-primary save-profile-btn">{t('profile.edit.saveChanges')}</button>
       </form>
 
       {/* Success Modal */}

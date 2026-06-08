@@ -98,7 +98,7 @@ const MOCK_AVAILABLE_TEAMS: Team[] = [
 
 function Feed() {
   const { t } = useTranslation();
-  const { user } = useContext(AuthContext);
+  const { user, teamInvites } = useContext(AuthContext)!;
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -123,17 +123,23 @@ function Feed() {
     const fetchTeams = async () => {
       try {
         setLoading(true);
-        const teamsData = await api.getTeams();
+        const [teamsData, invites] = await Promise.all([
+          api.getTeams(),
+          user ? api.getTeamInvites() : Promise.resolve([])
+        ]);
 
         let baseTeams: Team[];
 
         if (user) {
           const myTeams = await api.getMyTeams();
           const myTeamIds = new Set(myTeams.map(t => t.id));
+          const invitedTeamIds = new Set(invites.map(i => i.team_id));
 
           setRequestStatuses(prev => {
             const next = { ...prev };
             let changed = false;
+            
+            // Remove pending if already a member
             const pendingIds = Object.keys(next).filter(k => next[Number(k)] === 'pending').map(Number);
             for (const teamId of pendingIds) {
               if (myTeamIds.has(teamId)) {
@@ -141,15 +147,25 @@ function Feed() {
                 changed = true;
               }
             }
+
+            // Sync with existing invites (if invited, mark as pending to disable Join button)
+            for (const teamId of Array.from(invitedTeamIds)) {
+              if (!next[teamId]) {
+                next[teamId] = 'pending';
+                changed = true;
+              }
+            }
+
             return changed ? next : prev;
           });
 
           baseTeams = teamsData.filter(t => !myTeamIds.has(t.id));
-
+          
+          // Remaining logic for join requests verification...
           const rawPendingIds = Object.keys(requestStatuses)
             .filter(k => requestStatuses[Number(k)] === 'pending')
             .map(Number);
-          const pendingIds = rawPendingIds.filter(id => !myTeamIds.has(id));
+          const pendingIds = rawPendingIds.filter(id => !myTeamIds.has(id) && !invitedTeamIds.has(id));
           if (pendingIds.length > 0) {
             const results = await Promise.all(
               pendingIds.map(async (teamId) => {
@@ -166,7 +182,7 @@ function Feed() {
               const next = { ...prev };
               let changed = false;
               for (const { teamId, valid } of results) {
-                if (!valid && next[teamId] === 'pending') {
+                if (!valid && next[teamId] === 'pending' && !invitedTeamIds.has(teamId)) {
                   delete next[teamId];
                   changed = true;
                 }
@@ -178,32 +194,17 @@ function Feed() {
           baseTeams = teamsData;
         }
 
-        const statusResults = await Promise.all(
-          baseTeams.map(async (team) => {
-            try {
-              const detail = await api.getTeam(team.id);
-              return { id: team.id, isFinished: detail.status === 'finished' };
-            } catch {
-              return { id: team.id, isFinished: false };
-            }
-          })
-        );
-        const finishedIds = new Set(
-          statusResults.filter(r => r.isFinished).map(r => r.id)
-        );
-        if (finishedIds.size > 0) {
-          baseTeams = baseTeams.filter(t => !finishedIds.has(t.id));
-        }
-
         setTeams(baseTeams);
         setIsUsingMockData(false);
       } catch (err) {
-        console.error('Failed to fetch teams:', err);
         if (!user) {
           setTeams(MOCK_AVAILABLE_TEAMS);
           setIsUsingMockData(true);
         } else {
-          setError('Failed to load teams');
+          // Suppress error log if it's a silent auth failure
+          if (!(err instanceof Error && err.message.includes('401'))) {
+            setError('Failed to load teams');
+          }
         }
       } finally {
         setLoading(false);
@@ -230,6 +231,47 @@ function Feed() {
       setShowNotification(true);
       return;
     }
+
+    // Guard: Check if user already has a pending invite for this team
+    const hasPendingInvite = (teamInvites || []).some(invite => invite.team_id === teamId && invite.status === 'pending');
+    if (hasPendingInvite) {
+      setRequestStatuses(prev => ({ ...prev, [teamId]: 'pending' }));
+      setNotificationType('info');
+      setNotificationMessage(t('teams.alreadyInvited') || 'You already have a pending invite for this team. Check your invitations.');
+      setShowNotification(true);
+      return;
+    }
+
+    // Guard: Check if user is already a member (in case of stale state)
+    try {
+      const myTeams = await api.getMyTeams();
+      if (myTeams.some(t => t.id === teamId)) {
+        setNotificationType('info');
+        setNotificationMessage(t('teams.alreadyInTeam') || 'You are already a member of this team.');
+        setShowNotification(true);
+        // Refresh local state if possible
+        setTeams(prev => prev.filter(t => t.id !== teamId));
+        return;
+      }
+    } catch {
+      // Ignore myTeams fetch error and proceed
+    }
+
+    // Guard: Fetch latest invites from server to avoid stale context
+    try {
+      const latestInvites = await api.getTeamInvites();
+      const hasInvite = latestInvites.some((invite: any) => invite.team_id === teamId);
+      if (hasInvite) {
+        setRequestStatuses(prev => ({ ...prev, [teamId]: 'pending' }));
+        setNotificationType('info');
+        setNotificationMessage(t('teams.alreadyInvited') || 'You already have a pending invite for this team. Check your invitations.');
+        setShowNotification(true);
+        return;
+      }
+    } catch {
+      // Ignore invite fetch error and proceed with join request
+    }
+
     try {
       await api.sendJoinRequest(teamId);
       setRequestStatuses(prev => ({ ...prev, [teamId]: 'pending' }));
@@ -238,10 +280,14 @@ function Feed() {
       setShowNotification(true);
     } catch (err: any) {
       const message = err?.message || '';
-      if (message.includes('already exists')) {
+      if (message.includes('already exists') || message.includes('already have a pending invite')) {
         setRequestStatuses(prev => ({ ...prev, [teamId]: 'pending' }));
         setNotificationType('info');
-        setNotificationMessage(t('teams.alreadyRequested') || 'You already have a pending request for this team.');
+        if (message.includes('pending invite')) {
+          setNotificationMessage(t('teams.alreadyInvited') || 'You already have a pending invite for this team. Check your invitations.');
+        } else {
+          setNotificationMessage(t('teams.alreadyRequested') || 'You already have a pending request for this team.');
+        }
       } else {
         setNotificationType('error');
         setNotificationMessage(t('teams.joinRequestFailed') || 'Failed to send join request.');
@@ -253,13 +299,23 @@ function Feed() {
   const headerContent = (
     <div className="feed-header">
       {!user && (
-        <Link to="/login" className="welcome-user">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="welcome-avatar">
+        <>
+          <Link to="/login" className="welcome-user">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="welcome-avatar">
             <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.895A15.309 15.309 0 0112 21c-2.17 0-4.207-.316-6.061-1.777a.75.75 0 01-.437-.895z" clipRule="evenodd" />
-          </svg>
-          <span className="welcome-text">{t('auth.login.title')}</span>
-        </Link>
+            </svg>
+            <span className="welcome-text">{t('auth.login.title')}</span>
+          </Link>
+
+          <div className="auth-topbar-actions feed-auth-actions">
+            <span>New to Transcendence?</span>
+            <Link to="/register" className="auth-topbar-btn">
+              Create account
+            </Link>
+          </div>
+        </>
       )}
+
       <h1 className="feed-title">
         <span>Activity Feed</span>
       </h1>
@@ -310,11 +366,11 @@ function Feed() {
                 {t('feed.lookingFor') || 'Looking for'} <strong>{(team.maxUsers || 10) - (team.memberCount || 0)}</strong> {(team.maxUsers || 10) - (team.memberCount || 0) > 1 ? t('feed.collaborators') : t('feed.collaborator')}
               </span>
               <button
-                className={`btn btn-small ${requestStatuses[team.id] === 'pending' && user ? 'btn-pending' : 'btn-primary'}`}
+                className={`btn btn-small ${(requestStatuses[team.id] === 'pending' || (teamInvites || []).some(i => i.team_id === team.id && i.status === 'pending')) && user ? 'btn-pending' : 'btn-primary'}`}
                 onClick={() => handleJoinTeam(team.id, team.name)}
-                disabled={requestStatuses[team.id] === 'pending' && !!user}
+                disabled={(requestStatuses[team.id] === 'pending' || (teamInvites || []).some(i => i.team_id === team.id && i.status === 'pending')) && !!user}
               >
-                {requestStatuses[team.id] === 'pending' && user ? t('teams.pending') : t('teams.join')}
+                {(requestStatuses[team.id] === 'pending' || (teamInvites || []).some(i => i.team_id === team.id && i.status === 'pending')) && user ? t('teams.pending') : t('teams.join')}
               </button>
             </div>
           </div>
