@@ -26,6 +26,7 @@ function ProfileEdit() {
   const [description, setDescription] = useState(initialDescription);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatar);
   const [language, setLanguage] = useState((i18n.language || '').split('-')[0] || 'en');
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(user?.twoFactorEnabled || false);
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -81,6 +82,10 @@ function ProfileEdit() {
     }
     if (language !== i18n.language) {
       i18n.changeLanguage(language);
+    }
+    if (user && twoFactorEnabled !== user.twoFactorEnabled) {
+      await toggle2FA();
+      updateUser({ twoFactorEnabled });
     }
     setShowSuccessModal(true);
   };
@@ -142,11 +147,11 @@ function ProfileEdit() {
               <label className="security-toggle-label">
                 <input
                   type="checkbox"
-                  checked={user.twoFactorEnabled}
-                  onChange={toggle2FA}
+                  checked={twoFactorEnabled}
+                  onChange={() => setTwoFactorEnabled(!twoFactorEnabled)}
                 />
                 <span className="toggle-text">
-                  {user.twoFactorEnabled ? t('profile.security.enable') : t('profile.security.disable')}
+                  {twoFactorEnabled ? t('profile.security.enable') : t('profile.security.disable')}
                 </span>
               </label>
             </div>
