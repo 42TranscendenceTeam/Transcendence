@@ -1,10 +1,13 @@
 import { prisma } from '../prisma.js';
-import { JWT_SECRET } from '../config.js';
+import { JWT_SECRET, GOOGLE_CLIENT_ID } from '../config.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/AppError.js';
 import type { RegisterDTO, LoginDTO } from './auth.types.js';
-import { send2FACode } from "../utils/mailer.js";
+import { OAuth2Client } from "google-auth-library";
+import { handle2FA } from '../utils/2fa.js';
+
+const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
 export const register = async (data: RegisterDTO) => {
   const { email, username, password } = data;
@@ -73,7 +76,7 @@ export const login = async (data: LoginDTO) => {
   if (!user) {
     throw new AppError('User not found', 404);
   }
-
+  
   const isValid = await bcrypt.compare(password, user.password_hash);
 
   if (!isValid) {
@@ -81,24 +84,7 @@ export const login = async (data: LoginDTO) => {
   }
 
   if (user.two_factor_enabled) {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-    await send2FACode(user.email, code);
-
-    const tempToken = jwt.sign(
-      {
-        userId: user.id,
-        twoFactorCode: code,
-        type: "2fa"
-      },
-      JWT_SECRET,
-      { expiresIn: "5m" }
-    );
-
-    return {
-      requires_2fa: true,
-      temp_token: tempToken,
-    };
+    return await handle2FA(user);
   }
 
   const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET);
@@ -132,6 +118,66 @@ export const verify2FA = async (tempToken: string, code: string) => {
 
   if (!user) {
     throw new AppError("User not found", 404);
+  }
+
+  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET);
+
+  return {
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+    },
+    token,
+  };
+};
+
+export const googleLogin = async (credential: string) => {
+  if (!credential) {
+    throw new AppError("Missing credential", 400);
+  }
+
+  const ticket = await client.verifyIdToken({
+    idToken: credential,
+    audience: GOOGLE_CLIENT_ID,
+  });
+
+  const payload = ticket.getPayload();
+
+  if (!payload?.email) {
+    throw new AppError("Invalid Google account", 400);
+  }
+
+  const email = payload.email;
+  const name = payload.name || "user";
+
+  let user = await prisma.user.findUnique({
+    where: { email },
+  });
+
+  if (!user) {
+    let username = name.replace(/\s+/g, "_");
+
+    let counter = 1;
+    while (
+      await prisma.user.findUnique({
+        where: { username },
+      })
+    ) {
+      username = `${name}_${counter++}`;
+    }
+
+    user = await prisma.user.create({
+      data: {
+        email,
+        username,
+        password_hash: "",
+      },
+    });
+  }
+
+  if (user.two_factor_enabled) {
+    return await handle2FA(user);
   }
 
   const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET);
