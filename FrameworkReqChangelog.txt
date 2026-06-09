@@ -51,9 +51,27 @@ Changes to 04-auth.css:
 Status: Complete.
 
 ================================================================================
+2026-06-09 — Register.tsx migration
+================================================================================
+Files changed:
+  - src/pages/auth/Register.tsx
+
+Changes to Register.tsx:
+  - Replaced 8 inline style={{...}} blocks with Tailwind classes
+  - Added w-full to submit button
+  - Tailwind classes added:
+      Layout:    mb-4, mb-6, w-full, text-center
+      Visual:    text-error, text-text-secondary, text-accent, text-sm
+  - Cleanup: Removed mock mode code (USE_MOCK, if/else wrapper)
+  - Removed unused imports: useNavigate, useError
+  - Updated header comment to reflect actual implementation
+  - No CSS file changes (layout rules already removed in Login.tsx session)
+
+Status: Complete.
+
+================================================================================
 Pending (next up)
 ================================================================================
-  - Register.tsx            (04-auth.css)
   - AuthLayout.tsx          (04-auth.css)
   - ProfileLayout.tsx        (06a-profile-pages.css)
   - Friends.tsx              (08-chat.css)
