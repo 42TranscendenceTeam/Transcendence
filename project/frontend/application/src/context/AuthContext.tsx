@@ -446,6 +446,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }).catch(() => {});
   };
 
+  const cancelSentFriendRequest = (requestId: number) => {
+    api.cancelFriendRequest(requestId).then(() => {
+      setSentRequests(sentRequests.filter((r) => r.request_id !== requestId));
+      fetchNotifications();
+    }).catch((err) => {
+      console.error('Failed to cancel friend request:', err);
+    });
+  };
+
   const rejectFriendRequest = (requestId: number) => {
     api.rejectFriendRequest(requestId).then(() => {
       setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
@@ -636,6 +645,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       deleteNotification,
       deleteAllNotifications,
       fetchFriendRequests,
+      cancelSentFriendRequest,
       fetchSentRequests,
       fetchFriends,
       fetchTeamInvites,
