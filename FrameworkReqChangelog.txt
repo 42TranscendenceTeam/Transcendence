@@ -70,9 +70,35 @@ Changes to Register.tsx:
 Status: Complete.
 
 ================================================================================
+2026-06-09 — AuthLayout.tsx migration
+================================================================================
+Files changed:
+  - src/components/layouts/AuthLayout.tsx
+  - src/css-styles/04-auth.css
+
+Changes to AuthLayout.tsx:
+  - Added Tailwind layout utilities to all elements
+  - Removed unused import: BottomNav
+  - Updated header comment
+  - Tailwind classes added:
+      .auth-layout:       min-h-screen, overflow-y-auto, overflow-x-hidden,
+                         flex, flex-col, items-stretch, justify-start
+      .auth-topbar:      w-full, h-[72px], px-8, relative
+      .auth-topbar-actions: flex, items-center, gap-4
+      .auth-topbar-btn:  inline-flex, h-10, px-6, items-center, justify-center
+      .auth-content:     w-full, min-h-[calc(100vh-72px)], px-8, pb-8
+      .auth-card:        min-w-[450px], p-6
+
+Changes to 04-auth.css:
+  - Removed layout rules from: .auth-layout, .auth-topbar, .auth-topbar-actions,
+    .auth-topbar-btn, .auth-content, .auth-card
+  - Each class now contains only visual/theme properties
+
+Status: Complete.
+
+================================================================================
 Pending (next up)
 ================================================================================
-  - AuthLayout.tsx          (04-auth.css)
   - ProfileLayout.tsx        (06a-profile-pages.css)
   - Friends.tsx              (08-chat.css)
   - GlobalChat.tsx           (05a-feed-global-chat.css)

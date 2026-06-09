@@ -1,12 +1,5 @@
 /* Auth page layout */
 .auth-layout {
-  min-height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
   background-image: url('/main-background.webp');
   background-size: cover;
   background-position: bottom;
@@ -14,12 +7,6 @@
 }
 
 .auth-content {
-  width: 100%;
-  min-height: calc(100vh - 72px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 2rem 2rem;
   pointer-events: none;
   z-index: 20;
 }
@@ -63,13 +50,6 @@
 
 /* Top Header */
 .auth-topbar {
-  width: 100%;
-  height: 72px;
-  padding: 0 2rem;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   background: linear-gradient(to bottom, rgba(5, 7, 18, 0.78), rgba(5, 7, 18, 0.28));
   backdrop-filter: blur(10px);
   z-index: 10;
@@ -82,20 +62,12 @@
 }
 
 .auth-topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
   color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
 .auth-topbar-btn {
   font-weight: 600;
-  height: 40px;
-  padding: 0.75rem 1.5rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   color: var(--text-primary);
   background: rgba(9, 12, 24, 0.45);
   border: 1px solid rgba(139, 92, 246, 0.45);
@@ -133,8 +105,6 @@
 
 /* Login Form */
 .auth-card {
-  min-width: 450px;
-  padding: 1.5rem 2rem;
   background: rgba(21, 24, 40, 0.72);
   border: 1px solid var(--border);
   border-radius: 1rem;
