@@ -1,0 +1,53 @@
+Framework Migration Changelog
+==============================
+Tracks per-component progress migrating layout/spacing rules from custom CSS
+to Tailwind utility classes. See FrameworkReqRoadMap.txt for full strategy.
+
+Date format: YYYY-MM-DD
+
+================================================================================
+2026-06-09 — Phase 1: Tailwind palette configuration
+================================================================================
+Files changed:
+  - tailwind.config.js — added custom color palette and box shadows under
+    theme.extend:
+      colors: card, card-hover, primary, text-primary, text-secondary,
+              accent, accent-hover, border, border-light, success, error,
+              neon-purple, neon-blue, neon-pink
+      boxShadow: btn-glow, btn-glow-hover
+
+Status: Complete. All CSS variable colors now available as Tailwind utilities
+(e.g. bg-card, text-accent, border-border).
+
+================================================================================
+Phase 2 — Per-Component Migration (pending)
+================================================================================
+
+Component Migration Order:
+-------------------------
+  1. Login.tsx               (pilot - 04-auth.css)
+  2. Register.tsx            (04-auth.css)
+  3. AuthLayout.tsx          (04-auth.css)
+  4. ProfileLayout.tsx       (06a-profile-pages.css)
+  5. Friends.tsx             (08-chat.css)
+  6. GlobalChat.tsx          (05a-feed-global-chat.css)
+  7. Profile.tsx             (06-profile.css)
+  8. UserProfile.tsx         (06-profile.css)
+  9. TeamDetail.tsx          (07-teams.css)
+ 10. Feed.tsx                (05-feed.css)
+ 11. Modals                  (09-modals.css)
+
+Status: Pending (Phase 1 complete, component migration not started)
+
+================================================================================
+Pending (next up)
+================================================================================
+  - Login.tsx (pilot)
+  - 04-auth.css (partial migration: remove layout rules, keep visual rules)
+
+Migration approach per component:
+  1. Read the .tsx file and its CSS file
+  2. Identify layout/spacing rules → Tailwind candidates
+  3. Identify visual/theme rules → keep in CSS
+  4. Add Tailwind utilities to JSX className
+  5. Optionally remove layout rules from CSS class definitions
