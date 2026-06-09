@@ -2,27 +2,17 @@
  * Login Page Component
  *
  * User authentication page with email/password login.
- * Supports both mock mode and real backend API.
- *
- * Mock Mode (VITE_USE_MOCK=true):
- * - Uses mock 2FA flow for demo
- *
- * Real Mode (VITE_USE_MOCK=false):
- * - Calls api.login() from services/api.ts
- * - Stores auth token on successful login
+ * Calls api.checkEmail(), api.login(), and api.verify2FA() from services/api.ts.
  */
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import { api } from '../../services/api';
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
-
 function Login() {
   const { t } = useTranslation(undefined, { lng: 'en' });
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [show2FA, setShow2FA] = useState(false);
@@ -34,45 +24,26 @@ function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (USE_MOCK) {
-      try {
-        const data = { requires2FA: false, tempToken: 'mock-temp-token' };
-
-        if (data.requires2FA) {
-          setTempToken(data.tempToken);
-          setShow2FA(true);
-        } else {
-          window.location.href = '/';
-        }
-      } catch {
-        setError('Login failed. Please try again.');
-      } finally {
+    setLoading(true);
+    try {
+      const { exists } = await api.checkEmail(email);
+      if (!exists) {
+        setError(t('auth.login.userNotFound') || 'No account found with this email.');
         setLoading(false);
+        return;
       }
-    } else {
-      setLoading(true);
-      try {
-        const { exists } = await api.checkEmail(email);
-        if (!exists) {
-          setError(t('auth.login.userNotFound') || 'No account found with this email.');
-          setLoading(false);
-          return;
-        }
-        const result = await api.login({ email, password });
-        if (result.requires_2fa && result.temp_token) {
-          setTempToken(result.temp_token);
-          setShow2FA(true);
-        } else {
-          localStorage.setItem('authToken', result.token);
-          window.location.href = '/';
-        }
-      } catch (err: any) {
-        // Prevent default console error reporting for login failures
-        setError(err.message || 'Login failed. Please check your credentials.');
-      } finally {
-        setLoading(false);
+      const result = await api.login({ email, password });
+      if (result.requires_2fa && result.temp_token) {
+        setTempToken(result.temp_token);
+        setShow2FA(true);
+      } else {
+        localStorage.setItem('authToken', result.token);
+        window.location.href = '/';
       }
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,9 +51,8 @@ function Login() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
-const result = await api.verify2FA(tempToken, twoFactorCode);
+      const result = await api.verify2FA(tempToken, twoFactorCode);
       localStorage.setItem('authToken', result.token);
       window.location.href = '/';
     } catch {
@@ -101,14 +71,14 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
       </div>
 
       {error && (
-        <div style={{ color: '#ef4444', marginBottom: '1rem', textAlign: 'center' }}>
+        <div className="text-error text-center mb-4">
           {error}
         </div>
       )}
 
       {!show2FA ? (
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
+          <div className="mb-4">
             <label className="label" htmlFor="email">{t('auth.login.email')}</label>
             <input
               type="email"
@@ -120,7 +90,7 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
               required
             />
           </div>
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div className="mb-6">
             <label className="label" htmlFor="password">{t('auth.login.password')}</label>
             <input
               type="password"
@@ -132,25 +102,25 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
               required
             />
           </div>
-          <button type="submit" className="btn btn-primary auth-submit-btn" disabled={loading}>
+          <button type="submit" className="btn btn-primary auth-submit-btn w-full" disabled={loading}>
             {loading ? t('common.loading') : t('auth.login.submit')}
           </button>
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>{t('auth.login.noAccount')} </span>
-            <Link to="/register" style={{ color: 'var(--accent)' }}>{t('auth.login.register')}</Link>
+          <div className="text-center mb-6">
+            <span className="text-text-secondary">{t('auth.login.noAccount')} </span>
+            <Link to="/register" className="text-accent">{t('auth.login.register')}</Link>
           </div>
         </form>
       ) : (
         <form onSubmit={handle2FASubmit}>
-          <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+          <div className="mb-4 text-center">
+            <p className="text-text-secondary mb-2">
               {t('auth.login.twoFactorTitle') || 'Two-Factor Authentication'}
             </p>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+            <p className="text-sm text-text-secondary">
               {t('auth.login.twoFactorDesc') || 'Enter the 6-digit code from your authenticator app'}
             </p>
           </div>
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div className="mb-6">
             <label className="label" htmlFor="twoFactorCode">{t('auth.login.verificationCode') || 'Verification Code'}</label>
             <input
               type="text"
@@ -162,13 +132,13 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
               maxLength={6}
               pattern="[0-9]{6}"
               required
-              style={{ textAlign: 'center', letterSpacing: '0.5rem', fontSize: '1.25rem' }}
+              className="input text-center tracking-widest text-xl"
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading || twoFactorCode.length !== 6}>
+          <button type="submit" className="btn btn-primary w-full mb-4" disabled={loading || twoFactorCode.length !== 6}>
             {loading ? t('common.loading') : t('auth.login.verify') || 'Verify'}
           </button>
-          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          <div className="text-center mb-4">
             <button
               type="button"
               onClick={() => {
@@ -176,13 +146,7 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
                 setTwoFactorCode('');
                 setTempToken('');
               }}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--accent)',
-                cursor: 'pointer',
-                fontSize: '0.875rem',
-              }}
+              className="bg-none border-none text-accent cursor-pointer text-sm"
             >
               {t('auth.login.backToLogin') || 'Back to Login'}
             </button>
@@ -191,23 +155,23 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
       )}
 
       {!show2FA && (
-        <div className="auth-social-section">
-          <div className="auth-divider">
+        <div className="auth-social-section mt-6">
+          <div className="auth-divider flex items-center gap-4">
             <span>or continue with</span>
           </div>
 
-          <div className="auth-social-buttons">
-            <button type="button" className="auth-social-btn">
+          <div className="auth-social-buttons grid grid-cols-2 gap-[0.85rem]">
+            <button type="button" className="auth-social-btn flex items-center justify-center gap-3">
               <img src="/42logo.png" alt="42 logo" />
               <span>42 School</span>
             </button>
 
-            <button type="button" className="auth-social-btn">
+            <button type="button" className="auth-social-btn flex items-center justify-center gap-3">
               <img src="/google-logo.webp" alt="Google logo" />
               <span>Google</span>
             </button>
           </div>
-          <p className="auth-terms-note">
+          <p className="auth-terms-note text-center mt-4">
             By signing in, you agree with our <br />
             <Link to="/terms">Terms of Service</Link>{' '}
             and{' '}

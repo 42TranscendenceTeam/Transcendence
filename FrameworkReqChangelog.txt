@@ -20,30 +20,49 @@ Status: Complete. All CSS variable colors now available as Tailwind utilities
 (e.g. bg-card, text-accent, border-border).
 
 ================================================================================
-Phase 2 — Per-Component Migration (pending)
+2026-06-09 — Login.tsx pilot migration
 ================================================================================
+Files changed:
+  - src/pages/auth/Login.tsx
+  - src/css-styles/04-auth.css (partial)
 
-Component Migration Order:
--------------------------
-  1. Login.tsx               (pilot - 04-auth.css)
-  2. Register.tsx            (04-auth.css)
-  3. AuthLayout.tsx          (04-auth.css)
-  4. ProfileLayout.tsx       (06a-profile-pages.css)
-  5. Friends.tsx             (08-chat.css)
-  6. GlobalChat.tsx          (05a-feed-global-chat.css)
-  7. Profile.tsx             (06-profile.css)
-  8. UserProfile.tsx         (06-profile.css)
-  9. TeamDetail.tsx          (07-teams.css)
- 10. Feed.tsx                (05-feed.css)
- 11. Modals                  (09-modals.css)
+Changes to Login.tsx:
+  - Replaced 10 inline style={{...}} blocks with Tailwind classes
+  - Added layout utilities to custom CSS class names
+  - Shared classes (.label, .input, .btn, .btn-primary) left untouched
+  - Tailwind classes added:
+      Layout:    mb-4, mb-6, text-center, w-full, mt-6, flex, items-center,
+                 justify-center, gap-4, gap-3, grid, grid-cols-2
+      Visual:    text-error, text-text-secondary, text-accent, text-sm,
+                 text-xl, tracking-widest
+  - Cleanup: Removed mock mode code (USE_MOCK, if/else wrapper)
+  - Removed unused import: useNavigate
+  - Updated header comment to reflect actual implementation
 
-Status: Pending (Phase 1 complete, component migration not started)
+Changes to 04-auth.css:
+  - Removed layout rules from: .login-card-header (margin-bottom),
+    .login-card-logo (margin: 0 auto), .auth-submit-btn (width, margin-bottom),
+    .auth-social-section (margin-top), .auth-divider (display, align-items, gap),
+    .auth-social-buttons (display, grid-template-columns, gap),
+    .auth-social-btn (display, align-items, justify-content, gap),
+    .auth-terms-note (text-align, margin-top)
+  - Each class now contains only visual/theme properties
+
+Status: Complete.
 
 ================================================================================
 Pending (next up)
 ================================================================================
-  - Login.tsx (pilot)
-  - 04-auth.css (partial migration: remove layout rules, keep visual rules)
+  - Register.tsx            (04-auth.css)
+  - AuthLayout.tsx          (04-auth.css)
+  - ProfileLayout.tsx        (06a-profile-pages.css)
+  - Friends.tsx              (08-chat.css)
+  - GlobalChat.tsx           (05a-feed-global-chat.css)
+  - Profile.tsx              (06-profile.css)
+  - UserProfile.tsx          (06-profile.css)
+  - TeamDetail.tsx           (07-teams.css)
+  - Feed.tsx                 (05-feed.css)
+  - Modals                   (09-modals.css)
 
 Migration approach per component:
   1. Read the .tsx file and its CSS file
