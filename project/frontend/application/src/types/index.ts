@@ -142,6 +142,7 @@ export interface AuthContextType {
   fetchJoinRequestNotifications: () => void;
   acceptFriendRequest: (requestId: number) => void;
   rejectFriendRequest: (requestId: number) => void;
+  cancelSentFriendRequest: (requestId: number) => void;
   acceptTeamInvite: (inviteId: number) => void;
   rejectTeamInvite: (inviteId: number) => void;
   markNotificationsRead: () => void;
