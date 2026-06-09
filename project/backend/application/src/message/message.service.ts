@@ -17,7 +17,7 @@ export const getSentMessages = async (userId: number, friendId: number, amount: 
 			receiver_id: true,
 			content: true,
 			status_read: true,
-			sent_at: true
+			sent_at: true,
 		},
 		orderBy: {
 			sent_at: 'desc',
@@ -56,7 +56,7 @@ export const getReceivedMessages = async (userId: number, friendId: number, amou
 			receiver_id: true,
 			content: true,
 			status_read: true,
-			sent_at: true
+			sent_at: true,
 		},
 		orderBy: { 
 			sent_at: 'desc'
@@ -97,7 +97,7 @@ export const getAllMessages = async (userId: number, friendId: number, amount: n
 			receiver_id: true,
 			content: true,
 			status_read: true,
-			sent_at: true
+			sent_at: true,
 		},
 		orderBy: { 
 			sent_at: 'desc'

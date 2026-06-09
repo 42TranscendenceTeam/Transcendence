@@ -1164,18 +1164,84 @@ export const api = {
   },
 
   // ========== MESSAGES ==========
-  // TODO: Implement - Backend needs to provide GET /teams/:id/messages
-  getTeamMessages(teamId: string): Promise<any[]> {
-    // Frontend sends: nothing
-    // Backend returns: Array of messages { id, sender, content, timestamp }
-    throw new Error('TODO: Implement GET /teams/:id/messages');
+  getFriendMessages(friendId: number, amount: number = 0): Promise<{ message_list: any[] }> {
+    return fetch(`${API_URL}/message/${friendId}/${amount}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get friend messages');
+      }
+      return response.json();
+    });
   },
 
-  // TODO: Implement - Backend needs to provide POST /teams/:id/messages
-  sendTeamMessage(teamId: string, content: string): Promise<any> {
-    // Frontend sends: { content }
-    // Backend returns: { id, sender, content, timestamp }
-    throw new Error('TODO: Implement POST /teams/:id/messages');
+  sendFriendMessage(friendId: number, content: string): Promise<any> {
+    return fetch(`${API_URL}/message/${friendId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+      body: JSON.stringify({ content }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to send message');
+        });
+      }
+      return response.json();
+    });
+  },
+
+  markFriendMessagesRead(friendId: number): Promise<void> {
+    return fetch(`${API_URL}/message/${friendId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to mark messages as read');
+      }
+    });
+  },
+
+  getTeamMessages(teamId: number, amount: number = 0): Promise<{ message_list: any[] }> {
+    return fetch(`${API_URL}/teams/${teamId}/message/${amount}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to get team messages');
+      }
+      return response.json();
+    });
+  },
+
+  sendTeamMessage(teamId: number, content: string): Promise<any> {
+    return fetch(`${API_URL}/teams/${teamId}/message`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+      body: JSON.stringify({ content }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Failed to send team message');
+        });
+      }
+      return response.json();
+    });
   },
 
   // ========== UTILITIES ==========
