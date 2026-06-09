@@ -106,8 +106,8 @@ export interface AuthContextType {
   toggle2FA: () => void;
   removeFriend: (friendId: number) => void;
   leaveTeam: (teamId: number) => void;
-  addChatMessage: (teamId: number, message: Message) => void;
-  sendFriendMessage: (friendId: number, message: Message) => void;
+  addChatMessage: (teamId: number, message: Message) => Promise<void>;
+  sendFriendMessage: (friendId: number, message: Message) => Promise<void>;
   sendGlobalMessage: (message: Message) => void;
   updateTaskStatus: (teamId: number, taskId: number, status: Task['status']) => void;
   addTask: (teamId: number, newTask: Partial<Task>) => void;

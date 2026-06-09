@@ -1,4 +1,37 @@
 /*
+ * Grouped messages (consecutive from same sender)
+ */
+.chat-message.grouped,
+.friend-chat-message.grouped {
+  margin-top: -0.375rem;
+}
+
+.chat-message.grouped .chat-message-header,
+.friend-chat-message.grouped .chat-message-header {
+  display: none;
+}
+
+/*
+ * Chat message header (avatar + username)
+ */
+.chat-message-header,
+.friend-chat-message-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/*
+ * Chat message body (timestamp + text)
+ */
+.chat-message-body,
+.friend-chat-message-body {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+/*
  * Chat placeholder
  */
 .chat-placeholder {
@@ -39,15 +72,23 @@
  */
 .chat-message {
   display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
+  flex-direction: column;
+  max-width: 70%;
 }
 
 /*
  * Chat message own/right aligned
  */
 .chat-message.own {
-  flex-direction: row-reverse;
+  align-self: flex-end;
+}
+
+.chat-message.own .chat-message-body {
+  align-self: flex-end;
+}
+
+.friend-chat-message.own .friend-chat-message-body {
+  align-self: flex-end;
 }
 
 /*
@@ -260,8 +301,7 @@
  */
 .friend-chat-message {
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
+  flex-direction: column;
   max-width: 70%;
 }
 
@@ -270,7 +310,6 @@
  */
 .friend-chat-message.own {
   align-self: flex-end;
-  flex-direction: row-reverse;
 }
 
 /*

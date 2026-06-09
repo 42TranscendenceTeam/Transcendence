@@ -119,15 +119,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           };
           sock.on('notification:new', handler);
 
+const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
+            if (ack) ack(true);
+            fetchFriends();
+          };
+          const teamMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
+            if (ack) ack(true);
+            setTeamRefreshTrigger(c => c + 1);
+          };
           const onlineHandler = (ids: number[]) => setOnlineFriendIds(new Set(ids));
           const userOnlineHandler = (userId: number) => setOnlineFriendIds((prev) => new Set(prev).add(userId));
           const userOfflineHandler = (userId: number) => setOnlineFriendIds((prev) => { const next = new Set(prev); next.delete(userId); return next; });
+
+          sock.on('chat message', chatMessageHandler);
+          sock.on('team message', teamMessageHandler);
           sock.on('online friends', onlineHandler);
           sock.on('user online', userOnlineHandler);
           sock.on('user offline', userOfflineHandler);
 
           return () => {
             sock.off('notification:new', handler);
+            sock.off('chat message', chatMessageHandler);
+            sock.off('team message', teamMessageHandler);
             sock.off('online friends', onlineHandler);
             sock.off('user online', userOnlineHandler);
             sock.off('user offline', userOfflineHandler);
@@ -146,8 +159,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const updateUser = (updates: Partial<User>) => {
-    if (!user) return;
-    setUser({ ...user, ...updates });
+    setUser((prev) => (prev ? { ...prev, ...updates } : prev));
   };
 
   const toggle2FA = async () => {
@@ -174,26 +186,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const addChatMessage = (teamId: number, message: Message) => {
-    if (!user) return;
-    const updatedTeams = user.teams.map((team) => {
-      if (team.id === teamId) {
-        return { ...team, chat: [...team.chat, message] };
-      }
-      return team;
-    });
-    setUser({ ...user, teams: updatedTeams });
+  const addChatMessage = async (teamId: number, message: Message) => {
+    try {
+      await api.sendTeamMessage(teamId, message.text);
+      setUser(prev => {
+        if (!prev) return prev;
+        const updatedTeams = prev.teams.map((team) => {
+          if (team.id === teamId) {
+            return { ...team, chat: [...(team.chat || []), message] };
+          }
+          return team;
+        });
+        return { ...prev, teams: updatedTeams };
+      });
+    } catch (err) {
+      console.error('Failed to send team message:', err);
+    }
   };
 
-  const sendFriendMessage = (friendId: number, message: Message) => {
-    if (!user) return;
-    const updatedFriends = user.friends.map((friend) => {
-      if (friend.id === friendId) {
-        return { ...friend, chat: [...(friend.chat || []), message] };
-      }
-      return friend;
-    });
-    setUser({ ...user, friends: updatedFriends });
+  const sendFriendMessage = async (friendId: number, message: Message) => {
+    try {
+      await api.sendFriendMessage(friendId, message.text);
+      setUser(prev => {
+        if (!prev) return prev;
+        const updatedFriends = prev.friends.map((friend) => {
+          if (friend.id === friendId) {
+            return { ...friend, chat: [...(friend.chat || []), message] };
+          }
+          return friend;
+        });
+        return { ...prev, friends: updatedFriends };
+      });
+    } catch (err) {
+      console.error('Failed to send friend message:', err);
+    }
   };
 
   const sendGlobalMessage = (message: Message) => {
@@ -467,16 +493,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const fetchSentRequests = () => {
     api.getSentFriendRequests().then((requests) => {
       setSentRequests(requests);
-    }).catch(() => {});
+    }).catch((err) => {
+      console.error('Failed to fetch sent requests:', err);
+    });
   };
 
   const fetchFriends = () => {
     const currentFriendIds = new Set(friends.map(f => f.id));
-    api.getFriends().then((friendList) => {
+    return api.getFriends().then((friendList) => {
       setFriends(friendList);
-      if (user) {
-        setUser({ ...user, friends: friendList });
-      }
+      setUser((prev) => {
+        if (!prev) return prev;
+        const updatedFriends = friendList.map(nf => {
+          const oldf = prev.friends.find(of => of.id === nf.id);
+          return { ...nf, chat: oldf?.chat || [] };
+        });
+        return { ...prev, friends: updatedFriends };
+      });
       friendList.forEach((f: Friend) => {
         if (!currentFriendIds.has(f.id)) {
           api.getUserOnline(f.id).then(d => {
