@@ -32,6 +32,7 @@ function Register() {
   const [loading, setLoading] = useState(false);
   const { showError } = useError();
   const [error, setError] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +65,7 @@ function Register() {
       try {
         const result = await api.register({ email, username, password });
         localStorage.setItem('authToken', result.token);
-        window.location.href = '/';
+        setShowSuccessModal(true);
       } catch (err: any) {
         setError(err.message || 'Registration failed. Please try again.');
       } finally {
@@ -135,6 +136,31 @@ function Register() {
             <Link to="/login" style={{ color: 'var(--accent)' }}>{t('auth.register.login')}</Link>
           </div>
       </form>
+
+      {showSuccessModal && (
+        <div className="modal-overlay" onClick={() => {}}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t('common.success')}</h2>
+            </div>
+            <div className="modal-body">
+              <div className="success-content">
+                <div className="success-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <p className="success-message">{t('auth.register.success')}</p>
+              </div>
+            </div>
+            <div className="modal-actions">
+              <button className="btn btn-primary" onClick={() => { window.location.href = '/'; }}>
+                {t('common.confirm')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AuthLayout>
   );
 }

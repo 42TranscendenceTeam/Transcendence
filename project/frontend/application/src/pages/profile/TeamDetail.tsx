@@ -265,9 +265,9 @@ const { showError } = useError();
     try {
       const users = await api.searchUsers('');
       setAllUsers(users);
-    } catch {
+      } catch {
       setErrorUsers(t('teams.failedToLoadUsers') || 'Failed to load users');
-    } finally {
+      } finally {
       setLoadingUsers(false);
     }
   };
@@ -445,7 +445,7 @@ const { showError } = useError();
       showError(t('common.error'), t('teams.taskTitleRequired') || 'Title is required');
       return;
     }
-
+    
     if (!newTask.description.trim()) {
       showError(t('common.error'), t('tasks.pleaseAddDescription') || 'Please add a description');
       return;
@@ -563,6 +563,7 @@ const { showError } = useError();
         return;
       }
       try {
+        // Pre-check for pending invites to this user if possible or handle catch gracefully
         await api.sendTeamInvite(team.id, userToAdd.id);
 
         addTeamMember(team.id, { id: userToAdd.id, username: userToAdd.username, avatar: userToAdd.avatar, role: 'Member' }, 'Member');

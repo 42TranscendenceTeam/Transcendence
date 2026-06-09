@@ -37,7 +37,7 @@
       "register": "Register",
       "forgotPassword": "Forgot password?",
       "twoFactorTitle": "Two-Factor Authentication",
-      "twoFactorDesc": "Enter the 6-digit code from your authenticator app",
+      "twoFactorDesc": "Enter the 6-digit code sent to your email",
       "verificationCode": "Verification Code",
       "verify": "Verify",
       "backToLogin": "Back to Login",
@@ -58,7 +58,8 @@
       "hasAccount": "Already have an account?",
       "login": "Login",
       "passwordMismatch": "Passwords do not match",
-      "passwordTooShort": "Password must be at least 8 characters"
+      "passwordTooShort": "Password must be at least 8 characters",
+      "success": "Account created successfully."
     },
     "logout": "Logout"
   },
@@ -104,6 +105,9 @@
       "desc": "Manage your account security settings",
       "twoFactor": "Two-Factor Authentication",
       "twoFactorDesc": "Add an extra layer of security to your account",
+      "enable": "Enable",
+      "disable": "Disable",
+      "twoFactorEnabled": "Two-factor authentication enabled. The next time you log in, a code will be sent to your email.",
       "enable": "Enabled",
       "disable": "Disabled",
       "changePassword": "Change Password",

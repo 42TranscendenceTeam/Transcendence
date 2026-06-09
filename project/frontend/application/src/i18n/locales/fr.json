@@ -37,7 +37,7 @@
       "register": "S'inscrire",
       "forgotPassword": "Mot de passe oublié ?",
       "twoFactorTitle": "Authentification à deux facteurs",
-      "twoFactorDesc": "Entrez le code à 6 chiffres de votre application d'authentification",
+      "twoFactorDesc": "Entrez le code à 6 chiffres envoyé à votre e-mail",
       "verificationCode": "Code de vérification",
       "verify": "Vérifier",
       "backToLogin": "Retour à la connexion",
@@ -58,6 +58,7 @@
       "hasAccount": "Vous avez déjà un compte ?",
       "login": "Se connecter",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "success": "Compte créé avec succès.",
       "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères"
     },
     "logout": "Déconnexion"

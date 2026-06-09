@@ -162,9 +162,16 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
     setUser((prev) => (prev ? { ...prev, ...updates } : prev));
   };
 
-  const toggle2FA = () => {
-    if (!user) return;
-    setUser({ ...user, twoFactorEnabled: !user.twoFactorEnabled });
+  const toggle2FA = async () => {
+    if (!user) return false;
+    const newState = !user.twoFactorEnabled;
+    try {
+      const result = await api.enable2FA(newState);
+      setUser({ ...user, twoFactorEnabled: result.two_factor_enabled });
+      return result.two_factor_enabled;
+    } catch (err) {
+      return false;
+    }
   };
 
   const leaveTeam = async (teamId: number) => {
@@ -465,15 +472,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
     }).catch(() => {});
   };
 
-  const rejectFriendRequest = (requestId: number) => {
-    api.rejectFriendRequest(requestId).then(() => {
-      setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
-      fetchFriendRequests();
-      fetchSentRequests();
-      fetchNotifications();
-    }).catch(() => {});
-  };
-
   const cancelSentFriendRequest = (requestId: number) => {
     api.cancelFriendRequest(requestId).then(() => {
       setSentRequests(sentRequests.filter((r) => r.request_id !== requestId));
@@ -481,6 +479,15 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
     }).catch((err) => {
       console.error('Failed to cancel friend request:', err);
     });
+  };
+
+  const rejectFriendRequest = (requestId: number) => {
+    api.rejectFriendRequest(requestId).then(() => {
+      setFriendRequests(friendRequests.filter((r) => r.request_id !== requestId));
+      fetchFriendRequests();
+      fetchSentRequests();
+      fetchNotifications();
+    }).catch(() => {});
   };
 
   const fetchSentRequests = () => {
@@ -671,6 +678,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       deleteNotification,
       deleteAllNotifications,
       fetchFriendRequests,
+      cancelSentFriendRequest,
       fetchSentRequests,
       fetchFriends,
       fetchTeamInvites,
@@ -678,7 +686,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       fetchJoinRequestNotifications,
       acceptFriendRequest,
       rejectFriendRequest,
-      cancelSentFriendRequest,
       acceptTeamInvite,
       rejectTeamInvite,
       markNotificationsRead,

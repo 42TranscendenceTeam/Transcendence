@@ -189,6 +189,21 @@ export const api = {
     });
   },
 
+  verify2FA(tempToken: string, code: string): Promise<AuthResponse> {
+    return fetch(`${API_URL}/auth/verify-2fa`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ temp_token: tempToken, code }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Invalid verification code');
+        });
+      }
+      return response.json();
+    });
+  },
+
   // ========== AVATAR UPLOAD ==========
   uploadAvatar(file: File): Promise<{ avatar_url: string }> {
     const formData = new FormData();
@@ -276,7 +291,7 @@ export const api = {
       email: data.email,
       avatar: getAvatarUrl(data.avatar_url),
       description: data.bio || '',
-      twoFactorEnabled: false,
+      twoFactorEnabled: data.two_factor_enabled || false,
       friends: [],
       teams: [],
       globalChat: [],
@@ -319,11 +334,20 @@ export const api = {
     throw new Error('TODO: Implement PUT /users/me/password');
   },
 
-  // TODO: Implement - Backend needs to provide POST /users/me/2fa
-  enable2FA(enable: boolean): Promise<void> {
-    // Frontend sends: { enable: boolean }
-    // Backend returns: nothing
-    throw new Error('TODO: Implement POST /users/me/2fa');
+  enable2FA(enable: boolean): Promise<{ two_factor_enabled: boolean }> {
+    return fetch(`${API_URL}/users/2fa`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        ...api.getAuthHeaders(),
+      },
+      body: JSON.stringify({ enable }),
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error('Failed to update 2FA setting');
+      }
+      return response.json();
+    });
   },
 
   // ========== TEAMS ==========

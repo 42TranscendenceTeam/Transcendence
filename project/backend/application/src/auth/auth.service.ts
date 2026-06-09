@@ -89,6 +89,7 @@ export const login = async (data: LoginDTO) => {
       {
         userId: user.id,
         twoFactorCode: code,
+        type: "2fa"
       },
       JWT_SECRET,
       { expiresIn: "5m" }
@@ -133,7 +134,7 @@ export const verify2FA = async (tempToken: string, code: string) => {
     throw new AppError("User not found", 404);
   }
 
-  const token = jwt.sign({ id: user.id, type: "2fa" }, JWT_SECRET);
+  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET);
 
   return {
     user: {
