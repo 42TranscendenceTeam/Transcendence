@@ -97,6 +97,24 @@ Changes to 04-auth.css:
 Status: Complete.
 
 ================================================================================
+2026-06-10 — TermsOfService.tsx + PrivacyPolicy.tsx migration
+================================================================================
+Files changed:
+  - src/pages/auth/TermsOfService.tsx
+  - src/pages/auth/PrivacyPolicy.tsx
+  - src/css-styles/04-auth.css (legal classes)
+
+Changes:
+  - Added Tailwind classes: mx-auto, rounded-xl, mb-4, text-center, text-sm,
+    text-xs, text-text-primary, text-text-secondary, leading-relaxed, mt-4,
+    font-semibold, w-full, max-w-2xl, p-6, md:p-8
+  - Removed layout rules from: .legal-layout-card, .legal-page, .legal-title,
+    .legal-content, .legal-content p, .legal-content h2, .legal-contact-list
+  - Each class now contains only visual/theme properties
+
+Status: Complete.
+
+================================================================================
 Pending (next up)
 ================================================================================
   - ProfileLayout.tsx        (06a-profile-pages.css)

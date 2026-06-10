@@ -125,14 +125,13 @@ function Login() {
             <input
               type="text"
               id="twoFactorCode"
-              className="input"
+              className="input text-center tracking-widest text-xl"
               value={twoFactorCode}
               onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="000000"
               maxLength={6}
               pattern="[0-9]{6}"
               required
-              className="input text-center tracking-widest text-xl"
             />
           </div>
           <button type="submit" className="btn btn-primary w-full mb-4" disabled={loading || twoFactorCode.length !== 6}>

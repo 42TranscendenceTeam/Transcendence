@@ -16,33 +16,33 @@ function TermsOfService() {
   const { t } = useTranslation(undefined, { lng: user ? undefined : 'en' });
 
   const pageContent = (
-    <section className="legal-page">
-      <h1 className="legal-title">{t('legal.terms.title')}</h1>
+    <section className="legal-page mx-auto rounded-xl">
+      <h1 className="legal-title mb-4 text-center">{t('legal.terms.title')}</h1>
 
-      <div className="legal-content">
-        <p>{t('legal.terms.intro')}</p>
+      <div className="legal-content text-sm text-text-secondary leading-relaxed">
+        <p className="mb-2">{t('legal.terms.intro')}</p>
 
-        <h2>{t('legal.terms.acceptableUse')}</h2>
-        <p>{t('legal.terms.acceptableUseText')}</p>
+        <h2 className="mt-4 text-text-primary font-semibold">{t('legal.terms.acceptableUse')}</h2>
+        <p className="mb-2">{t('legal.terms.acceptableUseText')}</p>
 
-        <h2>{t('legal.terms.accountResponsibilities')}</h2>
-        <p>{t('legal.terms.accountResponsibilitiesText')}</p>
+        <h2 className="mt-4 text-text-primary font-semibold">{t('legal.terms.accountResponsibilities')}</h2>
+        <p className="mb-2">{t('legal.terms.accountResponsibilitiesText')}</p>
 
-        <h2>{t('legal.terms.intellectualProperty')}</h2>
-        <p>{t('legal.terms.intellectualPropertyText')}</p>
+        <h2 className="mt-4 text-text-primary font-semibold">{t('legal.terms.intellectualProperty')}</h2>
+        <p className="mb-2">{t('legal.terms.intellectualPropertyText')}</p>
 
-        <h2>{t('legal.terms.limitationLiability')}</h2>
-        <p>{t('legal.terms.limitationLiabilityText')}</p>
+        <h2 className="mt-4 text-text-primary font-semibold">{t('legal.terms.limitationLiability')}</h2>
+        <p className="mb-2">{t('legal.terms.limitationLiabilityText')}</p>
 
-        <h2>{t('legal.terms.changesToTerms')}</h2>
-        <p>{t('legal.terms.changesToTermsText')}</p>
+        <h2 className="mt-4 text-text-primary font-semibold">{t('legal.terms.changesToTerms')}</h2>
+        <p className="mb-2">{t('legal.terms.changesToTermsText')}</p>
       </div>
     </section>
   );
 
   return user ? (
     <ProfileLayout>
-      <div className="legal-layout-card">
+      <div className="legal-layout-card w-full max-w-2xl mx-auto p-6 md:p-8">
         {pageContent}
       </div>
     </ProfileLayout>

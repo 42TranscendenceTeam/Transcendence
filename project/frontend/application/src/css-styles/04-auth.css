@@ -88,14 +88,6 @@
 }
 
 .legal-layout-card {
-  width: 100%;
-  max-width: 750px;
-  min-width: 0;
-  height: auto;
-  min-height: 0;
-  align-self: flex-start;
-  margin: 0 auto;
-  padding: 1.5rem 2rem;
   background: rgba(21, 24, 40, 0.72);
   border: 1px solid var(--border);
   border-radius: 1rem;
@@ -245,14 +237,9 @@
 
 /* Legal pages */
 .legal-page {
-  margin: 0 auto;
-  border-radius: 1rem;
-  /*max-width: 750px;*/
 }
 
 .legal-title {
-  margin-bottom: 1.0rem;
-  text-align: center;
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -260,22 +247,16 @@
 
 .legal-content {
   color: var(--text-secondary);
-  font-size: 0.875rem;
-  line-height: 1.7;
 }
 
 .legal-content p {
-  margin-bottom: 0.5rem;
 }
 
 .legal-content h2 {
-  margin-top: 1rem;
   color: var(--text-primary);
   font-size: 1rem;
   font-weight: 600;
 }
 
 .legal-contact-list {
-  margin-top: 0.5rem;
-  font-size: 0.8rem;
 }
