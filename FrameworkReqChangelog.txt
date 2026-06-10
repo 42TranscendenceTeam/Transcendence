@@ -115,15 +115,61 @@ Changes:
 Status: Complete.
 
 ================================================================================
+2026-06-10 — Feed.tsx + FeedLayout.tsx migration
+================================================================================
+Files changed:
+  - src/pages/feed/Feed.tsx
+  - src/components/layouts/FeedLayout.tsx
+  - src/css-styles/05-feed.css
+
+Changes:
+  - Added Tailwind classes: min-h-screen, flex, flex-col, pr-[340px],
+    w-full, max-w-[620px], mx-auto, flex-1, p-6, pb-14, pl-4, pl-6, m-0,
+    gap-8, items-center, gap-3, mb-4, flex-wrap, gap-2, mt-4, justify-between,
+    pt-4, text-center, mb-4
+  - Removed layout rules from: .feed-header, .feed-title, .feed-subtitle,
+    .feed-list, .feed-header-container, .feed-main, .task-header,
+    .task-user-info, .task-tags, .task-footer
+  - Removed inline style from .empty-hint (line 334)
+  - Kept responsive CSS for .feed-sidebar (display: none/block)
+  - Kept .bottom-nav classes (unused but harmless)
+  - Cleaned up empty CSS classes after layout rule removal
+  - Note: GlobalChat not migrated (pending removal)
+
+Status: Complete.
+
+================================================================================
+2026-06-10 — Feed.tsx post-migration fixes
+================================================================================
+Files changed:
+  - src/pages/feed/Feed.tsx
+  - src/components/layouts/FeedLayout.tsx
+  - src/css-styles/04-auth.css
+  - src/css-styles/05-feed.css
+
+Changes:
+  - FeedLayout: Added max-w-[620px] to .feed-main to constrain card width
+  - Feed.tsx: Added { lng: 'en' } to useTranslation() for unregistered users
+  - Feed.tsx: Added forceEnglish prop to RotatingText component (shows English
+    for unregistered users, translated for logged-in users)
+  - 04-auth.css: Added display: flex, align-items: center, gap: 0.75rem to
+    .auth-topbar-actions for proper spacing between text and button
+  - 04-auth.css: Updated .auth-topbar-btn styling (padding, gradient, glow)
+    to match Login button appearance
+  - 04-auth.css: Changed .welcome-text font-weight from 500 to 600 to match
+    Create account button
+
+Status: Complete.
+
+================================================================================
 Pending (next up)
 ================================================================================
   - ProfileLayout.tsx        (06a-profile-pages.css)
   - Friends.tsx              (08-chat.css)
-  - GlobalChat.tsx           (05a-feed-global-chat.css)
+  - GlobalChat.tsx           (05a-feed-global-chat.css) — PENDING REMOVAL, NOT MIGRATING
   - Profile.tsx              (06-profile.css)
   - UserProfile.tsx          (06-profile.css)
   - TeamDetail.tsx           (07-teams.css)
-  - Feed.tsx                 (05-feed.css)
   - Modals                   (09-modals.css)
 
 Migration approach per component:

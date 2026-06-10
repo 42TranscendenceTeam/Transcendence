@@ -43,7 +43,7 @@
 }
 
 .welcome-text {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 0.875rem;
   color: var(--text-primary);
 }
@@ -62,22 +62,30 @@
 }
 
 .auth-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
 .auth-topbar-btn {
+  padding: 0.75rem 1.8rem;
   font-weight: 600;
+  font-size: 0.875rem;
   color: var(--text-primary);
-  background: rgba(9, 12, 24, 0.45);
-  border: 1px solid rgba(139, 92, 246, 0.45);
+  background: var(--gradient-primary);
+  border: 1px solid var(--btn-border-hover);
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.18);
   border-radius: 0.5rem;
+  transition: all 0.2s ease;
 }
 
 .auth-topbar-btn:hover {
   background: linear-gradient(135deg, #a855f7 0%, #7c5cff 45%, #4f8cff 100%);
   box-shadow: 0 0 24px rgba(139, 92, 246, 0.35);
   text-decoration: none;
+  transform: translateY(-1px);
 }
 
 .feed-auth-actions {

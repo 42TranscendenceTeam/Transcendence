@@ -7,10 +7,10 @@
 }
 
 /* Main feed exception */
-.feed-header-container, .feed-main {
-  width: 100%;
-  max-width: 620px;
-  margin: 0 auto;
+.feed-header-container {
+}
+
+.feed-main {
 }
 
 /* Top Elements */
@@ -135,24 +135,19 @@
 
 /* Central Feed Header */
 .feed-header {
-  margin-bottom: 0;
 }
 
 .feed-title {
   font-size: 1.25rem;
   font-weight: 600;
-  margin-bottom: 0.25rem;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  padding-left: 1em;
 }
 
 .feed-subtitle {
   font-size: 0.9rem;
   line-height: 1.4;
   color: var(--text-secondary);
-  margin: 0;
-  padding-left: 1.35em;
 }
 
 /* Subtitle Animation */
@@ -173,17 +168,7 @@
 }
 
 /* Feed Cards Area */
-.feed-main {
-  flex: 1;
-  width: 100%;
-  margin: 0 auto;
-  padding: 1.5rem 1rem 3.5rem;
-}
-
 .feed-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
 }
 
 /* Feed Cards General */
@@ -214,10 +199,6 @@
 
 /* Feed Cards Inside */
 .task-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
 }
 
 .task-avatar {
@@ -228,8 +209,6 @@
 }
 
 .task-user-info {
-  display: flex;
-  flex-direction: column;
 }
 
 .task-author {
@@ -258,11 +237,6 @@
 }
 
 .task-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  margin-bottom: 0.8rem;
 }
 
 .task-tag {
@@ -275,10 +249,6 @@
 }
 
 .task-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 0.8rem;
 }
 
 /* Task looking for */
@@ -293,19 +263,6 @@
 
 /* Privacy Policy Terms of Service */
 .bottom-nav {
-  position: fixed;
-  left: 1rem;
-  bottom: 1.5rem;
-  width: 210px;
-  height: auto;
-  min-height: 0;
-  padding-left: 0.25rem;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-  gap: 0.2rem;
-  z-index: 250;
 }
 
 .bottom-nav-item {
@@ -339,7 +296,7 @@
     position: fixed;
     top: 7rem;
     right: 1rem;
-		height: calc(100vh - 8rem);
+    height: calc(100vh - 8rem);
     width: 325px;
     z-index: 150;
   }
