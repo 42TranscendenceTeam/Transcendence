@@ -95,12 +95,6 @@ const NOTIFICATION_PATTERNS: Record<string, { regex: RegExp; vars: string[]; key
     vars: ['username'],
     key: 'directMessage',
   },
-  // NOTE: Uncomment to add team message notification support
-  // team_message: {
-  //   regex: /^(.+) sent a message in (.+)\.$/,
-  //   vars: ['username', 'team'],
-  //   key: 'teamMessage',
-  // },
 };
 
 function extractTeamName(type: string, content: string | null): string | null {

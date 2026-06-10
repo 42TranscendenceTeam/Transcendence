@@ -119,10 +119,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             if (n.type === 'direct_message') {
 				fetchFriends();
             }
-			//         NOTE: Uncomment to handle team messages
-				//         if (n.type === 'team_message') {
-				// setTeamRefreshTrigger((c) => c + 1);
-				//         }
           };
           sock.on('notification:new', handler);
 
