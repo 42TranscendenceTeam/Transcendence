@@ -365,6 +365,7 @@
     "teamRemoved": "You were removed from the {{team}} team.",
     "teamUserLeft": "{{username}} left {{team}}.",
     "teamDeleted": "The {{team}} team has been deleted by its owner.",
+    "directMessage": "You got a message from {{username}}.",
     "teamLoadFailed": "Failed to load team information.",
     "subtitle": "Stay up to date with friend requests, team activity, and account updates."
   },

@@ -1,6 +1,5 @@
 import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
-import { createNotification } from '../notifications/notifications.service.js';
 
 // Returns messages sent to a team
 export const getTeamSentMessages = async (userId: number, teamId: number, amount: number) => {
@@ -137,42 +136,13 @@ export const sendTeamMessage = async (userId: number, teamId: number, message: s
 	if (!message)
 		throw new AppError("Message cannot be empty.", 400);
 
-	const request = await prisma.teamMessage.create({
+	return prisma.teamMessage.create({
 		data: {
 			sender_id: userId,
 			team_id: teamId,
 			content: message,
 		},
 	});
-
-	const sender = await prisma.user.findUnique({
-		where: {
-			id:userId,
-		},
-		select: {
-			username: true,
-		}
-	});
-
-	const team = await prisma.team.findUnique({
-		where: {
-			id:teamId,
-		},
-		select: {
-			name: true,
-		}
-	});
-
-	await createNotification(
-		teamId,
-		'team_message',
-		request.id,
-		'team_message',
-		userId,
-		`You got a message from ${sender?.username ?? 'someone'} to ${team?.name} team.`,
-	);
-
-	return request;
 };
 
 // Delete team message

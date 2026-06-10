@@ -181,7 +181,7 @@ export const sendMessage = async (userId: number, friendId: number, message: str
 	await createNotification(
 		friendId,
 		'direct_message',
-		request.id,
+		friendId,
 		'direct_message',
 		userId,
 		`You got a message from ${sender?.username ?? 'someone'}.`,
