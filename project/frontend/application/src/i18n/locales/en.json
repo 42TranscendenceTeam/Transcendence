@@ -74,6 +74,7 @@
   },
   "profile": {
     "title": "Profile",
+    "userNotFound": "User not found",
     "collaboration": "Collaboration",
     "teamStats": "Teams Stats",
     "totalTeams": "Total",
