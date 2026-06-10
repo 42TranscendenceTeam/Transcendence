@@ -15,6 +15,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { GoogleLogin } from '@react-oauth/google';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import { api } from '../../services/api';
 
@@ -196,16 +197,22 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
             <span>or continue with</span>
           </div>
 
-          <div className="auth-social-buttons">
-            <button type="button" className="auth-social-btn">
-              <img src="/42logo.png" alt="42 logo" />
-              <span>42 School</span>
-            </button>
-
-            <button type="button" className="auth-social-btn">
-              <img src="/google-logo.webp" alt="Google logo" />
-              <span>Google</span>
-            </button>
+          <div className="auth-social-buttons" style={{ display: 'flex', justifyContent: 'center' }}>
+            <GoogleLogin
+              locale="en"
+              onSuccess={async (credentialResponse) => {
+                try {
+                  const result = await api.googleLogin(credentialResponse.credential);
+                  localStorage.setItem('authToken', result.token);
+                  window.location.href = '/';
+                } catch (err: any) {
+                  setError(err.message || 'Google login failed');
+                }
+              }}
+              onError={() => {
+                setError('Google login failed. Please try again.');
+              }}
+            />
           </div>
           <p className="auth-terms-note">
             By signing in, you agree with our <br />
