@@ -227,7 +227,7 @@ function Notifications() {
             {friendNotifications.map((notification) => (
 				notification.type === 'direct_message' ? (
 				  <Link
-					key={notification.id}
+					key={`${notification.id}-${notification.created_at}`}
 					to={`/profile/friends/${notification.user_id_trigger}`}
 					className={`notification-item${!notification.status_read ? ' unread' : ''}`}
 					onClick={() => deleteNotification(notification.id)}

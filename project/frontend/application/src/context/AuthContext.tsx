@@ -90,8 +90,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const sock = getSocket();
         if (sock) {
           const handler = (n: AppNotification) => {
-            setNotifications((prev) => [n, ...prev]);
-            if (!n.status_read) setUnreadCount((c) => c + 1);
+            setNotifications((prev) => {
+				const idx = prev.findIndex(item => item.id === n.id);
+				if (idx >= 0) {
+					return prev.map((item, i) => i === idx ? n : item);
+				}
+
+				if (!n.status_read) setUnreadCount((c) => c + 1);
+				return [n, ...prev];
+			});
 
             if (n.type === 'friend_request' || n.type === 'friend_request_accepted'
                 || n.type === 'friend_request_rejected'

@@ -150,6 +150,8 @@ export const createNotification = async (
 			},
 		});
 
+		const io = getIO();
+		io.to(`user:${userIdReceiver}`).emit('notification:new', updated);
 		return updated;
 	}
 
