@@ -116,7 +116,7 @@ function Register() {
             {loading ? t('common.loading') : t('auth.register.submit')}
           </button>
           {error && (
-            <div className="text-error text-center mb-4 text-sm">
+            <div className="text-center text-error text-sm mb-4">
               {error}
             </div>
           )}

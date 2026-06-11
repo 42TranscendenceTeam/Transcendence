@@ -1,0 +1,151 @@
+Tailwind Migration Summary
+===========================
+
+To get a better understanding of what TailwindCSS class do, install 'Tailwind CSS IntelliSense' extension on VsCode!
+
+Tailwind CSS Configuration
+===========================
+
+tailwind.config.js - Custom palette:
+  colors: card, card-hover, primary, text-primary, text-secondary,
+          accent, accent-hover, border, border-light, success, error,
+          neon-purple, neon-blue, neon-pink
+  boxShadow: btn-glow, btn-glow-hover
+
+postcss.config.js - Processing pipeline:
+  plugins: { tailwindcss: {}, autoprefixer: {} }
+
+
+Tailwind Classes Used (by category)
+===========================
+CLASS             WHAT IT DOES               WHERE IS USED                     OLD CSS RULE
+
+LAYOUT
+------------------------------------------------------------------------------------------------
+min-h-screen     Full viewport height         AuthLayout, FeedLayout         min-height: 100vh
+flex              Flexbox container            AuthLayout, FeedLayout, Login   display: flex
+flex-col          Vertical flex direction     FeedLayout, Feed               flex-direction: column
+flex-1            Grow to fill space          FeedLayout                      flex: 1
+pr-[340px]        340px right padding         FeedLayout                      padding-right: 340px
+
+SPACING
+------------------------------------------------------------------------------------------------
+mb-4              1rem margin-bottom          Login, Register, Terms, Privacy  margin-bottom: 1rem
+mb-6              1.5rem margin-bottom        Login, Register                  margin-bottom: 1.5rem
+mt-4              1rem margin-top             Terms, Privacy                  margin-top: 1rem
+mt-6              1.5rem margin-top           Login                            margin-top: 1.5rem
+p-6               1.5rem padding              Privacy, AuthLayout card         padding: 1.5rem
+pb-14             3.5rem bottom padding       FeedLayout                      padding-bottom: 3.5rem
+pl-4              1rem left padding           Feed                            padding-left: 1rem
+pl-6              1.5rem left padding         Feed                            padding-left: 1.5rem
+
+GAP
+------------------------------------------------------------------------------------------------
+gap-4             1rem gap                    AuthLayout, Login               gap: 1rem
+gap-3             0.75rem gap                 Feed                            gap: 0.75rem
+gap-2             0.5rem gap                  Feed                            gap: 0.5rem
+gap-[0.85rem]     Custom 0.85rem gap          Login                           gap: 0.85rem
+gap-8             2rem gap                    Feed                            gap: 2rem
+gap-[0.65rem]     Custom 0.65rem gap          Terms                           gap: 0.65rem
+
+ALIGNMENT
+------------------------------------------------------------------------------------------------
+items-center      Center vertically           AuthLayout, Login, Feed         align-items: center
+items-stretch     Stretch to fill             AuthLayout                     align-items: stretch
+justify-center    Center horizontally         AuthLayout, Login              justify-content: center
+justify-between   Space between               Feed                            justify-content: space-between
+justify-start     Align start                 AuthLayout                     justify-content: flex-start
+
+GRID
+------------------------------------------------------------------------------------------------
+grid              CSS grid                   Login                           display: grid
+grid-cols-2       2 columns                  Login                           grid-template-columns: ...
+
+WIDTH/HEIGHT
+------------------------------------------------------------------------------------------------
+w-full            100% width                 Login, Register, Terms, Privacy,
+                                           FeedLayout                      width: 100%
+h-[72px]          72px height               AuthLayout                      height: 72px
+h-10              40px height               AuthLayout                      height: 2.5rem
+min-w-[450px]     Min 450px width           AuthLayout card                 min-width: 450px
+
+MAX WIDTH
+------------------------------------------------------------------------------------------------
+max-w-[620px]     Max 620px width           FeedLayout                      max-width: 620px
+max-w-2xl         Max 672px width           Privacy, Terms                  max-width: 42rem
+mx-auto           Center horizontally        Terms, Privacy, FeedLayout      margin: 0 auto
+
+TEXT
+------------------------------------------------------------------------------------------------
+text-center       Center text                Login, Register, Terms, Privacy, Feed
+                                           text-align: center
+text-sm           0.875rem font             Login                           font-size: 0.875rem
+text-xl           1.25rem font              Login 2FA code                  font-size: 1.25rem
+text-xs           0.75rem font              Privacy                         font-size: 0.75rem
+tracking-widest   Wide letter-spacing        Login 2FA                       letter-spacing: 0.1em
+
+FONT WEIGHT
+------------------------------------------------------------------------------------------------
+font-semibold     600 weight                 Terms, Privacy                  font-weight: 600
+
+WRAPPING
+------------------------------------------------------------------------------------------------
+flex-wrap         Allow wrap                 Feed                            flex-wrap: wrap
+
+OVERFLOW
+------------------------------------------------------------------------------------------------
+overflow-y-auto   Scroll vertical            AuthLayout                      overflow-y: auto
+overflow-x-hidden Hide horizontal            AuthLayout                      overflow-x: hidden
+
+POSITIONING
+------------------------------------------------------------------------------------------------
+relative          Relative positioning       AuthLayout                      position: relative
+
+CUSTOM COLORS (from tailwind config)
+------------------------------------------------------------------------------------------------
+text-error        Error red                  Login                           color: var(--error)
+text-text-secondary  Secondary text           Login, Register, Terms, Privacy
+text-accent       Accent purple              Login
+text-text-primary Primary white              Terms, Privacy
+
+
+Components Migrated
+-------------------
+
+Component          File                          Tailwind Classes  CSS Rules Removed
+------             ----                          ----------------  -----------------
+Login.tsx          src/pages/auth/               16                11
+Register.tsx       src/pages/auth/                8                 6
+AuthLayout.tsx     src/components/layouts/       14                 6
+TermsOfService.tsx src/pages/auth/               11                 5
+PrivacyPolicy.tsx  src/pages/auth/               12                 6
+Feed.tsx           src/pages/feed/               13                10
+FeedLayout.tsx     src/components/layouts/        4                 4
+
+TOTAL: 78 Tailwind classes across 7 components
+
+
+Class Ordering Convention (mandatory)
+======================================
+Tailwind utility classes must follow this order within className:
+
+  1. Display/Layout    (flex, grid, block, inline-flex)
+  2. Sizing            (w-full, h-*, flex-1, min-w-*, max-w-*, min-h-*)
+  3. Positioning       (relative, absolute, fixed, sticky)
+  4. Overflow          (overflow-*, etc.)
+  5. Spacing           (p-*, m-*, gap-*, px-*, py-*, pt-*, pb-*, pl-*, pr-*)
+  6. Alignment         (items-center, items-stretch, justify-*, justify-self-*)
+  7. Typography        (text-*, font-*, tracking-*, leading-*)
+  8. Colors            (text-*, bg-*, border-*)
+  9. Effects           (rounded-*, shadow-*, opacity-*, backdrop-*, cursor-*)
+
+  CSS custom classes (.btn, .card, .auth-*, .feed-*, etc.) always come FIRST
+  before any Tailwind utilities.
+
+Example CORRECT:
+  className="auth-divider flex items-center gap-4 text-center"
+  className="mb-2 text-text-secondary"
+
+Example INCORRECT:
+  className="flex text-center auth-divider items-center gap-4"
+  className="text-text-secondary mb-2"

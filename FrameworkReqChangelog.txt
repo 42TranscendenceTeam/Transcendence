@@ -162,6 +162,44 @@ Changes:
 Status: Complete.
 
 ================================================================================
+2026-06-11 — Tailwind class ordering standardization
+================================================================================
+Files changed:
+  - src/pages/auth/Login.tsx (7 fixes)
+  - src/pages/auth/Register.tsx (1 fix)
+  - src/pages/auth/TermsOfService.tsx (1 fix)
+  - src/pages/auth/PrivacyPolicy.tsx (1 fix)
+  - FrameworkReqRoadMap.txt (added ordering convention)
+
+Changes:
+  - Applied consistent class ordering to all migrated components
+  - Order: Display → Sizing → Position → Overflow → Spacing → Alignment
+           → Typography → Colors → Effects
+  - CSS custom classes always come first before Tailwind utilities
+  - Fixed inconsistent patterns where margin/text classes were mixed
+
+Class ordering fixes per file:
+  Login.tsx:
+    - "text-error text-center mb-4" → "text-center text-error mb-4"
+    - "mb-4 text-center" → "text-center mb-4"
+    - "text-text-secondary mb-2" → "mb-2 text-text-secondary"
+    - "text-sm text-text-secondary" → "text-text-secondary text-sm"
+    - "text-center tracking-widest text-xl" → "text-center text-xl tracking-widest"
+    - "bg-none border-none text-accent cursor-pointer text-sm"
+      → "bg-none border-none text-sm text-accent cursor-pointer"
+
+  Register.tsx:
+    - "text-error text-center mb-4 text-sm" → "text-center text-error text-sm mb-4"
+
+  TermsOfService.tsx:
+    - "text-sm text-text-secondary" → "text-text-secondary text-sm"
+
+  PrivacyPolicy.tsx:
+    - "text-sm text-text-secondary" → "text-text-secondary text-sm"
+
+Status: Complete.
+
+================================================================================
 Pending (next up)
 ================================================================================
   - ProfileLayout.tsx        (06a-profile-pages.css)

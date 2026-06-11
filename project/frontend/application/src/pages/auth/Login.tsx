@@ -71,7 +71,7 @@ function Login() {
       </div>
 
       {error && (
-        <div className="text-error text-center mb-4">
+        <div className="text-center text-error mb-4">
           {error}
         </div>
       )}
@@ -112,11 +112,11 @@ function Login() {
         </form>
       ) : (
         <form onSubmit={handle2FASubmit}>
-          <div className="mb-4 text-center">
-            <p className="text-text-secondary mb-2">
+          <div className="text-center mb-4">
+            <p className="mb-2 text-text-secondary">
               {t('auth.login.twoFactorTitle') || 'Two-Factor Authentication'}
             </p>
-            <p className="text-sm text-text-secondary">
+            <p className="text-text-secondary text-sm">
               {t('auth.login.twoFactorDesc') || 'Enter the 6-digit code from your authenticator app'}
             </p>
           </div>
@@ -125,7 +125,7 @@ function Login() {
             <input
               type="text"
               id="twoFactorCode"
-              className="input text-center tracking-widest text-xl"
+              className="input text-center text-xl tracking-widest"
               value={twoFactorCode}
               onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="000000"
@@ -145,7 +145,7 @@ function Login() {
                 setTwoFactorCode('');
                 setTempToken('');
               }}
-              className="bg-none border-none text-accent cursor-pointer text-sm"
+              className="bg-none border-none text-sm text-accent cursor-pointer"
             >
               {t('auth.login.backToLogin') || 'Back to Login'}
             </button>

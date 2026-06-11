@@ -19,7 +19,7 @@ function TermsOfService() {
     <section className="legal-page mx-auto rounded-xl">
       <h1 className="legal-title mb-4 text-center">{t('legal.terms.title')}</h1>
 
-      <div className="legal-content text-sm text-text-secondary leading-relaxed">
+      <div className="legal-content text-text-secondary text-sm leading-relaxed">
         <p className="mb-2">{t('legal.terms.intro')}</p>
 
         <h2 className="mt-4 text-text-primary font-semibold">{t('legal.terms.acceptableUse')}</h2>

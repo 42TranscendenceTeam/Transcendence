@@ -141,6 +141,31 @@ What NOT to Do
 - Do NOT try to replace complex visual effects with Tailwind (gradients,
   glows, backdrop-filter are harder to express in Tailwind than in CSS)
 
+Class Ordering Convention (mandatory for all migrated components)
+------------------------------------------------------------------
+Tailwind utility classes must follow this order within className:
+
+  1. Display/Layout    (flex, grid, block, inline-flex)
+  2. Sizing            (w-full, h-*, flex-1, min-w-*, max-w-*, min-h-*)
+  3. Positioning       (relative, absolute, fixed, sticky)
+  4. Overflow          (overflow-*, etc.)
+  5. Spacing           (p-*, m-*, gap-*, px-*, py-*, pt-*, pb-*, pl-*, pr-*)
+  6. Alignment         (items-center, items-stretch, justify-*, justify-self-*)
+  7. Typography        (text-*, font-*, tracking-*, leading-*)
+  8. Colors            (text-*, bg-*, border-*)
+  9. Effects           (rounded-*, shadow-*, opacity-*, backdrop-*, cursor-*)
+
+  CSS custom classes (.btn, .card, .auth-*, .feed-*, etc.) always come FIRST
+  before any Tailwind utilities.
+
+  Example CORRECT:
+    className="auth-divider flex items-center gap-4 text-center"
+    className="mb-2 text-text-secondary"
+
+  Example INCORRECT:
+    className="flex text-center auth-divider items-center gap-4"
+    className="text-text-secondary mb-2"
+
 Key Benefits of This Approach
 ------------------------------
 - No breaking changes at any commit
