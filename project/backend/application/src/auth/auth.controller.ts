@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { register, login, verify2FA, checkEmail } from './auth.service.js';
+import { register, login, verify2FA, checkEmail, googleLogin } from './auth.service.js';
 
  export const registerUser = async (req: Request, res: Response) => {
    const result = await register(req.body);
@@ -22,4 +22,9 @@ export const checkEmailController = async (req: Request, res: Response) => {
   const { email } = req.body;
   const result = await checkEmail(email);
   res.json(result);
+};
+
+export const googleLoginController = async (req: Request, res: Response) => {
+  const result = await googleLogin(req.body.credential);
+  return res.json(result);
 };
