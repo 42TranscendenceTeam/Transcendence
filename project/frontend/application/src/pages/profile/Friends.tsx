@@ -206,11 +206,10 @@ function Friends() {
                 >
                   ×
                 </button>
-                <div style={{ position: 'relative', display: 'inline-block' }}>
+                <div className="relative inline-block">
                   <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
                   <span
-                    className={`status-indicator ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`}
-                    style={{ position: 'absolute', bottom: 0, right: 0 }}
+                    className={`status-indicator ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'} absolute bottom-0 right-0`}
                   />
                 </div>
                 <div className="friend-info">

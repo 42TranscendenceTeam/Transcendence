@@ -12,8 +12,8 @@ import { api, Team } from '../../services/api';
 import { getAvatarUrl } from '../../utils/avatar';
 import FeedLayout from '../../components/layouts/FeedLayout';
 
-function RotatingText() {
-  const { t } = useTranslation();
+function RotatingText({ forceEnglish }: { forceEnglish?: boolean }) {
+  const { t } = useTranslation(undefined, forceEnglish ? { lng: 'en' } : undefined);
 
   const phrases = [
     t('feed.rotatingPhrase1'),
@@ -97,7 +97,7 @@ const MOCK_AVAILABLE_TEAMS: Team[] = [
 ];
 
 function Feed() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, { lng: 'en' });
   const { user, teamInvites } = useContext(AuthContext)!;
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
@@ -297,7 +297,7 @@ function Feed() {
   };
 
   const headerContent = (
-    <div className="feed-header">
+    <div className="feed-header mb-0">
       {!user && (
         <>
           <Link to="/login" className="welcome-user">
@@ -307,7 +307,7 @@ function Feed() {
             <span className="welcome-text">{t('auth.login.title')}</span>
           </Link>
 
-          <div className="auth-topbar-actions feed-auth-actions">
+          <div className="auth-topbar-actions feed-auth-actions gap-4">
             <span>New to Transcendence?</span>
             <Link to="/register" className="auth-topbar-btn">
               Create account
@@ -316,22 +316,22 @@ function Feed() {
         </>
       )}
 
-      <h1 className="feed-title">
+      <h1 className="feed-title pl-4">
         <span>Activity Feed</span>
       </h1>
-      <p className="feed-subtitle">
-        <RotatingText />
+      <p className="feed-subtitle pl-6 m-0">
+        <RotatingText forceEnglish={!user} />
       </p>
     </div>
   );
 
   return (
     <FeedLayout header={headerContent}>
-      <div className="feed-list">
+      <div className="feed-list flex flex-col gap-8">
         {loading && <div className="loading">Loading teams...</div>}
         {error && !isUsingMockData && <div className="error-text">{error}</div>}
         {isUsingMockData && !user && (
-          <p className="empty-hint" style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          <p className="empty-hint mb-4 text-center">
             Sign in to see real team data
           </p>
         )}
@@ -343,25 +343,25 @@ function Feed() {
         )}
         {!loading && !error && availableTeams.map((team) => (
           <div key={team.id} className="task-card">
-            <div className="task-header">
+            <div className="task-header flex items-center gap-3 mb-4">
               <img
                 src={getAvatarUrl(team.owner.avatar)}
                 alt={team.owner.username}
                 className="task-avatar"
               />
-              <div className="task-user-info">
+              <div className="task-user-info flex flex-col">
                 <Link to={`/profile/${team.owner.id}`} className="task-author">{team.owner.username}</Link>
                 <span className="task-timestamp">{formatDate(team.created_at)}</span>
               </div>
             </div>
             <h2 className="task-title">{team.name}</h2>
             <p className="task-description">{team.objective}</p>
-            <div className="task-tags">
+            <div className="task-tags flex flex-wrap gap-2 mt-4 mb-4">
               {(team.tags || []).map((tag) => (
                 <span key={tag} className="task-tag">{tag}</span>
               ))}
             </div>
-            <div className="task-footer">
+            <div className="task-footer flex justify-between items-center pt-4">
               <span className="task-looking">
                 {t('feed.lookingFor') || 'Looking for'} <strong>{(team.maxUsers || 10) - (team.memberCount || 0)}</strong> {(team.maxUsers || 10) - (team.memberCount || 0) > 1 ? t('feed.collaborators') : t('feed.collaborator')}
               </span>

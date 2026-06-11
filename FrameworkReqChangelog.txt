@@ -1,0 +1,352 @@
+Framework Migration Changelog
+==============================
+Tracks per-component progress migrating layout/spacing rules from custom CSS
+to Tailwind utility classes. See FrameworkReqRoadMap.txt for full strategy.
+
+Date format: YYYY-MM-DD
+
+================================================================================
+2026-06-09 — Phase 1: Tailwind palette configuration
+================================================================================
+Files changed:
+  - tailwind.config.js — added custom color palette and box shadows under
+    theme.extend:
+      colors: card, card-hover, primary, text-primary, text-secondary,
+              accent, accent-hover, border, border-light, success, error,
+              neon-purple, neon-blue, neon-pink
+      boxShadow: btn-glow, btn-glow-hover
+
+Status: Complete. All CSS variable colors now available as Tailwind utilities
+(e.g. bg-card, text-accent, border-border).
+
+================================================================================
+2026-06-09 — Login.tsx pilot migration
+================================================================================
+Files changed:
+  - src/pages/auth/Login.tsx
+  - src/css-styles/04-auth.css (partial)
+
+Changes to Login.tsx:
+  - Replaced 10 inline style={{...}} blocks with Tailwind classes
+  - Added layout utilities to custom CSS class names
+  - Shared classes (.label, .input, .btn, .btn-primary) left untouched
+  - Tailwind classes added:
+      Layout:    mb-4, mb-6, text-center, w-full, mt-6, flex, items-center,
+                 justify-center, gap-4, gap-3, grid, grid-cols-2
+      Visual:    text-error, text-text-secondary, text-accent, text-sm,
+                 text-xl, tracking-widest
+  - Cleanup: Removed mock mode code (USE_MOCK, if/else wrapper)
+  - Removed unused import: useNavigate
+  - Updated header comment to reflect actual implementation
+
+Changes to 04-auth.css:
+  - Removed layout rules from: .login-card-header (margin-bottom),
+    .login-card-logo (margin: 0 auto), .auth-submit-btn (width, margin-bottom),
+    .auth-social-section (margin-top), .auth-divider (display, align-items, gap),
+    .auth-social-buttons (display, grid-template-columns, gap),
+    .auth-social-btn (display, align-items, justify-content, gap),
+    .auth-terms-note (text-align, margin-top)
+  - Each class now contains only visual/theme properties
+
+Status: Complete.
+
+================================================================================
+2026-06-09 — Register.tsx migration
+================================================================================
+Files changed:
+  - src/pages/auth/Register.tsx
+
+Changes to Register.tsx:
+  - Replaced 8 inline style={{...}} blocks with Tailwind classes
+  - Added w-full to submit button
+  - Tailwind classes added:
+      Layout:    mb-4, mb-6, w-full, text-center
+      Visual:    text-error, text-text-secondary, text-accent, text-sm
+  - Cleanup: Removed mock mode code (USE_MOCK, if/else wrapper)
+  - Removed unused imports: useNavigate, useError
+  - Updated header comment to reflect actual implementation
+  - No CSS file changes (layout rules already removed in Login.tsx session)
+
+Status: Complete.
+
+================================================================================
+2026-06-09 — AuthLayout.tsx migration
+================================================================================
+Files changed:
+  - src/components/layouts/AuthLayout.tsx
+  - src/css-styles/04-auth.css
+
+Changes to AuthLayout.tsx:
+  - Added Tailwind layout utilities to all elements
+  - Removed unused import: BottomNav
+  - Updated header comment
+  - Tailwind classes added:
+      .auth-layout:       min-h-screen, overflow-y-auto, overflow-x-hidden,
+                         flex, flex-col, items-stretch, justify-start
+      .auth-topbar:      w-full, h-[72px], px-8, relative
+      .auth-topbar-actions: flex, items-center, gap-4
+      .auth-topbar-btn:  inline-flex, h-10, px-6, items-center, justify-center
+      .auth-content:     w-full, min-h-[calc(100vh-72px)], px-8, pb-8
+      .auth-card:        min-w-[450px], p-6
+
+Changes to 04-auth.css:
+  - Removed layout rules from: .auth-layout, .auth-topbar, .auth-topbar-actions,
+    .auth-topbar-btn, .auth-content, .auth-card
+  - Each class now contains only visual/theme properties
+
+Status: Complete.
+
+================================================================================
+2026-06-10 — TermsOfService.tsx + PrivacyPolicy.tsx migration
+================================================================================
+Files changed:
+  - src/pages/auth/TermsOfService.tsx
+  - src/pages/auth/PrivacyPolicy.tsx
+  - src/css-styles/04-auth.css (legal classes)
+
+Changes:
+  - Added Tailwind classes: mx-auto, rounded-xl, mb-4, text-center, text-sm,
+    text-xs, text-text-primary, text-text-secondary, leading-relaxed, mt-4,
+    font-semibold, w-full, max-w-2xl, p-6, md:p-8
+  - Removed layout rules from: .legal-layout-card, .legal-page, .legal-title,
+    .legal-content, .legal-content p, .legal-content h2, .legal-contact-list
+  - Each class now contains only visual/theme properties
+
+Status: Complete.
+
+================================================================================
+2026-06-10 — Feed.tsx + FeedLayout.tsx migration
+================================================================================
+Files changed:
+  - src/pages/feed/Feed.tsx
+  - src/components/layouts/FeedLayout.tsx
+  - src/css-styles/05-feed.css
+
+Changes:
+  - Added Tailwind classes: min-h-screen, flex, flex-col, pr-[340px],
+    w-full, max-w-[620px], mx-auto, flex-1, p-6, pb-14, pl-4, pl-6, m-0,
+    gap-8, items-center, gap-3, mb-4, flex-wrap, gap-2, mt-4, justify-between,
+    pt-4, text-center, mb-4
+  - Removed layout rules from: .feed-header, .feed-title, .feed-subtitle,
+    .feed-list, .feed-header-container, .feed-main, .task-header,
+    .task-user-info, .task-tags, .task-footer
+  - Removed inline style from .empty-hint (line 334)
+  - Kept responsive CSS for .feed-sidebar (display: none/block)
+  - Kept .bottom-nav classes (unused but harmless)
+  - Cleaned up empty CSS classes after layout rule removal
+  - Note: GlobalChat not migrated (pending removal)
+
+Status: Complete.
+
+================================================================================
+2026-06-10 — Feed.tsx post-migration fixes
+================================================================================
+Files changed:
+  - src/pages/feed/Feed.tsx
+  - src/components/layouts/FeedLayout.tsx
+  - src/css-styles/04-auth.css
+  - src/css-styles/05-feed.css
+
+Changes:
+  - FeedLayout: Added max-w-[620px] to .feed-main to constrain card width
+  - Feed.tsx: Added { lng: 'en' } to useTranslation() for unregistered users
+  - Feed.tsx: Added forceEnglish prop to RotatingText component (shows English
+    for unregistered users, translated for logged-in users)
+  - 04-auth.css: Added display: flex, align-items: center, gap: 0.75rem to
+    .auth-topbar-actions for proper spacing between text and button
+  - 04-auth.css: Updated .auth-topbar-btn styling (padding, gradient, glow)
+    to match Login button appearance
+  - 04-auth.css: Changed .welcome-text font-weight from 500 to 600 to match
+    Create account button
+
+Status: Complete.
+
+================================================================================
+2026-06-11 — Tailwind class ordering standardization
+================================================================================
+Files changed:
+  - src/pages/auth/Login.tsx (7 fixes)
+  - src/pages/auth/Register.tsx (1 fix)
+  - src/pages/auth/TermsOfService.tsx (1 fix)
+  - src/pages/auth/PrivacyPolicy.tsx (1 fix)
+  - FrameworkReqRoadMap.txt (added ordering convention)
+
+Changes:
+  - Applied consistent class ordering to all migrated components
+  - Order: Display → Sizing → Position → Overflow → Spacing → Alignment
+           → Typography → Colors → Effects
+  - CSS custom classes always come first before Tailwind utilities
+  - Fixed inconsistent patterns where margin/text classes were mixed
+
+Class ordering fixes per file:
+  Login.tsx:
+    - "text-error text-center mb-4" → "text-center text-error mb-4"
+    - "mb-4 text-center" → "text-center mb-4"
+    - "text-text-secondary mb-2" → "mb-2 text-text-secondary"
+    - "text-sm text-text-secondary" → "text-text-secondary text-sm"
+    - "text-center tracking-widest text-xl" → "text-center text-xl tracking-widest"
+    - "bg-none border-none text-accent cursor-pointer text-sm"
+      → "bg-none border-none text-sm text-accent cursor-pointer"
+
+  Register.tsx:
+    - "text-error text-center mb-4 text-sm" → "text-center text-error text-sm mb-4"
+
+  TermsOfService.tsx:
+    - "text-sm text-text-secondary" → "text-text-secondary text-sm"
+
+  PrivacyPolicy.tsx:
+    - "text-sm text-text-secondary" → "text-text-secondary text-sm"
+
+Status: Complete.
+
+================================================================================
+2026-06-11 — Inline styles to Tailwind conversion
+================================================================================
+Files changed:
+  - src/pages/profile/Friends.tsx (2 fixes)
+  - src/pages/profile/UserProfile.tsx (1 fix)
+  - src/pages/profile/TeamDetail.tsx (7 fixes)
+
+Changes:
+  Friends.tsx:
+    - Line 209: `style={{ position: 'relative', display: 'inline-block' }}`
+      → `className="relative inline-block"`
+    - Line 213: `style={{ position: 'absolute', bottom: 0, right: 0 }}`
+      → `absolute bottom-0 right-0` (added to existing span className)
+
+  UserProfile.tsx:
+    - Line 76: `style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}`
+      → `className="flex items-center gap-2"`
+
+  TeamDetail.tsx:
+    - Line 750: `style={{ position: 'relative', display: 'inline-block' }}`
+      → `className="relative inline-block"`
+    - Line 752: `style={{ position: 'absolute', bottom: 0, right: 0 }}`
+      → `absolute bottom-0 right-0` (added to existing span className)
+    - Line 1000: `style={{ display: 'none' }}`
+      → `className="hidden"`
+    - Line 1024: `style={{ cursor: 'pointer' }}`
+      → `className="cursor-pointer"`
+    - Line 1035: `style={{ width: '0.875rem', height: '0.875rem' }}`
+      → `className="w-[0.875rem] h-[0.875rem]"`
+    - Line 1050: `style={{ width: '1rem', height: '1rem' }}`
+      → `className="w-4 h-4"`
+    - Line 1113: `style={{ color: 'var(--color-error, #ef4444)', marginTop: '0.5rem', fontWeight: 600 }}`
+      → `className="text-error mt-2 font-semibold"`
+
+Status: Complete.
+
+================================================================================
+2026-06-11 — ProfileLayout.tsx migration
+================================================================================
+Files changed:
+  - src/components/layouts/ProfileLayout.tsx
+  - src/css-styles/06-profile.css
+
+Changes to ProfileLayout.tsx:
+  - Added Tailwind classes to main layout elements:
+    .profile-layout:    flex min-h-screen
+    .profile-main:     flex flex-1 justify-center p-20
+    .profile-sidebar:  fixed top-0 left-0 bottom-0 w-[240px] flex flex-col items-center
+    .profile-sidebar-nav: flex flex-col gap-2 shrink-0
+    .profile-sidebar-nav-item: flex flex-row items-center justify-start gap-3
+    .nav-icon-wrapper: relative flex
+    .mobile-menu-overlay: fixed inset-0 bg-black/50 z-50
+    .mobile-menu-panel: fixed top-0 right-0 h-full w-[280px] bg-card border-l border-border
+    .mobile-menu-header: flex justify-between items-center p-4 border-b border-border
+    .mobile-menu-nav: flex flex-col p-4 gap-2
+
+Changes to 06-profile.css:
+  - Removed layout rules from: .profile-layout, .profile-sidebar,
+    .profile-sidebar-nav, .profile-sidebar-nav-item, .nav-icon-wrapper,
+    .profile-main
+
+Status: Complete.
+
+================================================================================
+2026-06-11 — CSS cleanup (layout rules removed)
+================================================================================
+Files changed:
+  - src/css-styles/04-auth.css
+  - src/css-styles/05-feed.css
+  - src/css-styles/06-profile.css
+
+Changes to 04-auth.css:
+  - Removed display: inline-flex from .welcome-user
+  - Removed display: flex, align-items: center, gap from .auth-topbar-actions
+  - Removed flex: 1 from .auth-divider::before and .auth-divider::after
+
+Changes to 05-feed.css:
+  - Removed min-height, display, flex-direction, padding-right from .feed-layout
+
+Changes to 06-profile.css:
+  - Removed min-height, display from .profile-layout
+  - Removed width, position, display, flex-direction, align-items from .profile-sidebar
+  - Removed flex-shrink, display, flex-direction, gap from .profile-sidebar-nav
+  - Removed display, flex-direction, align-items, justify-content, gap from .profile-sidebar-nav-item
+  - Removed position: relative, display: flex from .nav-icon-wrapper
+  - Removed flex, min-height, margin-left, width, padding, display, justify-content from .profile-main
+
+Status: Complete.
+
+================================================================================
+2026-06-11 — Ordering convention applied to all migrated components
+================================================================================
+Files changed:
+  - src/components/layouts/FeedLayout.tsx (1 fix)
+  - src/components/layouts/ProfileLayout.tsx (1 fix)
+
+Changes:
+  FeedLayout.tsx:
+    - "feed-main flex-1 w-full..." → "feed-main flex flex-1 w-full..."
+      (moved flex before flex-1 to follow convention)
+
+  ProfileLayout.tsx:
+    - "profile-main flex-1 p-20 flex justify-center..."
+      → "profile-main flex flex-1 justify-center p-20..."
+      (moved flex before flex-1, reordered spacing after alignment)
+
+Status: Complete.
+
+================================================================================
+2026-06-11 — Ordering convention fixes (spacing before text)
+================================================================================
+Files changed:
+  - src/pages/auth/Login.tsx (4 fixes)
+  - src/pages/auth/Register.tsx (1 fix)
+  - src/pages/feed/Feed.tsx (1 fix)
+
+Changes:
+  Login.tsx:
+    - Line 74: "text-center text-error mb-4" → "mb-4 text-center text-error"
+    - Line 108: "text-center mb-6" → "mb-6 text-center"
+    - Line 115: "text-center mb-4" → "mb-4 text-center"
+    - Line 173: "auth-terms-note text-center mt-4" → "auth-terms-note mt-4 text-center"
+
+  Register.tsx:
+    - Line 119: "text-center text-error text-sm mb-4" → "mb-4 text-center text-error text-sm"
+
+  Feed.tsx:
+    - Line 334: "empty-hint text-center mb-4" → "empty-hint mb-4 text-center"
+
+Note: Fixed spacing classes (mb-*, mt-*) should come BEFORE text/typography
+classes to follow the documented ordering convention.
+
+Status: Complete.
+
+================================================================================
+Pending (next up)
+================================================================================
+  - Friends.tsx              (full migration, 08-chat.css)
+  - Profile.tsx              (06-profile.css)
+  - UserProfile.tsx          (full migration, 06-profile.css)
+  - TeamDetail.tsx           (full migration, 07-teams.css)
+  - Modals                   (09-modals.css)
+  - GlobalChat.tsx           (05a-feed-global-chat.css) — PENDING REMOVAL, NOT MIGRATING
+
+Migration approach per component:
+  1. Read the .tsx file and its CSS file
+  2. Identify layout/spacing rules → Tailwind candidates
+  3. Identify visual/theme rules → keep in CSS
+  4. Add Tailwind utilities to JSX className
+  5. Optionally remove layout rules from CSS class definitions
