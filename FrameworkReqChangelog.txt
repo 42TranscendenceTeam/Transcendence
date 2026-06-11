@@ -200,15 +200,149 @@ Class ordering fixes per file:
 Status: Complete.
 
 ================================================================================
+2026-06-11 — Inline styles to Tailwind conversion
+================================================================================
+Files changed:
+  - src/pages/profile/Friends.tsx (2 fixes)
+  - src/pages/profile/UserProfile.tsx (1 fix)
+  - src/pages/profile/TeamDetail.tsx (7 fixes)
+
+Changes:
+  Friends.tsx:
+    - Line 209: `style={{ position: 'relative', display: 'inline-block' }}`
+      → `className="relative inline-block"`
+    - Line 213: `style={{ position: 'absolute', bottom: 0, right: 0 }}`
+      → `absolute bottom-0 right-0` (added to existing span className)
+
+  UserProfile.tsx:
+    - Line 76: `style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}`
+      → `className="flex items-center gap-2"`
+
+  TeamDetail.tsx:
+    - Line 750: `style={{ position: 'relative', display: 'inline-block' }}`
+      → `className="relative inline-block"`
+    - Line 752: `style={{ position: 'absolute', bottom: 0, right: 0 }}`
+      → `absolute bottom-0 right-0` (added to existing span className)
+    - Line 1000: `style={{ display: 'none' }}`
+      → `className="hidden"`
+    - Line 1024: `style={{ cursor: 'pointer' }}`
+      → `className="cursor-pointer"`
+    - Line 1035: `style={{ width: '0.875rem', height: '0.875rem' }}`
+      → `className="w-[0.875rem] h-[0.875rem]"`
+    - Line 1050: `style={{ width: '1rem', height: '1rem' }}`
+      → `className="w-4 h-4"`
+    - Line 1113: `style={{ color: 'var(--color-error, #ef4444)', marginTop: '0.5rem', fontWeight: 600 }}`
+      → `className="text-error mt-2 font-semibold"`
+
+Status: Complete.
+
+================================================================================
+2026-06-11 — ProfileLayout.tsx migration
+================================================================================
+Files changed:
+  - src/components/layouts/ProfileLayout.tsx
+  - src/css-styles/06-profile.css
+
+Changes to ProfileLayout.tsx:
+  - Added Tailwind classes to main layout elements:
+    .profile-layout:    flex min-h-screen
+    .profile-main:     flex flex-1 justify-center p-20
+    .profile-sidebar:  fixed top-0 left-0 bottom-0 w-[240px] flex flex-col items-center
+    .profile-sidebar-nav: flex flex-col gap-2 shrink-0
+    .profile-sidebar-nav-item: flex flex-row items-center justify-start gap-3
+    .nav-icon-wrapper: relative flex
+    .mobile-menu-overlay: fixed inset-0 bg-black/50 z-50
+    .mobile-menu-panel: fixed top-0 right-0 h-full w-[280px] bg-card border-l border-border
+    .mobile-menu-header: flex justify-between items-center p-4 border-b border-border
+    .mobile-menu-nav: flex flex-col p-4 gap-2
+
+Changes to 06-profile.css:
+  - Removed layout rules from: .profile-layout, .profile-sidebar,
+    .profile-sidebar-nav, .profile-sidebar-nav-item, .nav-icon-wrapper,
+    .profile-main
+
+Status: Complete.
+
+================================================================================
+2026-06-11 — CSS cleanup (layout rules removed)
+================================================================================
+Files changed:
+  - src/css-styles/04-auth.css
+  - src/css-styles/05-feed.css
+  - src/css-styles/06-profile.css
+
+Changes to 04-auth.css:
+  - Removed display: inline-flex from .welcome-user
+  - Removed display: flex, align-items: center, gap from .auth-topbar-actions
+  - Removed flex: 1 from .auth-divider::before and .auth-divider::after
+
+Changes to 05-feed.css:
+  - Removed min-height, display, flex-direction, padding-right from .feed-layout
+
+Changes to 06-profile.css:
+  - Removed min-height, display from .profile-layout
+  - Removed width, position, display, flex-direction, align-items from .profile-sidebar
+  - Removed flex-shrink, display, flex-direction, gap from .profile-sidebar-nav
+  - Removed display, flex-direction, align-items, justify-content, gap from .profile-sidebar-nav-item
+  - Removed position: relative, display: flex from .nav-icon-wrapper
+  - Removed flex, min-height, margin-left, width, padding, display, justify-content from .profile-main
+
+Status: Complete.
+
+================================================================================
+2026-06-11 — Ordering convention applied to all migrated components
+================================================================================
+Files changed:
+  - src/components/layouts/FeedLayout.tsx (1 fix)
+  - src/components/layouts/ProfileLayout.tsx (1 fix)
+
+Changes:
+  FeedLayout.tsx:
+    - "feed-main flex-1 w-full..." → "feed-main flex flex-1 w-full..."
+      (moved flex before flex-1 to follow convention)
+
+  ProfileLayout.tsx:
+    - "profile-main flex-1 p-20 flex justify-center..."
+      → "profile-main flex flex-1 justify-center p-20..."
+      (moved flex before flex-1, reordered spacing after alignment)
+
+Status: Complete.
+
+================================================================================
+2026-06-11 — Ordering convention fixes (spacing before text)
+================================================================================
+Files changed:
+  - src/pages/auth/Login.tsx (4 fixes)
+  - src/pages/auth/Register.tsx (1 fix)
+  - src/pages/feed/Feed.tsx (1 fix)
+
+Changes:
+  Login.tsx:
+    - Line 74: "text-center text-error mb-4" → "mb-4 text-center text-error"
+    - Line 108: "text-center mb-6" → "mb-6 text-center"
+    - Line 115: "text-center mb-4" → "mb-4 text-center"
+    - Line 173: "auth-terms-note text-center mt-4" → "auth-terms-note mt-4 text-center"
+
+  Register.tsx:
+    - Line 119: "text-center text-error text-sm mb-4" → "mb-4 text-center text-error text-sm"
+
+  Feed.tsx:
+    - Line 334: "empty-hint text-center mb-4" → "empty-hint mb-4 text-center"
+
+Note: Fixed spacing classes (mb-*, mt-*) should come BEFORE text/typography
+classes to follow the documented ordering convention.
+
+Status: Complete.
+
+================================================================================
 Pending (next up)
 ================================================================================
-  - ProfileLayout.tsx        (06a-profile-pages.css)
-  - Friends.tsx              (08-chat.css)
-  - GlobalChat.tsx           (05a-feed-global-chat.css) — PENDING REMOVAL, NOT MIGRATING
+  - Friends.tsx              (full migration, 08-chat.css)
   - Profile.tsx              (06-profile.css)
-  - UserProfile.tsx          (06-profile.css)
-  - TeamDetail.tsx           (07-teams.css)
+  - UserProfile.tsx          (full migration, 06-profile.css)
+  - TeamDetail.tsx           (full migration, 07-teams.css)
   - Modals                   (09-modals.css)
+  - GlobalChat.tsx           (05a-feed-global-chat.css) — PENDING REMOVAL, NOT MIGRATING
 
 Migration approach per component:
   1. Read the .tsx file and its CSS file

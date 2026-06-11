@@ -13,15 +13,12 @@
 
 /* Login Button in Logged Out Feed Page */
 .welcome-user {
+  display: inline-flex;
   position: fixed;
   top: 1.5rem;
   left: 1.5rem;
   z-index: 101;
   padding: 0.75rem 1.8rem 0.75rem 1.4rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
   color: var(--text-primary);
   background: var(--gradient-primary);
   border: 1px solid var(--btn-border-hover);
@@ -62,9 +59,6 @@
 }
 
 .auth-topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   color: var(--text-secondary);
   font-size: 0.9rem;
 }
@@ -82,13 +76,14 @@
 }
 
 .auth-topbar-btn:hover {
-  background: linear-gradient(135deg, #a855f7 0%, #7c5cff 45%, #4f8cff 100%);
-  box-shadow: 0 0 24px rgba(139, 92, 246, 0.35);
+  background: rgba(9, 12, 24, 0.45);
+  border-color: rgba(139, 92, 246, 0.45);
   text-decoration: none;
-  transform: translateY(-1px);
 }
 
 .feed-auth-actions {
+  display: inline-flex;
+  align-items: center;
   position: fixed;
   top: 1.5rem;
   right: 1.5rem;
@@ -196,7 +191,6 @@
 .auth-divider::before,
 .auth-divider::after {
   content: "";
-  flex: 1;
   height: 2px;
   background: rgba(148, 163, 184, 0.18);
 }

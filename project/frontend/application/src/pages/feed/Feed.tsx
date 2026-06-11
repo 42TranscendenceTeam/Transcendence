@@ -307,7 +307,7 @@ function Feed() {
             <span className="welcome-text">{t('auth.login.title')}</span>
           </Link>
 
-          <div className="auth-topbar-actions feed-auth-actions">
+          <div className="auth-topbar-actions feed-auth-actions gap-4">
             <span>New to Transcendence?</span>
             <Link to="/register" className="auth-topbar-btn">
               Create account
@@ -331,7 +331,7 @@ function Feed() {
         {loading && <div className="loading">Loading teams...</div>}
         {error && !isUsingMockData && <div className="error-text">{error}</div>}
         {isUsingMockData && !user && (
-          <p className="empty-hint text-center mb-4">
+          <p className="empty-hint mb-4 text-center">
             Sign in to see real team data
           </p>
         )}

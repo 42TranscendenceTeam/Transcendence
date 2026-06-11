@@ -1,9 +1,7 @@
 /* ========================================
-  All Pages Layout Styles
-  ======================================== */
+   All Pages Layout Styles
+   ======================================== */
 .profile-layout {
-  min-height: 100vh;
-  display: flex;
   background-image: url('/main-background.webp');
   background-size: cover;
   background-position: center;
@@ -22,19 +20,11 @@
 
 /* Sidebar Navigation Menu */
 .profile-sidebar {
-  width: 240px;
   background: var(--sidebar-background);
   border-right: 1px solid rgba(148, 163, 184, 0.12);
   border-left: none;
   padding: 1.5rem 1rem;
   padding-bottom: 3rem;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .profile-sidebar {
@@ -42,7 +32,6 @@
 }
 
 .profile-sidebar-nav {
-  flex-shrink: 0;
 }
 
 .profile-sidebar .bottom-nav {
@@ -73,11 +62,6 @@
 }
 
 .profile-sidebar-nav-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.75rem;
   padding: 0.75rem 0.5rem;
   border-radius: 0.5rem;
   color: var(--text-secondary);
@@ -114,8 +98,6 @@
 }
 
 .nav-icon-wrapper {
-  position: relative;
-  display: flex;
 }
 
 .notification-badge {
@@ -138,13 +120,6 @@
 
 /* All Pages Main Content Area */
 .profile-main {
-  flex: 1;
-  min-height: 100vh;
-  margin-left: 240px;
-  width: calc(100% - 240px);
-  padding: 5rem 2rem;
-  display: flex;
-  justify-content: center;
 }
 
 .profile-main>* {

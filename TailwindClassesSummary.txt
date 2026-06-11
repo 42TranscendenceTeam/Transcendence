@@ -23,18 +23,25 @@ CLASS             WHAT IT DOES               WHERE IS USED                     O
 LAYOUT
 ------------------------------------------------------------------------------------------------
 min-h-screen     Full viewport height         AuthLayout, FeedLayout         min-height: 100vh
-flex              Flexbox container            AuthLayout, FeedLayout, Login   display: flex
-flex-col          Vertical flex direction     FeedLayout, Feed               flex-direction: column
-flex-1            Grow to fill space          FeedLayout                      flex: 1
+flex              Flexbox container            AuthLayout, FeedLayout, Login,
+                                           ProfileLayout                   display: flex
+flex-col          Vertical flex direction     FeedLayout, Feed, ProfileLayout  flex-direction: column
+flex-row          Horizontal flex row         ProfileLayout                   flex-direction: row
+flex-1            Grow to fill space          FeedLayout, ProfileLayout       flex: 1
+inline-block      Inline block                Friends, TeamDetail             display: inline-block
+hidden            Hidden display               TeamDetail                      display: none
 pr-[340px]        340px right padding         FeedLayout                      padding-right: 340px
 
 SPACING
 ------------------------------------------------------------------------------------------------
 mb-4              1rem margin-bottom          Login, Register, Terms, Privacy  margin-bottom: 1rem
 mb-6              1.5rem margin-bottom        Login, Register                  margin-bottom: 1.5rem
+mt-2              0.5rem margin-top           TeamDetail                      margin-top: 0.5rem
 mt-4              1rem margin-top             Terms, Privacy                  margin-top: 1rem
 mt-6              1.5rem margin-top           Login                            margin-top: 1.5rem
+p-4               1rem padding               ProfileLayout                   padding: 1rem
 p-6               1.5rem padding              Privacy, AuthLayout card         padding: 1.5rem
+p-20              5rem padding               ProfileLayout main               padding: 5rem
 pb-14             3.5rem bottom padding       FeedLayout                      padding-bottom: 3.5rem
 pl-4              1rem left padding           Feed                            padding-left: 1rem
 pl-6              1.5rem left padding         Feed                            padding-left: 1.5rem
@@ -50,11 +57,13 @@ gap-[0.65rem]     Custom 0.65rem gap          Terms                           ga
 
 ALIGNMENT
 ------------------------------------------------------------------------------------------------
-items-center      Center vertically           AuthLayout, Login, Feed         align-items: center
+items-center      Center vertically           AuthLayout, Login, Feed, ProfileLayout
+                                                                       align-items: center
 items-stretch     Stretch to fill             AuthLayout                     align-items: stretch
-justify-center    Center horizontally         AuthLayout, Login              justify-content: center
-justify-between   Space between               Feed                            justify-content: space-between
-justify-start     Align start                 AuthLayout                     justify-content: flex-start
+justify-center    Center horizontally         AuthLayout, Login, ProfileLayout
+                                                                       justify-content: center
+justify-between   Space between               Feed, ProfileLayout            justify-content: space-between
+justify-start     Align start                 AuthLayout, ProfileLayout      justify-content: flex-start
 
 GRID
 ------------------------------------------------------------------------------------------------
@@ -65,9 +74,17 @@ WIDTH/HEIGHT
 ------------------------------------------------------------------------------------------------
 w-full            100% width                 Login, Register, Terms, Privacy,
                                            FeedLayout                      width: 100%
+w-[240px]         240px width               ProfileLayout sidebar            width: 240px
+w-[280px]         280px width               ProfileLayout mobile panel       width: 280px
+w-[0.875rem]      0.875rem width            TeamDetail file icon             width: 0.875rem
+w-4               1rem (16px) width         TeamDetail delete icon           width: 1rem
 h-[72px]          72px height               AuthLayout                      height: 72px
 h-10              40px height               AuthLayout                      height: 2.5rem
+h-full            Full height               ProfileLayout mobile panel       height: 100%
+h-[0.875rem]      0.875rem height           TeamDetail file icon             height: 0.875rem
+h-4               1rem (16px) height        TeamDetail delete icon           height: 1rem
 min-w-[450px]     Min 450px width           AuthLayout card                 min-width: 450px
+shrink-0          No shrink                 ProfileLayout nav               flex-shrink: 0
 
 MAX WIDTH
 ------------------------------------------------------------------------------------------------
@@ -100,13 +117,32 @@ overflow-x-hidden Hide horizontal            AuthLayout                      ove
 POSITIONING
 ------------------------------------------------------------------------------------------------
 relative          Relative positioning       AuthLayout                      position: relative
+fixed             Fixed positioning          ProfileLayout                   position: fixed
+absolute          Absolute positioning       Friends, TeamDetail             position: absolute
+top-0             Top 0 position             ProfileLayout                   top: 0
+left-0            Left 0 position            ProfileLayout                   left: 0
+bottom-0          Bottom 0 position          Friends, TeamDetail             bottom: 0
+right-0           Right 0 position           Friends, TeamDetail             right: 0
+inset-0           All sides 0               ProfileLayout                   top/left/right/bottom: 0
+
+Z-INDEX
+------------------------------------------------------------------------------------------------
+z-50              Z-index 50                ProfileLayout                   z-index: 50
 
 CUSTOM COLORS (from tailwind config)
 ------------------------------------------------------------------------------------------------
-text-error        Error red                  Login                           color: var(--error)
+text-error        Error red                  Login, TeamDetail               color: var(--error)
 text-text-secondary  Secondary text           Login, Register, Terms, Privacy
 text-accent       Accent purple              Login
 text-text-primary Primary white              Terms, Privacy
+
+EFFECTS & BORDERS
+------------------------------------------------------------------------------------------------
+cursor-pointer    Pointer cursor             TeamDetail                      cursor: pointer
+border-l          Left border               ProfileLayout                   border-left
+border-b          Bottom border             ProfileLayout                   border-bottom
+border-border     Border color              ProfileLayout                   border: var(--border)
+bg-black/50       50% black overlay         ProfileLayout                   background: rgba(0,0,0,0.5)
 
 
 Components Migrated
@@ -120,9 +156,13 @@ AuthLayout.tsx     src/components/layouts/       14                 6
 TermsOfService.tsx src/pages/auth/               11                 5
 PrivacyPolicy.tsx  src/pages/auth/               12                 6
 Feed.tsx           src/pages/feed/               13                10
-FeedLayout.tsx     src/components/layouts/        4                 4
+FeedLayout.tsx     src/components/layouts/        5                 5
+ProfileLayout.tsx  src/components/layouts/       14                10
+Friends.tsx        src/pages/profile/             4                 0 (inline style fix)
+UserProfile.tsx    src/pages/profile/            3                 0 (inline style fix)
+TeamDetail.tsx     src/pages/profile/             8                 0 (inline style fix)
 
-TOTAL: 78 Tailwind classes across 7 components
+TOTAL: 108 Tailwind classes across 10 components
 
 
 Class Ordering Convention (mandatory)

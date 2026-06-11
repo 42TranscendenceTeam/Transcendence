@@ -71,7 +71,7 @@ function Login() {
       </div>
 
       {error && (
-        <div className="text-center text-error mb-4">
+        <div className="mb-4 text-center text-error">
           {error}
         </div>
       )}
@@ -105,14 +105,14 @@ function Login() {
           <button type="submit" className="btn btn-primary auth-submit-btn w-full" disabled={loading}>
             {loading ? t('common.loading') : t('auth.login.submit')}
           </button>
-          <div className="text-center mb-6">
+          <div className="mb-6 text-center">
             <span className="text-text-secondary">{t('auth.login.noAccount')} </span>
             <Link to="/register" className="text-accent">{t('auth.login.register')}</Link>
           </div>
         </form>
       ) : (
         <form onSubmit={handle2FASubmit}>
-          <div className="text-center mb-4">
+          <div className="mb-4 text-center">
             <p className="mb-2 text-text-secondary">
               {t('auth.login.twoFactorTitle') || 'Two-Factor Authentication'}
             </p>
@@ -170,7 +170,7 @@ function Login() {
               <span>Google</span>
             </button>
           </div>
-          <p className="auth-terms-note text-center mt-4">
+          <p className="auth-terms-note mt-4 text-center">
             By signing in, you agree with our <br />
             <Link to="/terms">Terms of Service</Link>{' '}
             and{' '}
