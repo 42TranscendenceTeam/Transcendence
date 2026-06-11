@@ -203,8 +203,13 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
               onSuccess={async (credentialResponse) => {
                 try {
                   const result = await api.googleLogin(credentialResponse.credential);
-                  localStorage.setItem('authToken', result.token);
-                  window.location.href = '/';
+                  if (result.requires_2fa && result.temp_token) {
+                    setTempToken(result.temp_token);
+                    setShow2FA(true);
+                  } else {
+                    localStorage.setItem('authToken', result.token);
+                    window.location.href = '/';
+                  }
                 } catch (err: any) {
                   setError(err.message || 'Google login failed');
                 }
