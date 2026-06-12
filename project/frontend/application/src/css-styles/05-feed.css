@@ -140,16 +140,20 @@
 }
 
 .feed-title {
-  font-size: 1.25rem;
-  font-weight: 600;
+  font-size: 2rem;
+  font-weight: 700;
   margin-bottom: 0.25rem;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  padding-left: 1em;
+  padding-left: 0.5em;
+  background: linear-gradient(90deg, var(--neon-purple) 15%, var(--neon-blue) 60%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .feed-subtitle {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   line-height: 1.4;
   color: var(--text-secondary);
   margin: 0;
@@ -340,10 +344,8 @@
     position: fixed;
     top: 7rem;
     right: 1rem;
-		height: calc(100vh - 8rem);
+    height: calc(100vh - 8rem);
     width: 325px;
     z-index: 150;
   }
 }
-
-

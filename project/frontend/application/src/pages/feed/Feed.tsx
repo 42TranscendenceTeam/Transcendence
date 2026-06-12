@@ -138,7 +138,7 @@ function Feed() {
           setRequestStatuses(prev => {
             const next = { ...prev };
             let changed = false;
-            
+
             // Remove pending if already a member
             const pendingIds = Object.keys(next).filter(k => next[Number(k)] === 'pending').map(Number);
             for (const teamId of pendingIds) {
@@ -160,7 +160,7 @@ function Feed() {
           });
 
           baseTeams = teamsData.filter(t => !myTeamIds.has(t.id));
-          
+
           // Remaining logic for join requests verification...
           const rawPendingIds = Object.keys(requestStatuses)
             .filter(k => requestStatuses[Number(k)] === 'pending')
@@ -317,7 +317,7 @@ function Feed() {
       )}
 
       <h1 className="feed-title">
-        <span>Activity Feed</span>
+        <span>Community Hub</span>
       </h1>
       <p className="feed-subtitle">
         <RotatingText />
