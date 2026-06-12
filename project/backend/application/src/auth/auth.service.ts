@@ -6,6 +6,8 @@ import { AppError } from '../utils/AppError.js';
 import type { RegisterDTO, LoginDTO } from './auth.types.js';
 import { OAuth2Client } from "google-auth-library";
 import { handle2FA } from '../utils/2fa.js';
+import { pendingRegistrations, pending2FA } from '../utils/storage.js';
+import { sendVerificationCode } from '../utils/mailer.js';
 
 const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 
@@ -15,8 +17,6 @@ export const register = async (data: RegisterDTO) => {
   if (!email || !username || !password) {
     throw new AppError('Missing required fields', 400);
   }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
 
   const existingEmail = await prisma.user.findUnique({
     where: { email },
@@ -34,18 +34,88 @@ export const register = async (data: RegisterDTO) => {
     throw new AppError('Username already exists', 400);
   }
 
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+  pendingRegistrations.set(email, {
+    email,
+    username,
+    hashedPassword,
+    code,
+    expiresAt: Date.now() + 5 * 60 * 1000,
+  });
+
+  await sendVerificationCode(email, code);
+
+  const tempToken = jwt.sign(
+    {
+      email,
+      type: "email_verification",
+    },
+    JWT_SECRET,
+    { expiresIn: "5m" }
+  );
+
+  return {
+    requires_verification: true,
+    temp_token: tempToken,
+  };
+}
+
+export const verifyEmail = async (tempToken: string, code: string) => {
+  if (!tempToken || !code) {
+    throw new AppError("Missing required fields", 400);
+  }
+  
+  let payload: any;
+
+  try {
+    payload = jwt.verify(tempToken, JWT_SECRET);
+  } catch {
+    throw new AppError("Invalid or expired token", 400);
+  }
+
+  if (payload.type !== "email_verification") {
+    throw new AppError("Invalid token", 400);
+  }
+
+  const pending = pendingRegistrations.get(payload.email);
+
+  if (!pending) {
+    throw new AppError("Verification expired", 400);
+  }
+
+  if (pending.code !== code) {
+    throw new AppError("Invalid code", 400);
+  }
+
+  const existingUsername = await prisma.user.findUnique({
+    where: { username: pending.username },
+  });
+
+  if (existingUsername) {
+    throw new AppError("Username already exists", 400);
+  }
+
   const user = await prisma.user.create({
     data: {
-      email,
-      username,
-      password_hash: hashedPassword,
+      email: pending.email,
+      username: pending.username,
+      password_hash: pending.hashedPassword,
     },
   });
 
-  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET);
+  pendingRegistrations.delete(payload.email);
+
+  const token = jwt.sign({id: user.id, type: "auth" }, JWT_SECRET);
 
   return {
-    user: { id: user.id, email: user.email, username: user.username },
+    user: {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+    },
     token,
   };
 };
@@ -108,7 +178,17 @@ export const verify2FA = async (tempToken: string, code: string) => {
     throw new AppError("Invalid or expired token", 400);
   }
 
-  if (payload.twoFactorCode !== code) {
+  if (payload.type !== "2fa") {
+    throw new AppError("Invalid token", 400);
+  }
+
+  const pending = pending2FA.get(payload.userId);
+
+  if (!pending) {
+    throw new AppError("2FA expired", 400);
+  }
+
+  if (pending.code !== code) {
     throw new AppError("Invalid code", 400);
   }
 
@@ -119,6 +199,8 @@ export const verify2FA = async (tempToken: string, code: string) => {
   if (!user) {
     throw new AppError("User not found", 404);
   }
+
+  pending2FA.delete(payload.userId);
 
   const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET);
 
