@@ -75,7 +75,6 @@ function UserProfile() {
           <div className="profile-header-info">
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <h1 className="profile-username">{profile.username}</h1>
-              <span className={`status-indicator ${isOnline ? 'online' : 'offline'}`} />
               <span className={`friend-status ${isOnline ? 'online' : 'offline'}`}>
                 {isOnline ? t('common.online') : t('common.offline')}
               </span>
