@@ -385,5 +385,10 @@
       "changesToTerms": "Alterações aos Termos",
       "changesToTermsText": "Reservamo-nos o direito de modificar estes termos a qualquer momento. A sua utilização contínua do serviço constitui aceitação de quaisquer alterações."
     }
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "text": "A página que procura não existe ou foi movida.",
+    "backHome": "Voltar ao início"
   }
 }

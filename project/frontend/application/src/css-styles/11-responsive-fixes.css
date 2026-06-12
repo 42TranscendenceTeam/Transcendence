@@ -670,6 +670,30 @@
 }
 
 /* ========================================
+           404 on Mobile
+======================================== */
+@media (max-width: 767px) {
+
+  .legal-layout-card {
+    margin-top: 4rem;
+    padding: 1rem;
+  }
+
+  .not-found-title {
+    margin-top: -0.05em;
+  }
+
+  .not-found-text {
+    font-size: 0.85rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .not-found-link {
+    font-size: 0.85rem;
+  }
+}
+
+/* ========================================
             Chats on Mobile
 ======================================== */
 @media (max-width: 767px) {

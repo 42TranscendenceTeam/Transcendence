@@ -1,6 +1,6 @@
 /**
  * Main Application Router
- * 
+ *
  * Defines all application routes using React Router.
  * Sets up authentication context and routes.
  */
@@ -24,6 +24,7 @@ import Teams from './pages/profile/Teams';
 import Notifications from './pages/profile/Notifications';
 import Security from './pages/profile/Security';
 import TeamDetail from './pages/profile/TeamDetail';
+import NotFound from './pages/404';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -154,6 +155,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
       </ErrorProvider>
