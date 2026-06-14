@@ -21,3 +21,16 @@ export const send2FACode = async (email: string, code: string) => {
     `,
   });
 };
+
+export const sendVerificationCode = async (email: string, code: string) => {
+  await transporter.sendMail({
+    from: `"Transcendence" <${SMTP_EMAIL}>`,
+    to: email,
+    subject: "Your Registration Code",
+    html: `
+      <h3>Your registration code is:</h3>
+      <h1>${code}</h1>
+      <p><em>This code expires in 5 minutes.</em></p>
+    `,
+  });
+}

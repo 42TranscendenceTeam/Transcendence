@@ -25,20 +25,7 @@ export const getMe = async (userId: number) => {
 };
 
 export const updateMe = async (userId: number, data: UpdateUserDTO) => {
-  const { email, username } = data;
-
-  if (email) {
-    const existingEmail = await prisma.user.findFirst({
-      where: {
-        email,
-        NOT: { id: userId },
-      },
-    });
-
-    if (existingEmail) {
-      throw new AppError('Email already in use', 400);
-    }
-  }
+  const { username } = data;
 
   if (username) {
     const existingUsername = await prisma.user.findFirst({
