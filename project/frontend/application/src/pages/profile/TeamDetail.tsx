@@ -11,7 +11,7 @@
  */
 
 import { useContext, useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import { useError } from '../../context/ErrorContext';
@@ -133,7 +133,7 @@ const { showError } = useError();
   }, [teamRefreshTrigger]);
 
   useEffect(() => {
-    if (!teamIdInt) return;
+    if (!teamIdInt || teamError) return;
 
     const socket = getSocket();
     if (socket) {
@@ -155,7 +155,7 @@ const { showError } = useError();
         socket.off('team message', handleNewTeamMessage);
       };
     }
-  }, [teamIdInt]);
+  }, [teamIdInt, teamError]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -190,7 +190,7 @@ const { showError } = useError();
 
   useEffect(() => {
     const fetchJoinRequests = async () => {
-      if (!id || team?.role !== 'Leader') return;
+      if (!id || !numericId || team?.role !== 'Leader') return;
       try {
         const data = await api.getJoinRequests(numericId);
         setJoinRequests(data.request_list || []);
@@ -202,7 +202,7 @@ const { showError } = useError();
 
   useEffect(() => {
     const fetchTeamInvitesSent = async () => {
-      if (!id || team?.role !== 'Leader') return;
+      if (!id || !numericId || team?.role !== 'Leader') return;
       try {
         const data = await api.getTeamInvitesSent(numericId);
         setTeamInvitesSent(data || []);
@@ -214,7 +214,7 @@ const { showError } = useError();
 
   useEffect(() => {
     const fetchTasks = async () => {
-      if (!id) return;
+      if (!id || !numericId) return;
       try {
         const taskData = await api.getTasks(numericId);
         const tasksWithFiles = await Promise.all(
@@ -302,12 +302,7 @@ const { showError } = useError();
   }
 
   if (teamError || !team) {
-    return (
-      <div className="team-detail-page">
-        <h1>{t('teams.notFound') || 'Team not found'}</h1>
-        <p>{t('teams.notFoundDesc') || 'This team does not exist or you are not a member.'}</p>
-      </div>
-    );
+    return <Navigate to="/404" replace />;
   }
 
   const availableUsers = allUsers
