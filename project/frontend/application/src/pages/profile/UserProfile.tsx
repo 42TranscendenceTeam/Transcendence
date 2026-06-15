@@ -15,7 +15,7 @@ function UserProfile() {
   const fetchProfile = useCallback(() => {
     if (!userId) return;
     const numericId = Number(userId);
-    if (isNaN(numericId) || numericId <= 0) {
+    if (isNaN(numericId) || numericId <= 0 || !Number.isSafeInteger(numericId)) {
       setError(t('profile.userNotFound'));
       return;
     }

@@ -79,14 +79,14 @@ const { showError } = useError();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const parsedId = parseInt(id || '0');
-  const numericId = isNaN(parsedId) || parsedId <= 0 ? 0 : parsedId;
+  const parsedId = Number(id || '0');
+  const numericId = isNaN(parsedId) || parsedId <= 0 || !Number.isSafeInteger(parsedId) ? 0 : parsedId;
   const teamIdInt = numericId;
 
   const fetchTeamData = async (silent = false) => {
     if (!id) return;
-    const numericId = parseInt(id);
-    if (isNaN(numericId) || numericId <= 0) {
+    const numericId = Number(id);
+    if (isNaN(numericId) || numericId <= 0 || !Number.isSafeInteger(numericId)) {
       if (!silent) {
         setLoadingTeam(false);
         setTeamError(t('teams.notFound'));
@@ -190,7 +190,7 @@ const { showError } = useError();
 
   useEffect(() => {
     const fetchJoinRequests = async () => {
-      if (!id || !numericId || team?.role !== 'Leader') return;
+      if (!id || !numericId || team?.role !== 'Leader' || teamError) return;
       try {
         const data = await api.getJoinRequests(numericId);
         setJoinRequests(data.request_list || []);
@@ -198,11 +198,11 @@ const { showError } = useError();
       }
     };
     fetchJoinRequests();
-  }, [id, team?.role, teamRefreshTrigger]);
+  }, [id, team?.role, teamRefreshTrigger, teamError]);
 
   useEffect(() => {
     const fetchTeamInvitesSent = async () => {
-      if (!id || !numericId || team?.role !== 'Leader') return;
+      if (!id || !numericId || team?.role !== 'Leader' || teamError) return;
       try {
         const data = await api.getTeamInvitesSent(numericId);
         setTeamInvitesSent(data || []);
@@ -210,11 +210,11 @@ const { showError } = useError();
       }
     };
     fetchTeamInvitesSent();
-  }, [id, team?.role, teamRefreshTrigger, showAddMemberModal]);
+  }, [id, team?.role, teamRefreshTrigger, showAddMemberModal, teamError]);
 
   useEffect(() => {
     const fetchTasks = async () => {
-      if (!id || !numericId) return;
+      if (!id || !numericId || teamError) return;
       try {
         const taskData = await api.getTasks(numericId);
         const tasksWithFiles = await Promise.all(
@@ -232,7 +232,7 @@ const { showError } = useError();
       }
     };
     fetchTasks();
-  }, [id, teamRefreshTrigger]);
+  }, [id, teamRefreshTrigger, teamError]);
 
   useEffect(() => {
     if (showAddMemberModal) {

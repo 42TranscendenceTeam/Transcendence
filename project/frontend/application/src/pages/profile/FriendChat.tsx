@@ -19,7 +19,7 @@ function FriendChat() {
   const { id } = useParams<{ id: string }>();
   const { user, sendFriendMessage, updateUser, onlineFriendIds } = useContext(AuthContext);
 
-  const friendId = parseInt(id || '0');
+  const friendId = Number(id || '0');
   const friend = user?.friends.find((f) => f.id === friendId);
   const [friendInfo, setFriendInfo] = useState<{ id: number; username: string; avatar: string } | null>(null);
   const [isLoadingFriend, setIsLoadingFriend] = useState(true);
