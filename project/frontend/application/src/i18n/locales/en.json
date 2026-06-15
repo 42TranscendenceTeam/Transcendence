@@ -74,6 +74,7 @@
   },
   "profile": {
     "title": "Profile",
+    "userNotFound": "User not found",
     "collaboration": "Collaboration",
     "teamStats": "Teams Stats",
     "totalTeams": "Total",
@@ -83,6 +84,7 @@
       "language": "Language",
       "username": "Username",
       "email": "Email",
+      "emailNotEditable": " (not editable)",
       "description": "Description",
       "descriptionPlaceholder": "Tell us about yourself...",
       "currentAvatar": "Current Avatar",

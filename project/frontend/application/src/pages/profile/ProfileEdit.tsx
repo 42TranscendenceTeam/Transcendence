@@ -22,7 +22,6 @@ function ProfileEdit() {
   const initialAvatar = user?.avatar || '';
 
   const [username, setUsername] = useState(initialUsername);
-  const [email, setEmail] = useState(initialEmail);
   const [description, setDescription] = useState(initialDescription);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatar);
   const [language, setLanguage] = useState((i18n.language || '').split('-')[0] || 'en');
@@ -68,12 +67,10 @@ function ProfileEdit() {
     try {
       const result = await api.updateCurrentUser({
         username,
-        email,
         description,
       });
       updateUser({
         username: result.username,
-        email: result.email,
         description: result.description,
       });
     } catch (err: any) {
@@ -111,13 +108,17 @@ function ProfileEdit() {
         </div>
 
         <div className="form-group">
-          <label className="label">{t('profile.edit.email')}</label>
+          <label className="label">
+            {t('profile.edit.email')}
+            <span style={{ fontSize: '0.85em', color: 'var(--text-secondary)', fontWeight: 'normal', marginLeft: '0.5rem' }}>
+            {t('profile.edit.emailNotEditable')}
+          </span>
+          </label>
           <input
             type="email"
             className="input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t('auth.login.emailPlaceholder')}
+            value={user?.email || ''}
+            disabled
           />
         </div>
 

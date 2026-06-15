@@ -74,6 +74,7 @@
   },
   "profile": {
     "title": "Perfil",
+    "userNotFound": "Utilizador não encontrado",
     "collaboration": "Colaboração",
     "teamStats": "Estatísticas de Equipas",
     "totalTeams": "Total",
@@ -82,6 +83,7 @@
       "title": "Editar Perfil",
       "username": "Nome de utilizador",
       "email": "Email",
+      "emailNotEditable": " (não editável)",
       "description": "Descrição",
       "descriptionPlaceholder": "Conte-nos sobre si...",
 "currentAvatar": "Avatar Atual",

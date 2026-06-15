@@ -14,10 +14,17 @@ function UserProfile() {
 
   const fetchProfile = useCallback(() => {
     if (!userId) return;
-    api.getUserProfile(Number(userId))
+    const numericId = Number(userId);
+    if (isNaN(numericId) || numericId <= 0) {
+      setError(t('profile.userNotFound'));
+      return;
+    }
+    api.getUserProfile(numericId)
       .then(setProfile)
-      .catch((err) => setError(err.message));
-  }, [userId]);
+      .catch(() => {
+        setError(t('profile.userNotFound'));
+      });
+  }, [userId, t]);
 
   useEffect(() => {
     fetchProfile();
