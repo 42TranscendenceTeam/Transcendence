@@ -204,6 +204,21 @@ export const api = {
     });
   },
 
+  googleLogin(credential: string): Promise<AuthResponse> {
+    return fetch(`${API_URL}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Google login failed');
+        });
+      }
+      return response.json();
+    });
+  },
+
   // ========== AVATAR UPLOAD ==========
   uploadAvatar(file: File): Promise<{ avatar_url: string }> {
     const formData = new FormData();
