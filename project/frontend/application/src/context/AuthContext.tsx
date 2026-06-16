@@ -93,7 +93,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setNotifications((prev) => {
 				const idx = prev.findIndex(item => item.id === n.id);
 				if (idx >= 0) {
-					return prev.map((item, i) => i === idx ? n : item);
+					const copy = [...prev];
+					copy.slice(idx, 1);
+					return [
+						n,
+						...copy.filter(
+							item => !(item.type === n.type && item.user_id_trigger === n.user_id_trigger && !item.status_read)
+						),
+					];
 				}
 
 				if (!n.status_read) setUnreadCount((c) => c + 1);
