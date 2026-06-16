@@ -77,39 +77,41 @@ function Login() {
       )}
 
       {!show2FA ? (
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="label" htmlFor="email">{t('auth.login.email')}</label>
-            <input
-              type="email"
-              id="email"
-              className="input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t('auth.login.emailPlaceholder')}
-              required
-            />
-          </div>
-          <div className="mb-6">
-            <label className="label" htmlFor="password">{t('auth.login.password')}</label>
-            <input
-              type="password"
-              id="password"
-              className="input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t('auth.login.passwordPlaceholder')}
-              required
-            />
-          </div>
-          <button type="submit" className="btn btn-primary auth-submit-btn w-full" disabled={loading}>
-            {loading ? t('common.loading') : t('auth.login.submit')}
-          </button>
-          <div className="mb-6 text-center">
+        <>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="label" htmlFor="email">{t('auth.login.email')}</label>
+              <input
+                type="email"
+                id="email"
+                className="input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t('auth.login.emailPlaceholder')}
+                required
+              />
+            </div>
+            <div className="mb-6">
+              <label className="label" htmlFor="password">{t('auth.login.password')}</label>
+              <input
+                type="password"
+                id="password"
+                className="input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('auth.login.passwordPlaceholder')}
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-primary auth-submit-btn w-full" disabled={loading}>
+              {loading ? t('common.loading') : t('auth.login.submit')}
+            </button>
+          </form>
+          <div className="auth-bottom-section flex-1 flex items-center justify-center">
             <span className="text-text-secondary">{t('auth.login.noAccount')} </span>
             <Link to="/register" className="text-accent">{t('auth.login.register')}</Link>
           </div>
-        </form>
+        </>
       ) : (
         <form onSubmit={handle2FASubmit}>
           <div className="mb-4 text-center">
@@ -154,7 +156,7 @@ function Login() {
       )}
 
       {!show2FA && (
-        <div className="auth-social-section mt-6">
+        <div className="auth-social-section">
           <div className="auth-divider flex items-center gap-4">
             <span>or continue with</span>
           </div>

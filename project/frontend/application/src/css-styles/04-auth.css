@@ -64,20 +64,21 @@
 }
 
 .auth-topbar-btn {
-  padding: 0.75rem 1.8rem;
   font-weight: 600;
-  font-size: 0.875rem;
+  height: 40px;
+  padding: 0.75rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--text-primary);
-  background: var(--gradient-primary);
-  border: 1px solid var(--btn-border-hover);
-  box-shadow: 0 0 18px rgba(139, 92, 246, 0.18);
+  background: rgba(9, 12, 24, 0.45);
+  border: 1px solid rgba(139, 92, 246, 0.45);
   border-radius: 0.5rem;
-  transition: all 0.2s ease;
 }
 
 .auth-topbar-btn:hover {
-  background: rgba(9, 12, 24, 0.45);
-  border-color: rgba(139, 92, 246, 0.45);
+  background: linear-gradient(135deg, #a855f7 0%, #7c5cff 45%, #4f8cff 100%);
+  box-shadow: 0 0 24px rgba(139, 92, 246, 0.35);
   text-decoration: none;
 }
 
@@ -119,6 +120,7 @@
   width: 56px;
   height: 56px;
   object-fit: contain;
+  margin: 0 auto;
 }
 
 .auth-title {
@@ -186,11 +188,15 @@
   font-size: 0.8rem;
   color: var(--text-secondary);
   margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .auth-divider::before,
 .auth-divider::after {
   content: "";
+  flex: 1;
   height: 2px;
   background: rgba(148, 163, 184, 0.18);
 }

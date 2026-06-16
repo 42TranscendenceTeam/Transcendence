@@ -28,7 +28,7 @@ function AuthLayout({ children }: AuthLayoutProps) {
 			</header>
 
 			<main className="auth-content w-full min-h-[calc(100vh-72px)] flex items-center justify-center px-8 pb-8">
-				<div className="auth-card min-w-[450px] p-6">
+				<div className="auth-card min-w-[450px] p-6 flex flex-col">
 					{children}
 				</div>
 			</main>
