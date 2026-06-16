@@ -120,7 +120,7 @@ function Register() {
               {error}
             </div>
           )}
-          <div className="text-center">
+          <div className="mt-6 text-center">
             <span className="text-text-secondary">{t('auth.register.hasAccount')} </span>
             <Link to="/login" className="text-accent">{t('auth.register.login')}</Link>
           </div>

@@ -107,7 +107,7 @@ function Login() {
               {loading ? t('common.loading') : t('auth.login.submit')}
             </button>
           </form>
-          <div className="auth-bottom-section my-6 flex items-center justify-center">
+          <div className="auth-bottom-section my-6 flex items-center justify-center gap-2">
             <span className="text-text-secondary">{t('auth.login.noAccount')} </span>
             <Link to="/register" className="text-accent">{t('auth.login.register')}</Link>
           </div>
