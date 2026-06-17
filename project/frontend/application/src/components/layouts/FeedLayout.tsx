@@ -2,13 +2,10 @@
  * Feed Layout Component
  *
  * Layout for the Feed page.
- * Includes BottomNav, GlobalChat, and quick-access navigation
+ * Includes BottomNav and quick-access navigation
  */
 
-import { useContext } from 'react';
 import type { ReactNode } from 'react';
-import GlobalChat from '../chat/GlobalChat';
-import { AuthContext } from '../../context/AuthContext';
 
 interface FeedLayoutProps {
   children: ReactNode;
@@ -17,8 +14,6 @@ interface FeedLayoutProps {
 }
 
 function FeedLayout({ children, header, quickAccess }: FeedLayoutProps) {
-  const { user } = useContext(AuthContext);
-
   return (
     <div className="feed-layout min-h-screen flex flex-col pr-[340px]">
       {quickAccess && <aside className="feed-quick-access">{quickAccess}</aside>}
@@ -26,11 +21,6 @@ function FeedLayout({ children, header, quickAccess }: FeedLayoutProps) {
       <main className="feed-main flex flex-1 w-full max-w-[620px] mx-auto p-6 pb-14">
         {children}
       </main>
-      {user && (
-        <aside className="feed-sidebar">
-          <GlobalChat />
-        </aside>
-      )}
     </div>
   );
 }
