@@ -101,6 +101,8 @@
 .friend-name {
   font-size: 1.15em;
   color: var(--text-primary);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .friend-name:hover {
@@ -238,6 +240,8 @@
 
 .request-username {
   color: var(--text-primary);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .request-username:hover {

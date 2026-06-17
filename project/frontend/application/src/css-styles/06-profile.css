@@ -221,6 +221,8 @@
 
 .profile-username {
   font-size: 2rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .profile-email {
