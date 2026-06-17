@@ -31,7 +31,7 @@ function TeamDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-const { showError } = useError();
+  const { showError } = useError();
   const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, deleteTaskFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger, updateUser, onlineFriendIds } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -87,10 +87,10 @@ const { showError } = useError();
       if (!silent) setLoadingTeam(true);
       const teamData = await api.getTeam(parseInt(id));
       const messagesData = await api.getTeamMessages(parseInt(id), 50);
-      
+
       const formattedMessages: Message[] = messagesData.message_list.map((m: any) => {
-        const sender = teamData.members.find((member: any) => member.id === m.sender_id) || 
-                      (teamData.owner.id === m.sender_id ? teamData.owner : null);
+        const sender = teamData.members.find((member: any) => member.id === m.sender_id) ||
+          (teamData.owner.id === m.sender_id ? teamData.owner : null);
         return {
           id: m.id,
           text: m.content,
@@ -265,9 +265,9 @@ const { showError } = useError();
     try {
       const users = await api.searchUsers('');
       setAllUsers(users);
-      } catch {
+    } catch {
       setErrorUsers(t('teams.failedToLoadUsers') || 'Failed to load users');
-      } finally {
+    } finally {
       setLoadingUsers(false);
     }
   };
@@ -445,7 +445,7 @@ const { showError } = useError();
       showError(t('common.error'), t('teams.taskTitleRequired') || 'Title is required');
       return;
     }
-    
+
     if (!newTask.description.trim()) {
       showError(t('common.error'), t('tasks.pleaseAddDescription') || 'Please add a description');
       return;
@@ -690,17 +690,17 @@ const { showError } = useError();
   };
 
   return (
-    <div className="team-detail-page">
-      <div className="team-header">
-        <div className="team-header-content">
-          <h1 className="team-title">
+    <div className="team-detail-page w-full px-4">
+      <div className="team-header relative mb-6 flex items-center justify-between gap-8 overflow-hidden rounded-2xl p-7">
+        <div className="team-header-content flex-1 min-w-0">
+          <h1 className="team-title mb-2 font-semibold">
             <span className="title-gradient">{team.name}</span>
           </h1>
           <p className="team-objective">{team.objective}</p>
         </div>
-        <div className="team-header-meta">
+        <div className="team-header-meta flex shrink-0 items-center gap-3">
           <select
-            className={`team-status-select ${team.status}`}
+            className={`team-status-select ${team.status} cursor-pointer rounded-lg px-3 py-2 text-xs font-medium`}
             value={team.status}
             onChange={(e) => handleStatusChangeClick(e.target.value)}
             disabled={!canChangeStatus}
@@ -709,16 +709,16 @@ const { showError } = useError();
             <option value="finished">{t('teams.finished') || 'Finished'}</option>
             {isLeader && <option value="__delete__">{t('teams.deleteTeam')}</option>}
           </select>
-          <span className="team-members-count">
+          <span className="team-members-count rounded-lg px-3 py-2 font-semibold">
             {team.members.length}/{team.maxUsers || '∞'}
           </span>
         </div>
       </div>
 
-      <div className="team-section">
-        <div className="section-header">
-          <h2 className="team-section-title">{t('teams.members')} ({team.members.length})</h2>
-          <div className="team-section-actions">
+      <div className="team-section mb-6 rounded-2xl p-5">
+        <div className="section-header mb-3 flex items-center justify-between">
+          <h2 className="team-section-title mb-0 text-base font-semibold">{t('teams.members')} ({team.members.length})</h2>
+          <div className="team-section-actions flex items-center gap-3">
             {isLeader && (
               <button className="btn btn-primary btn-small" onClick={() => {
                 setEditTeamName(team.name);
@@ -744,15 +744,15 @@ const { showError } = useError();
             )}
           </div>
         </div>
-        <div className="members-list">
+        <div className="members-list flex flex-wrap gap-3">
           {team.members.map((member) => (
-            <div key={member.id} className="member-card">
+            <div key={member.id} className="member-card relative flex items-center rounded-xl">
               <div className="relative inline-block">
-                <img src={member.avatar} alt={member.username} className="member-avatar" />
+                <img src={member.avatar} alt={member.username} className="member-avatar rounded-full object-cover" />
                 <span className={`status-indicator ${(onlineFriendIds.has(member.id) || memberOnlineStatus[member.id] || member.id === user?.id) ? 'online' : 'offline'} absolute bottom-0 right-0`} />
               </div>
-              <Link to={`/profile/${member.id}`} className="member-name">{member.username}</Link>
-              <span className={`member-role ${member.role.toLowerCase()}`}>{member.role}</span>
+              <Link to={`/profile/${member.id}`} className="member-name font-medium">{member.username}</Link>
+              <span className={`member-role ${member.role.toLowerCase()} rounded-full text-xs`}>{member.role}</span>
               {isLeader && member.id !== user.id && (
                 <button className="btn-remove-member" onClick={() => handleRemoveMember(member)} title={t('teams.removeMember') || 'Remove member'}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -773,20 +773,20 @@ const { showError } = useError();
       </div>
 
       {isLeader && joinRequests.length > 0 && (
-        <div className="team-section">
-          <div className="section-header">
-            <h2 className="team-section-title">{t('teams.joinRequests')} ({joinRequests.length})</h2>
+        <div className="team-section mb-6 rounded-2xl p-5">
+          <div className="section-header mb-3 flex items-center justify-between">
+            <h2 className="team-section-title mb-0 text-base font-semibold">{t('teams.joinRequests')} ({joinRequests.length})</h2>
           </div>
-          <div className="members-list">
+          <div className="members-list flex flex-wrap gap-3">
             {joinRequests.map((request) => (
-              <div key={request.request_id} className="member-card">
+              <div key={request.request_id} className="member-card relative flex items-center rounded-xl">
                 <img
                   src={getAvatarUrl(request.avatar_url)}
                   alt={request.username}
-                  className="member-avatar"
+                  className="member-avatar rounded-full object-cover"
                 />
-                <Link to={`/profile/${request.user_id}`} className="member-name">{request.username}</Link>
-                <div className="member-actions">
+                <Link to={`/profile/${request.user_id}`} className="member-name font-medium">{request.username}</Link>
+                <div className="member-actions flex gap-2">
                   <button
                     className="btn btn-primary btn-small"
                     onClick={() => handleAcceptJoinRequest(request.request_id)}
@@ -806,14 +806,14 @@ const { showError } = useError();
         </div>
       )}
 
-      <div className="team-section">
-        <div className="section-header">
-          <div className="task-counts">
-            <span className="task-counts-label">{t('tasks.title')}:</span>
-            <span className="task-count total">{t('tasks.total')}: {taskCounts.total}</span>
-            <span className="task-count open">{t('tasks.open')}: {taskCounts.open}</span>
-            <span className="task-count in_progress">{t('tasks.inProgress')}: {taskCounts.in_progress}</span>
-            <span className="task-count closed">{t('tasks.done')}: {taskCounts.closed}</span>
+      <div className="team-section mb-6 rounded-2xl p-5">
+        <div className="section-header mb-3 flex items-center justify-between">
+          <div className="task-counts flex items-center gap-3 text-sm">
+            <span className="task-counts-label font-semibold">{t('tasks.title')}:</span>
+            <span className="task-count total inline-flex items-center justify-center rounded-full text-xs font-bold">{t('tasks.total')}: {taskCounts.total}</span>
+            <span className="task-count open inline-flex items-center justify-center rounded-full text-xs font-bold">{t('tasks.open')}: {taskCounts.open}</span>
+            <span className="task-count in_progress inline-flex items-center justify-center rounded-full text-xs font-bold">{t('tasks.inProgress')}: {taskCounts.in_progress}</span>
+            <span className="task-count closed inline-flex items-center justify-center rounded-full text-xs font-bold">{t('tasks.done')}: {taskCounts.closed}</span>
           </div>
           {canEdit && (
             <button className="btn btn-accent btn-small" onClick={() => setShowTaskForm(!showTaskForm)}>
@@ -823,7 +823,7 @@ const { showError } = useError();
         </div>
 
         {showTaskForm && (
-          <form onSubmit={handleAddTask} className="task-form">
+          <form onSubmit={handleAddTask} className="task-form mb-4 flex flex-col gap-3 rounded-xl p-4">
             <input
               type="text"
               placeholder={t('teams.taskTitle')}
@@ -838,23 +838,23 @@ const { showError } = useError();
               onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
               rows={2}
             />
-            <div className="task-form-row">
-              <div className="assignee-dropdown-wrapper" ref={formAssigneeRef}>
+            <div className="task-form-row flex items-center gap-2">
+              <div className="assignee-dropdown-wrapper relative inline-block" ref={formAssigneeRef}>
                 <button
                   type="button"
-                  className="input assignee-dropdown-trigger"
+                  className="input assignee-dropdown-trigger cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-left"
                   onClick={() => setShowFormAssigneeDropdown(!showFormAssigneeDropdown)}
                 >
-                  <span className="dropdown-arrow">&#9660;</span>
+                  <span className="dropdown-arrow float-right">&#9660;</span>
                   {newTask.assignedTo.length > 0
                     ? newTask.assignedTo.join(', ')
                     : t('teams.assignTo')
                   }
                 </button>
                 {showFormAssigneeDropdown && (
-                  <div className="assignee-dropdown-panel" id="form-assignee-panel">
+                  <div className="assignee-dropdown-panel absolute left-0 top-full z-50 max-h-48 overflow-y-auto rounded-md p-2" id="form-assignee-panel">
                     {team.members.map((member) => (
-                      <label key={member.id} className="assignee-dropdown-option">
+                      <label key={member.id} className="assignee-dropdown-option flex items-center gap-2 whitespace-nowrap rounded px-3 py-2 text-xs">
                         <input
                           type="checkbox"
                           checked={newTask.assignedTo.includes(member.username)}
@@ -886,7 +886,7 @@ const { showError } = useError();
           </form>
         )}
 
-        <div className="task-filters">
+        <div className="task-filters mb-4 flex gap-3">
           <select
             className="input filter-select"
             value={statusFilter}
@@ -909,8 +909,8 @@ const { showError } = useError();
           </select>
         </div>
 
-        <div className="tasks-table">
-          <div className="tasks-header">
+        <div className="tasks-table overflow-x-auto rounded-2xl">
+          <div className="tasks-header grid gap-2 text-xs font-medium">
             <span>{t('teams.title_col')}</span>
             <span>{t('teams.description')}</span>
             <span>{t('teams.status_col')}</span>
@@ -918,9 +918,9 @@ const { showError } = useError();
             <span>{t('teams.files_col')}</span>
           </div>
           {filteredTasks.map((task) => (
-            <div key={task.id} className="task-row">
-              <span className="task-title">{task.title}</span>
-              <span className="task-description">{task.description}</span>
+            <div key={task.id} className="task-row grid items-center gap-4 p-4 text-sm">
+              <span className="task-title font-medium">{task.title}</span>
+              <span className="task-description mb-0 text-xs">{task.description}</span>
               {canEdit ? (
                 <select
                   className="task-status-select"
@@ -937,10 +937,10 @@ const { showError } = useError();
                 </span>
               )}
               {canEdit ? (
-                <div className="assignee-dropdown-wrapper">
+                <div className="assignee-dropdown-wrapper relative inline-block">
                   <button
                     type="button"
-                    className="assigned-select assignee-dropdown-trigger"
+                    className="assigned-select assignee-dropdown-trigger cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-left text-xs"
                     id={`assignee-trigger-${task.id}`}
                     onClick={() => setOpenAssigneeTask(openAssigneeTask === task.id ? null : task.id)}
                   >
@@ -951,13 +951,13 @@ const { showError } = useError();
                   </button>
                   {openAssigneeTask === task.id && (
                     <div
-                      className="assignee-dropdown-panel"
+                      className="assignee-dropdown-panel absolute left-0 top-full z-50 max-h-48 overflow-y-auto rounded-md p-2"
                       id={`assignee-panel-${task.id}`}
                     >
                       {team.members.map((member) => {
                         const isAssigned = task.assignedTo?.some((a: { id: number }) => a.id === member.id) ?? false;
                         return (
-                          <label key={member.id} className="assignee-dropdown-option">
+                          <label key={member.id} className="assignee-dropdown-option flex items-center gap-2 whitespace-nowrap rounded px-3 py-2 text-xs">
                             <input
                               type="checkbox"
                               checked={isAssigned}
@@ -991,7 +991,7 @@ const { showError } = useError();
                   }
                 </span>
               )}
-              <span className="task-files">
+              <span className="task-files flex flex-col gap-1">
                 <input
                   type="file"
                   accept={ALLOWED_TASK_EXTENSIONS}
@@ -1001,7 +1001,7 @@ const { showError } = useError();
                 />
                 <button
                   type="button"
-                  className="file-upload-btn"
+                  className="file-upload-btn inline-flex cursor-pointer items-center text-xs"
                   onClick={() => fileInputRefs.current[task.id]?.click()}
                   disabled={!canEdit}
                   title={t('teams.uploadFile')}
@@ -1018,7 +1018,7 @@ const { showError } = useError();
                 </button>
                 {task.files.length > 0 ? (
                   task.files.map((file: TaskFile) => (
-                    <span key={file.id} className="file-item"><span
+                    <span key={file.id} className="file-item flex items-center gap-1 text-xs"><span
                       className="file-link cursor-pointer"
                       onClick={() => handleDownload(file)}
                     >
@@ -1027,11 +1027,11 @@ const { showError } = useError();
                       {canEdit && (
                         <button
                           type="button"
-                          className="file-delete-btn"
+                          className="file-delete-btn inline-flex cursor-pointer items-center p-0 leading-none"
                           onClick={() => { setFileToDelete({ taskId: task.id, fileId: file.id }); setShowDeleteFileConfirm(true); }}
                           title={t('teams.deleteFile', { defaultValue: 'Delete file' })}
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-[0.875rem] h-[0.875rem]">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
                             <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
                           </svg>
                         </button>
@@ -1042,11 +1042,11 @@ const { showError } = useError();
                 {task.creatorId === user.id && (
                   <button
                     type="button"
-                    className="file-upload-btn"
+                    className="file-upload-btn inline-flex cursor-pointer items-center text-xs"
                     onClick={() => { setTaskToDelete(task.id); setShowDeleteTaskConfirm(true); }}
                     title={t('teams.deleteTask', { defaultValue: 'Delete task' })}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
                       <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
                     </svg>
                     <span>{t('teams.deleteTask', { defaultValue: 'Delete task' })}</span>
@@ -1056,13 +1056,13 @@ const { showError } = useError();
             </div>
           ))}
           {filteredTasks.length === 0 && (
-            <div className="tasks-empty">{t('teams.noTasksMatch')}</div>
+            <div className="tasks-empty rounded-xl p-8 text-center text-sm">{t('teams.noTasksMatch')}</div>
           )}
         </div>
       </div>
 
-      <div className="team-section">
-        <h2 className="team-section-title">{t('teams.chat')}</h2>
+      <div className="team-section mb-6 rounded-2xl p-5">
+        <h2 className="team-section-title mb-3 text-base font-semibold">{t('teams.chat')}</h2>
         <div className="chat-container">
           <div className="chat-messages">
             {team.chat && team.chat.length > 0 ? (
