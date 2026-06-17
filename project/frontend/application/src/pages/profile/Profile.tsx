@@ -50,48 +50,48 @@ function Profile() {
 
   return (
     <div className="profile-page">
-      <div className="profile-header">
-        <div className="profile-header-main">
-          <img src={user.avatar} alt={user.username} className="profile-avatar-large" />
+      <div className="profile-header mb-8 flex items-center justify-between gap-8 p-8">
+        <div className="profile-header-main flex items-center gap-8">
+          <img src={user.avatar} alt={user.username} className="profile-avatar-large rounded-full" />
 
-          <div className="profile-header-info">
+          <div className="profile-header-info text-left">
             <h1 className="profile-username">{user.username}</h1>
-            <p className="profile-email">{user.email}</p>
-            <p className="profile-description">{user.description}</p>
+            <p className="profile-email mb-3 text-sm">{user.email}</p>
+            <p className="profile-description text-sm">{user.description}</p>
           </div>
         </div>
 
-        <Link to="/profile/edit" className="btn btn-accent profile-edit-btn">
+        <Link to="/profile/edit" className="btn btn-accent profile-edit-btn shrink-0 self-end">
           {t('profile.edit.title') || 'Edit profile'}
         </Link>
       </div>
 
-      <div className="profile-stats-grid">
-        <div className="profile-stat-card">
-          <div className="profile-stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <div className="profile-stats-grid mb-7 grid grid-cols-3 gap-4">
+        <div className="profile-stat-card flex items-start gap-4 p-4">
+          <div className="profile-stat-icon flex shrink-0 items-center justify-center rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-10 w-10">
               <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
             </svg>
           </div>
 
           <div className="profile-stat-info">
-            <span className="profile-stat-value">{user.friends.length}</span>
-            <span className="profile-stat-label">{t('friends.title')}</span>
+            <span className="profile-stat-value block font-medium leading-none">{user.friends.length}</span>
+            <span className="profile-stat-label block text-base">{t('friends.title')}</span>
           </div>
         </div>
 
-        <div className="profile-stat-card">
-          <div className="profile-stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <div className="profile-stat-card flex items-start gap-4 p-4">
+          <div className="profile-stat-icon flex shrink-0 items-center justify-center rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-10 w-10">
               <path d="M12 2L2 7l10 5 10-5-10-5zm0 7.8L6.2 7 12 4.2 17.8 7 12 9.8zM2 12l10 5 10-5-2.2-1.1L12 14.8 4.2 10.9 2 12zm0 5l10 5 10-5-2.2-1.1L12 19.8 4.2 15.9 2 17z" />
             </svg>
           </div>
 
           <div className="profile-stat-info">
-            <span className="profile-stat-value">{teamStats.total}</span>
-            <span className="profile-stat-label">{t('teams.title')}</span>
+            <span className="profile-stat-value block font-medium leading-none">{teamStats.total}</span>
+            <span className="profile-stat-label block text-base">{t('teams.title')}</span>
 
-            <div className="profile-stat-subtext">
+            <div className="profile-stat-subtext flex flex-wrap">
               <span className="task-count in_progress">
                 {t('teams.active')}: {teamStats.active}
               </span>
@@ -102,18 +102,18 @@ function Profile() {
           </div>
         </div>
 
-        <div className="profile-stat-card">
-          <div className="profile-stat-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <div className="profile-stat-card flex items-start gap-4 p-4">
+          <div className="profile-stat-icon flex shrink-0 items-center justify-center rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-10 w-10">
               <path d="M7 4h10a2 2 0 012 2v14l-3-2-3 2-3-2-3 2-3-2V6a2 2 0 012-2zm2 5h6V7H9v2zm0 4h6v-2H9v2zm0 4h4v-2H9v2z" />
             </svg>
           </div>
 
           <div className="profile-stat-info">
-            <span className="profile-stat-value">{taskStats.total}</span>
-            <span className="profile-stat-label">{t('profile.taskStats') || 'Task Stats'}</span>
+            <span className="profile-stat-value block font-medium leading-none">{taskStats.total}</span>
+            <span className="profile-stat-label block text-base">{t('profile.taskStats') || 'Task Stats'}</span>
 
-            <div className="profile-stat-subtext">
+            <div className="profile-stat-subtext flex flex-wrap">
               <span className="task-count open">
                 {t('tasks.open')}: {taskStats.open}
               </span>
@@ -131,29 +131,29 @@ function Profile() {
       <div className="profile-section profile-teams-section">
         <div className="profile-section-header">
           <span>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
               <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
             </svg>
           </span>
           <h2 className="profile-section-title">{t('teams.myTeams') || 'My Teams'}</h2>
         </div>
 
-        <div className="teams-list">
+        <div className="teams-list flex flex-col">
           {teams.slice(0, 4).map((team) => (
-            <Link key={team.id} to={`/teams/${team.id}`} className="team-card">
-              <div className="team-info">
-                <span className="team-name">{team.name}</span>
-                <span className="team-description">
+            <Link key={team.id} to={`/teams/${team.id}`} className="team-card grid items-center">
+              <div className="team-info flex min-w-0 flex-col">
+                <span className="team-name font-medium">{team.name}</span>
+                <span className="team-description block truncate">
                   {team.objective || 'No description added yet.'}
                 </span>
               </div>
 
-              <div className="team-meta">
+              <div className="team-meta grid items-center">
                 <div className="team-meta-item">
-                  <span className="team-meta-label">{t('teams.role')}</span>
+                  <span className="team-meta-label block font-medium leading-none">{t('teams.role')}</span>
                   <span className={`team-role inline-center ${team.role?.toLowerCase()}`}> {team.role}
                     {team.role?.toLowerCase() === 'leader' && (
-                      <span className="team-role-crown" aria-hidden="true">
+                      <span className="team-role-crown inline-flex items-center justify-center align-middle" aria-hidden="true">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5 7.5 12 12 6l4.5 6 4.5-4.5L19.5 18h-15L3 7.5Z" />
                         </svg>
@@ -163,8 +163,8 @@ function Profile() {
                 </div>
 
                 <div className="team-meta-item">
-                  <span className="team-meta-label">{t('teams.status')}</span>
-                  <span className={`team-status ${team.status}`}>
+                  <span className="team-meta-label block font-medium leading-none">{t('teams.status')}</span>
+                  <span className={`team-status ${team.status} inline-flex w-fit rounded-full`}>
                     {team.status === 'active'
                       ? t('teams.active')
                       : team.status === 'finished'
@@ -174,10 +174,10 @@ function Profile() {
                 </div>
 
                 <div className="team-meta-item">
-                  <span className="team-meta-label">{t('teams.members')}</span>
+                  <span className="team-meta-label block font-medium leading-none">{t('teams.members')}</span>
                   <span className="team-meta-value">
-                    <span className="team-meta-icon" aria-hidden="true">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                    <span className="team-meta-icon inline-flex items-center justify-center" aria-hidden="true">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -190,7 +190,7 @@ function Profile() {
                 </div>
 
                 <div className="team-meta-item">
-                  <span className="team-meta-label">{t('teams.created')}</span>
+                  <span className="team-meta-label block font-medium leading-none">{t('teams.created')}</span>
                   <span className="team-meta-value">
                     {team.created_at
                       ? new Date(team.created_at).toLocaleDateString('en-US', {
