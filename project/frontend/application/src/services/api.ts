@@ -204,6 +204,21 @@ export const api = {
     });
   },
 
+  verifyEmail(tempToken: string, code: string): Promise<AuthResponse> {
+    return fetch(`${API_URL}/auth/verify-email`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ temp_token: tempToken, code }),
+    }).then((response) => {
+      if (!response.ok) {
+        return response.json().then((error) => {
+          throw new Error(error.error || 'Invalid verification code');
+        });
+      }
+      return response.json();
+    });
+  },
+
   googleLogin(credential: string): Promise<AuthResponse> {
     return fetch(`${API_URL}/auth/google`, {
       method: 'POST',

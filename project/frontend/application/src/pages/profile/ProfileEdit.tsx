@@ -24,6 +24,7 @@ function ProfileEdit() {
   const [username, setUsername] = useState(initialUsername);
   const [description, setDescription] = useState(initialDescription);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatar);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [language, setLanguage] = useState((i18n.language || '').split('-')[0] || 'en');
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(user?.twoFactorEnabled || false);
 
@@ -46,16 +47,8 @@ function ProfileEdit() {
       setUploadError(t('profile.edit.uploadInvalidType'));
       return;
     }
-    setIsUploading(true);
-    try {
-      const result = await api.uploadAvatar(file);
-      setAvatarUrl(result.avatar_url);
-      updateUser({ avatar: result.avatar_url });
-    } catch (err: any) {
-      setUploadError(err.message || t('profile.edit.uploadFailed'));
-    } finally {
-      setIsUploading(false);
-    }
+    setAvatarFile(file);
+    setAvatarUrl(URL.createObjectURL(file));
   };
 
   const handleSuccessClose = () => {
@@ -64,7 +57,14 @@ function ProfileEdit() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsUploading(true);
+    let newAvatarUrl = avatarUrl;
     try {
+      if (avatarFile) {
+        const result = await api.uploadAvatar(avatarFile);
+        newAvatarUrl = result.avatar_url;
+        setAvatarUrl(result.avatar_url);
+      }
       const result = await api.updateCurrentUser({
         username,
         description,
@@ -72,9 +72,11 @@ function ProfileEdit() {
       updateUser({
         username: result.username,
         description: result.description,
+        avatar: newAvatarUrl,
       });
     } catch (err: any) {
       setUploadError(err.message || 'Failed to update profile');
+      setIsUploading(false);
       return;
     }
     if (language !== i18n.language) {
@@ -84,6 +86,8 @@ function ProfileEdit() {
       await toggle2FA();
       updateUser({ twoFactorEnabled });
     }
+    setAvatarFile(null);
+    setIsUploading(false);
     setShowSuccessModal(true);
   };
 
