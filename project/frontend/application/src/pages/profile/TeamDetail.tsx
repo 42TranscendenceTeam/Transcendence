@@ -75,6 +75,7 @@ function TeamDetail() {
   const [showFormAssigneeDropdown, setShowFormAssigneeDropdown] = useState(false);
   const [openAssigneeTask, setOpenAssigneeTask] = useState<number | null>(null);
   const [downloadingFileId, setDownloadingFileId] = useState<number | null>(null);
+  const [uploadingFileId, setUploadingFileId] = useState<number | null>(null);
   const formAssigneeRef = useRef<HTMLDivElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -525,6 +526,7 @@ function TeamDetail() {
     const input = fileInputRefs.current[taskId];
     if (input && input.files && input.files.length > 0) {
       const file = input.files[0];
+      setUploadingFileId(taskId);
       try {
         await uploadFile(team.id, taskId, file);
         const files = await api.getTaskFiles(taskId);
@@ -535,8 +537,10 @@ function TeamDetail() {
       } catch (err: any) {
         setFileErrorMessage(err.message || 'Failed to upload file');
         setShowFileError(true);
+      } finally {
+        setUploadingFileId(null);
+        input.value = '';
       }
-      input.value = '';
     }
   };
 
@@ -1009,20 +1013,31 @@ function TeamDetail() {
                 />
                 <button
                   type="button"
-                  className="file-upload-btn inline-flex cursor-pointer items-center text-xs"
+                  className={`file-upload-btn inline-flex items-center text-xs ${uploadingFileId === task.id ? 'uploading' : ''}`}
                   onClick={() => fileInputRefs.current[task.id]?.click()}
-                  disabled={!canEdit}
+                  disabled={!canEdit || uploadingFileId === task.id}
                   title={t('teams.uploadFile')}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                      fillRule="evenodd"
-                      d="M12 21.75a.75.75 0 01-.75-.75V9.31l-3.22 3.22a.75.75 0 11-1.06-1.06l4.5-4.5a.75.75 0 011.06 0l4.5 4.5a.75.75 0 11-1.06 1.06l-3.22-3.22V21a.75.75 0 01-.75.75z"
-                      clipRule="evenodd"
-                    />
-                    <path d="M11.47 7.72a.75.75 0 011.06 0l4.5 4.5a.75.75 0 01-1.06 1.06l-4.5-4.5-4.5 4.5a.75.75 0 01-1.06-1.06l4.5-4.5z" />
-                  </svg>
-                  <span>{t('teams.uploadFile')}</span>
+                  {uploadingFileId === task.id ? (
+                    <>
+                      <svg className="upload-spinner w-[16px] h-[16px] animate-spin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                      </svg>
+                      <span>{t('common.uploading')}</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          fillRule="evenodd"
+                          d="M12 21.75a.75.75 0 01-.75-.75V9.31l-3.22 3.22a.75.75 0 11-1.06-1.06l4.5-4.5a.75.75 0 011.06 0l4.5 4.5a.75.75 0 11-1.06 1.06l-3.22-3.22V21a.75.75 0 01-.75.75z"
+                          clipRule="evenodd"
+                        />
+                        <path d="M11.47 7.72a.75.75 0 011.06 0l4.5 4.5a.75.75 0 01-1.06 1.06l-4.5-4.5-4.5 4.5a.75.75 0 01-1.06-1.06l4.5-4.5z" />
+                      </svg>
+                      <span>{t('teams.uploadFile')}</span>
+                    </>
+                  )}
                 </button>
                 {task.files.length > 0 ? (
                   task.files.map((file: TaskFile) => (

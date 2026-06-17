@@ -407,6 +407,12 @@
   height: 16px;
 }
 
+.file-upload-btn.uploading {
+  opacity: 0.7;
+  cursor: wait;
+  pointer-events: none;
+}
+
 .task-files {}
 
 .file-item {
