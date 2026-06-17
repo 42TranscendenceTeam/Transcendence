@@ -9,12 +9,14 @@
 import { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
+import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 import LanguageSelector from '../../components/LanguageSelector';
 
 function ProfileEdit() {
   const { t, i18n } = useTranslation();
   const { user, updateUser, toggle2FA } = useContext(AuthContext);
+  const { showError } = useError();
 
   const initialUsername = user?.username || '';
   const initialEmail = user?.email || '';
@@ -65,6 +67,14 @@ function ProfileEdit() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (username.length > 25) {
+      showError(t('common.error'), t('profile.edit.usernameTooLong'));
+      return;
+    }
+    if (description.length > 100) {
+      showError(t('common.error'), t('profile.edit.descriptionTooLong'));
+      return;
+    }
     try {
       const result = await api.updateCurrentUser({
         username,

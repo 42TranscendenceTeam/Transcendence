@@ -31,6 +31,10 @@ function Register() {
     e.preventDefault();
     setError('');
 
+    if (username.length > 25) {
+      setError('Username must be 25 characters or less');
+      return;
+    }
     if (!username.trim()) {
       setError('Username is required');
       return;

@@ -379,6 +379,10 @@ function TeamDetail() {
   };
 
   const handleSaveTeamSettings = async () => {
+    if (editTeamName.length > 25) {
+      showError(t('common.error'), t('teams.teamNameTooLong'));
+      return;
+    }
     try {
       await updateTeamSettings(team.id, {
         name: editTeamName,
@@ -443,6 +447,10 @@ function TeamDetail() {
     if (!canEdit) return;
     if (!newTask.title.trim()) {
       showError(t('common.error'), t('teams.taskTitleRequired') || 'Title is required');
+      return;
+    }
+    if (newTask.title.length > 25) {
+      showError(t('common.error'), t('tasks.taskTitleTooLong'));
       return;
     }
 

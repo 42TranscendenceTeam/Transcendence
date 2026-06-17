@@ -59,7 +59,8 @@
       "login": "Se connecter",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
       "success": "Compte créé avec succès.",
-      "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères"
+      "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+      "usernameTooLong": "Le nom d'utilisateur doit comporter au maximum 25 caractères"
     },
     "logout": "Déconnexion"
   },
@@ -97,7 +98,9 @@
       "uploading": "Téléchargement...",
       "uploadTooLarge": "L'image doit faire moins de 4,5 Mo",
       "uploadInvalidType": "Seuls JPG, PNG, GIF et WebP autorisés",
-      "uploadFailed": "Échec du téléchargement de l'avatar"
+      "uploadFailed": "Échec du téléchargement de l'avatar",
+      "usernameTooLong": "Le nom d'utilisateur doit comporter au maximum 25 caractères",
+      "descriptionTooLong": "La bio doit comporter au maximum 100 caractères"
     },
     "security": {
       "title": "Sécurité",
@@ -234,7 +237,8 @@
     "role": "Rôle",
     "status": "Statut",
     "members": "Membres",
-    "created": "Créé"
+    "created": "Créé",
+    "teamNameTooLong": "Le nom de l'équipe doit comporter au maximum 25 caractères"
   },
   "tasks": {
     "title": "Tâches",
@@ -256,7 +260,8 @@
     "high": "Haute",
     "pleaseAddDescription": "Veuillez ajouter une description",
     "noTasks": "Aucune tâche trouvée",
-    "createFirst": "Créez votre première tâche !"
+    "createFirst": "Créez votre première tâche !",
+    "taskTitleTooLong": "Le titre de la tâche doit comporter au maximum 25 caractères"
   },
   "friends": {
     "title": "Amis",

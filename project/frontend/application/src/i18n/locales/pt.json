@@ -59,7 +59,8 @@
       "login": "Iniciar sessão",
       "passwordMismatch": "As palavras-passe não coincidem",
       "success": "Conta criada com sucesso.",
-      "passwordTooShort": "A palavra-passe deve ter pelo menos 8 caracteres"
+      "passwordTooShort": "A palavra-passe deve ter pelo menos 8 caracteres",
+      "usernameTooLong": "O nome de utilizador deve ter no máximo 25 caracteres"
     },
     "logout": "Terminar sessão"
   },
@@ -97,7 +98,9 @@
       "uploading": "A carregar...",
       "uploadTooLarge": "A imagem deve ter menos de 4,5 MB",
       "uploadInvalidType": "Apenas JPG, PNG, GIF e WebP são permitidos",
-      "uploadFailed": "Falha ao carregar avatar"
+      "uploadFailed": "Falha ao carregar avatar",
+      "usernameTooLong": "O nome de utilizador deve ter no máximo 25 caracteres",
+      "descriptionTooLong": "A descrição deve ter no máximo 100 caracteres"
     },
     "security": {
       "title": "Segurança",
@@ -235,7 +238,8 @@
     "role": "Função",
     "status": "Estado",
     "members": "Membros",
-    "created": "Criada"
+    "created": "Criada",
+    "teamNameTooLong": "O nome da equipa deve ter no máximo 25 caracteres"
   },
   "tasks": {
     "title": "Tarefas",
@@ -257,7 +261,8 @@
     "high": "Alta",
     "pleaseAddDescription": "Por favor, adicione uma descrição",
     "noTasks": "Nenhuma tarefa encontrada",
-    "createFirst": "Crie a sua primeira tarefa!"
+    "createFirst": "Crie a sua primeira tarefa!",
+    "taskTitleTooLong": "O título da tarefa deve ter no máximo 25 caracteres"
   },
   "friends": {
     "title": "Amigos",

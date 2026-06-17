@@ -67,6 +67,10 @@ function Teams() {
   const handleCreateTeam = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTeam.name.trim() || !newTeam.description.trim()) return;
+    if (newTeam.name.length > 25) {
+      showError(t('common.error'), t('teams.teamNameTooLong'));
+      return;
+    }
     try {
       await createTeam({
         name: newTeam.name,

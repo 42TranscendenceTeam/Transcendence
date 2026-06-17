@@ -59,7 +59,8 @@
       "login": "Login",
       "passwordMismatch": "Passwords do not match",
       "passwordTooShort": "Password must be at least 8 characters",
-      "success": "Account created successfully."
+      "success": "Account created successfully.",
+      "usernameTooLong": "Username must be 25 characters or less"
     },
     "logout": "Logout"
   },
@@ -98,7 +99,9 @@
       "uploading": "Uploading...",
       "uploadTooLarge": "Image must be under 4.5MB",
       "uploadInvalidType": "Only JPG, PNG, GIF, and WebP allowed",
-      "uploadFailed": "Failed to upload avatar"
+      "uploadFailed": "Failed to upload avatar",
+      "usernameTooLong": "Username must be 25 characters or less",
+      "descriptionTooLong": "Bio must be 100 characters or less"
     },
     "security": {
       "title": "Security",
@@ -235,7 +238,8 @@
     "role": "Role",
     "status": "Status",
     "members": "Members",
-    "created": "Created"
+    "created": "Created",
+    "teamNameTooLong": "Team name must be 25 characters or less"
   },
   "tasks": {
     "title": "Tasks",
@@ -257,7 +261,8 @@
     "high": "High",
     "pleaseAddDescription": "Please add a description",
     "noTasks": "No tasks found",
-    "createFirst": "Create your first task!"
+    "createFirst": "Create your first task!",
+    "taskTitleTooLong": "Task title must be 25 characters or less"
   },
   "friends": {
     "title": "Friends",
