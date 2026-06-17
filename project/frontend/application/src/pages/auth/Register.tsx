@@ -127,13 +127,13 @@ function Register() {
       </form>
 
       {showSuccessModal && (
-        <div className="modal-overlay" onClick={() => {}}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => {}}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('common.success')}</h2>
             </div>
-            <div className="modal-body">
-              <div className="success-content">
+            <div className="modal-body p-5">
+              <div className="success-content text-center p-4">
                 <div className="success-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
@@ -142,7 +142,7 @@ function Register() {
                 <p className="success-message">{t('auth.register.success')}</p>
               </div>
             </div>
-            <div className="modal-actions">
+            <div className="modal-actions flex justify-end gap-3">
               <button className="btn btn-primary" onClick={() => { window.location.href = '/'; }}>
                 {t('common.confirm')}
               </button>

@@ -36,27 +36,27 @@ function LanguageSelector({ value, onChange }: LanguageSelectorProps) {
   };
 
   return (
-    <div className="language-dropdown" ref={dropdownRef}>
+    <div className="language-dropdown relative w-full" ref={dropdownRef}>
       <button
         type="button"
-        className="language-dropdown-trigger"
+        className="language-dropdown-trigger w-full flex items-center gap-3 px-4 py-3 bg-bg-card border border-border rounded-lg text-text-primary text-base cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="language-flag">{currentLang.flag}</span>
-        <span className="language-name">{currentLang.name}</span>
-        <span className={`language-arrow ${isOpen ? 'open' : ''}`}>▼</span>
+        <span className="language-flag text-xl">{currentLang.flag}</span>
+        <span className="language-name flex-1 text-left">{currentLang.name}</span>
+        <span className={`language-arrow text-xs text-text-secondary transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}>▼</span>
       </button>
       {isOpen && (
-        <div className="language-dropdown-menu">
+        <div className="language-dropdown-menu absolute top-full left-0 right-0 flex flex-col bg-bg-card border border-border rounded-lg z-[100] mt-1">
           {languages.map((lang) => (
             <button
               key={lang.code}
               type="button"
-              className={`language-dropdown-item ${lang.code === currentLang.code ? 'selected' : ''}`}
+              className={`language-dropdown-item flex flex-row items-center gap-3 px-4 py-[0.3rem] w-full ${lang.code === currentLang.code ? 'selected' : ''}`}
               onClick={() => handleSelect(lang.code)}
             >
-              <span className="language-flag">{lang.flag}</span>
-              <span className="language-name">{lang.name}</span>
+              <span className="language-flag text-xl">{lang.flag}</span>
+              <span className="language-name flex-1 text-left">{lang.name}</span>
             </button>
           ))}
         </div>

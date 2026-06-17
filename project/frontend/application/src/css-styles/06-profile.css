@@ -431,12 +431,9 @@
 
 /* Main Form */
 .profile-edit-page {
-  width: 100%;
 }
 
 .avatar-preview {
-  width: 80px;
-  height: 80px;
   border-radius: 50%;
   overflow: hidden;
   margin-bottom: 0.5rem;
@@ -448,23 +445,13 @@
 }
 
 .profile-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
 }
 
 /* Custom language dropdown */
 .language-dropdown {
-  position: relative;
-  width: 100%;
 }
 
 .language-dropdown-trigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
@@ -489,8 +476,6 @@
 }
 
 .language-name {
-  flex: 1;
-  text-align: left;
 }
 
 .language-arrow {
@@ -504,12 +489,6 @@
 }
 
 .language-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 0.25rem);
-  left: 0;
-  right: 0;
-  display: flex !important;
-  flex-direction: column !important;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
@@ -517,9 +496,6 @@
 }
 
 .language-dropdown-item {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center;
   gap: 0.75rem;
   padding: 0.3rem 1rem;
   width: 100%;
@@ -540,10 +516,6 @@
 
 /* Avatar upload label */
 .upload-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
   background: var(--bg-input);
   border: 2px solid var(--border);
   border-radius: 0.5rem;
@@ -560,9 +532,6 @@
 }
 
 .upload-label svg {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
 }
 
 .upload-label.uploading {

@@ -1100,20 +1100,20 @@ function TeamDetail() {
       </div>
 
       {showStatusModal && (
-        <div className="modal-overlay" onClick={() => setShowStatusModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowStatusModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.changeStatus')}</h2>
               <button className="modal-close" onClick={() => setShowStatusModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmStatus')} {newStatus === 'active' ? t('teams.active') : t('teams.finished')}?</p>
               {newStatus === 'finished' && (
                 <p className="modal-message text-error mt-2 font-semibold">
                   {t('teams.cannotReopenNotice') || 'This action cannot be undone.'}
                 </p>
               )}
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => setShowStatusModal(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-primary" onClick={handleConfirmStatusChange}>{t('common.confirm')}</button>
               </div>
@@ -1123,15 +1123,15 @@ function TeamDetail() {
       )}
 
       {showFinishedError && (
-        <div className="modal-overlay" onClick={() => setShowFinishedError(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowFinishedError(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('common.info')}</h2>
               <button className="modal-close" onClick={() => setShowFinishedError(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.cannotReopenFinished')}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-primary" onClick={() => setShowFinishedError(false)}>{t('common.close')}</button>
               </div>
             </div>
@@ -1140,15 +1140,15 @@ function TeamDetail() {
       )}
 
       {showLeaveConfirm && (
-        <div className="modal-overlay" onClick={() => setShowLeaveConfirm(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowLeaveConfirm(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.leaveTeam')}</h2>
               <button className="modal-close" onClick={() => setShowLeaveConfirm(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmLeave')}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => setShowLeaveConfirm(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleLeaveTeam}>{t('teams.leave')}</button>
               </div>
@@ -1158,15 +1158,15 @@ function TeamDetail() {
       )}
 
       {showDeleteConfirm && (
-        <div className="modal-overlay" onClick={() => setShowDeleteConfirm(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowDeleteConfirm(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.deleteTeam')}</h2>
               <button className="modal-close" onClick={() => setShowDeleteConfirm(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmDelete') || 'Are you sure you want to delete this team? This action cannot be undone.'}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary btn-small" onClick={() => setShowDeleteConfirm(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-danger-actions btn-small" onClick={handleDeleteTeam}>{t('common.delete')}</button>
               </div>
@@ -1176,15 +1176,15 @@ function TeamDetail() {
       )}
 
       {showFileError && (
-        <div className="modal-overlay" onClick={() => setShowFileError(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowFileError(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('common.error')}</h2>
               <button className="modal-close" onClick={() => setShowFileError(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{fileErrorMessage}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-primary" onClick={() => setShowFileError(false)}>{t('common.close')}</button>
               </div>
             </div>
@@ -1193,15 +1193,15 @@ function TeamDetail() {
       )}
 
       {showDeleteTaskConfirm && (
-        <div className="modal-overlay" onClick={() => { setShowDeleteTaskConfirm(false); setTaskToDelete(null); }}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => { setShowDeleteTaskConfirm(false); setTaskToDelete(null); }}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.deleteTask', { defaultValue: 'Delete task' })}</h2>
               <button className="modal-close" onClick={() => { setShowDeleteTaskConfirm(false); setTaskToDelete(null); }}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmDeleteTask', { defaultValue: 'Are you sure you want to delete this task? All associated files will also be deleted.' })}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => { setShowDeleteTaskConfirm(false); setTaskToDelete(null); }}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleConfirmDeleteTask}>{t('common.delete')}</button>
               </div>
@@ -1211,15 +1211,15 @@ function TeamDetail() {
       )}
 
       {showDeleteFileConfirm && (
-        <div className="modal-overlay" onClick={() => { setShowDeleteFileConfirm(false); setFileToDelete(null); }}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => { setShowDeleteFileConfirm(false); setFileToDelete(null); }}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.deleteFile', { defaultValue: 'Delete file' })}</h2>
               <button className="modal-close" onClick={() => { setShowDeleteFileConfirm(false); setFileToDelete(null); }}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmDeleteFile', { defaultValue: 'Are you sure you want to delete this file?' })}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => { setShowDeleteFileConfirm(false); setFileToDelete(null); }}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleConfirmDeleteFile}>{t('common.delete')}</button>
               </div>
@@ -1229,21 +1229,21 @@ function TeamDetail() {
       )}
 
       {showAddMemberModal && (
-        <div className="modal-overlay" onClick={() => setShowAddMemberModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowAddMemberModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.addMemberTitle')}</h2>
               <button className="modal-close" onClick={() => setShowAddMemberModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <div className="add-member-method">
                 <label className="input-label">{t('teams.selectUser')}</label>
-                <div className="add-member-row">
+                <div className="add-member-row flex items-center gap-3 mt-2">
                   {loadingUsers && allUsers.length === 0 ? (
                     <span className="loading-text">{t('common.loading')}</span>
                   ) : (
                     <>
-                      <select className="input" value={selectedFriend} onChange={(e) => setSelectedFriend(e.target.value)}>
+                      <select className="input flex-1" value={selectedFriend} onChange={(e) => setSelectedFriend(e.target.value)}>
                         <option value="">{t('teams.selectUser')}</option>
                         {availableUsers.map((u) => (<option key={u.id} value={u.username}>{u.username}</option>))}
                       </select>
@@ -1252,30 +1252,34 @@ function TeamDetail() {
                   )}
                 </div>
               </div>
-              <div className="add-member-divider">{t('teams.or')}</div>
+              <div className="add-member-divider flex items-center gap-4 my-4">
+                <span className="flex-1 h-px bg-border" />
+                <span className="text-text-secondary text-sm">{t('teams.or')}</span>
+                <span className="flex-1 h-px bg-border" />
+              </div>
               <div className="add-member-method">
                 <label className="input-label">{t('teams.addByUsername')}</label>
-                <div className="add-member-row">
-                  <input type="text" placeholder={t('teams.enterUsername')} className="input" value={manualUsername} onChange={(e) => setManualUsername(e.target.value)} />
+                <div className="add-member-row flex items-center gap-3 mt-2">
+                  <input type="text" placeholder={t('teams.enterUsername')} className="input flex-1" value={manualUsername} onChange={(e) => setManualUsername(e.target.value)} />
                   <button className="btn btn-primary" onClick={handleAddMemberManual} disabled={loadingUsers}>{loadingUsers ? '...' : t('teams.addUser')}</button>
                 </div>
               </div>
-              {errorUsers && <p className="error-text">{errorUsers}</p>}
+              {errorUsers && <p className="error-text mt-2">{errorUsers}</p>}
             </div>
           </div>
         </div>
       )}
 
       {showRemoveMemberModal && (
-        <div className="modal-overlay" onClick={() => setShowRemoveMemberModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowRemoveMemberModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.removeMember')}</h2>
               <button className="modal-close" onClick={() => setShowRemoveMemberModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmRemove')} {memberToRemove?.username} {t('teams.fromTeam') || 'from the team'}?</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => setShowRemoveMemberModal(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleConfirmRemove}>{t('teams.remove')}</button>
               </div>
@@ -1285,15 +1289,15 @@ function TeamDetail() {
       )}
 
       {showTeamFullModal && (
-        <div className="modal-overlay" onClick={() => setShowTeamFullModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowTeamFullModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.teamFullTitle') || 'Team Full'}</h2>
               <button className="modal-close" onClick={() => setShowTeamFullModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.teamFull') || 'Team is already full'}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-primary" onClick={() => setShowTeamFullModal(false)}>{t('common.close')}</button>
               </div>
             </div>
@@ -1301,13 +1305,13 @@ function TeamDetail() {
         </div>
       )}
       {showEditTeamModal && (
-        <div className="modal-overlay" onClick={() => setShowEditTeamModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowEditTeamModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.editTeam')}</h2>
               <button className="modal-close" onClick={() => setShowEditTeamModal(false)}>&times;</button>
             </div>
-            <form onSubmit={(e) => { e.preventDefault(); handleSaveTeamSettings(); }} className="modal-body">
+            <form onSubmit={(e) => { e.preventDefault(); handleSaveTeamSettings(); }} className="p-5 flex flex-col gap-4">
               <div className="form-group">
                 <label className="input-label">{t('teams.teamName')}</label>
                 <input
@@ -1342,7 +1346,7 @@ function TeamDetail() {
                   ))}
                 </div>
               </div>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowEditTeamModal(false)}>{t('common.cancel')}</button>
                 <button type="submit" className="btn btn-primary">{t('teams.saveSettings')}</button>
               </div>
@@ -1351,15 +1355,15 @@ function TeamDetail() {
         </div>
       )}
       {showSuccessModal && (
-        <div className="modal-overlay" onClick={() => setShowSuccessModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowSuccessModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('common.success')}</h2>
               <button className="modal-close" onClick={() => setShowSuccessModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{successMessage}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-primary" onClick={() => { setShowSuccessModal(false); if (successReload) window.location.reload(); }}>OK</button>
               </div>
             </div>

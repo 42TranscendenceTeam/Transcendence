@@ -378,9 +378,9 @@ function Feed() {
       </div>
 
       {showNotification && (
-        <div className="modal-overlay" onClick={() => setShowNotification(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowNotification(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>
                 {notificationType === 'success' && (t('common.success') || 'Success')}
                 {notificationType === 'error' && (t('common.error') || 'Error')}
@@ -388,14 +388,14 @@ function Feed() {
               </h2>
               <button className="modal-close" onClick={() => setShowNotification(false)}>&times;</button>
             </div>
-            <div className="modal-body">
-              <div className={notificationType === 'success' ? 'success-content' : notificationType === 'error' ? 'error-content' : 'info-content'}>
+            <div className="modal-body p-5">
+              <div className={notificationType === 'success' ? 'success-content text-center p-4' : notificationType === 'error' ? 'error-content text-center p-4' : 'info-content text-center p-4'}>
                 <p className={notificationType === 'success' ? 'success-message' : notificationType === 'error' ? 'error-message' : 'info-message'}>
                   {notificationMessage}
                 </p>
               </div>
             </div>
-            <div className="modal-actions">
+            <div className="modal-actions flex justify-end gap-3">
               <button className="btn btn-primary" onClick={() => setShowNotification(false)}>
                 {t('common.close') || 'Close'}
               </button>

@@ -2,7 +2,6 @@
  * Security page container
  */
 .security-page {
-  width: 100%;
 }
 
 /*
@@ -38,9 +37,6 @@
  * Security toggle switch
  */
 .security-toggle {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
   cursor: pointer;
 }
 
@@ -57,9 +53,6 @@
  * Toggle text
  */
 .toggle-text {
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-left: 0.5rem;
 }
 
 /*

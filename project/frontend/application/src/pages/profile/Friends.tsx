@@ -339,17 +339,17 @@ function Friends() {
       </div>
 
       {showRemoveModal && (
-        <div className="modal-overlay" onClick={() => setShowRemoveModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowRemoveModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('friends.removeFriend') || 'Remove Friend'}</h2>
               <button className="modal-close" onClick={() => setShowRemoveModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="remove-member-message">
                 {t('friends.confirmRemove') || 'Are you sure you want to remove'} <strong>{friendToRemove?.username}</strong> {t('friends.fromFriends') || 'from your friends'}?
               </p>
-              <div className="remove-member-actions">
+              <div className="remove-member-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => setShowRemoveModal(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleConfirmRemove}>{t('friends.remove')}</button>
               </div>
@@ -359,22 +359,22 @@ function Friends() {
       )}
 
       {showAddFriendModal && (
-        <div className="modal-overlay" onClick={() => setShowAddFriendModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowAddFriendModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('friends.addFriend')}</h2>
               <button className="modal-close" onClick={() => setShowAddFriendModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <div className="add-member-method">
                 <label className="input-label">{t('friends.selectFromUsers') || 'Select from Users'}</label>
-                <div className="add-member-row">
+                <div className="add-member-row flex items-center gap-3 mt-2">
                   {loadingUsers && allUsers.length === 0 ? (
                     <span className="loading-text">Loading users...</span>
                   ) : (
                     <>
                       <select
-                        className="input"
+                        className="input flex-1"
                         value={selectedUser}
                         onChange={(e) => setSelectedUser(e.target.value)}
                       >
@@ -389,15 +389,19 @@ function Friends() {
                 </div>
               </div>
 
-              <div className="add-member-divider">{t('teams.or')}</div>
+              <div className="add-member-divider flex items-center gap-4 my-4">
+                <span className="flex-1 h-px bg-border" />
+                <span className="text-text-secondary text-sm">{t('teams.or')}</span>
+                <span className="flex-1 h-px bg-border" />
+              </div>
 
               <div className="add-member-method">
                 <label className="input-label">{t('teams.addByUsername')}</label>
-                <div className="add-member-row">
+                <div className="add-member-row flex items-center gap-3 mt-2">
                   <input
                     type="text"
                     placeholder={t('teams.enterUsername')}
-                    className="input"
+                    className="input flex-1"
                     value={manualUsername}
                     onChange={(e) => setManualUsername(e.target.value)}
                   />
@@ -408,7 +412,7 @@ function Friends() {
               </div>
 
               {availableUsers.length === 0 && friends.length > 0 && !loadingUsers && (
-                <p className="empty-hint text-center">{t('friends.noUsersToAdd') || 'No users available to add'}</p>
+                <p className="empty-hint text-center mt-4">{t('friends.noUsersToAdd') || 'No users available to add'}</p>
               )}
             </div>
           </div>

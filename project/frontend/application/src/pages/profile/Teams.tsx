@@ -224,13 +224,13 @@ function Teams() {
       )}
 
       {showCreateModal && (
-        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowCreateModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.createTeam')}</h2>
               <button className="modal-close" onClick={() => setShowCreateModal(false)}>&times;</button>
             </div>
-            <form onSubmit={handleCreateTeam} className="modal-body">
+            <form onSubmit={handleCreateTeam} className="p-5 flex flex-col gap-4">
               <div className="form-group">
                 <label className="input-label">{t('teams.teamName')}</label>
                 <input
@@ -283,7 +283,7 @@ function Teams() {
                 </div>
               </div>
 
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3">
                 <button type="button" className="btn btn-danger-actions" onClick={() => setShowCreateModal(false)}>
                   {t('common.cancel')}
                 </button>

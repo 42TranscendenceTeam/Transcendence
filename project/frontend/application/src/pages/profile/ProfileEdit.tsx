@@ -95,11 +95,11 @@ function ProfileEdit() {
   }
 
   return (
-    <div className="profile-edit-page">
+    <div className="profile-edit-page w-full">
       <h1 className="profile-page-title">{t('profile.edit.title')}</h1>
 
-      <form onSubmit={handleSubmit} className="profile-form">
-        <div className="form-group">
+      <form onSubmit={handleSubmit} className="profile-form flex flex-col gap-1">
+        <div className="form-group flex flex-col gap-2 mb-4">
           <label className="label">{t('profile.edit.username')}</label>
           <input
             type="text"
@@ -110,7 +110,7 @@ function ProfileEdit() {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group flex flex-col gap-2 mb-4">
           <label className="label">{t('profile.edit.email')}</label>
           <input
             type="email"
@@ -121,7 +121,7 @@ function ProfileEdit() {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group flex flex-col gap-2 mb-4">
           <label className="label">{t('profile.edit.description')}</label>
           <textarea
             className="input textarea"
@@ -132,25 +132,25 @@ function ProfileEdit() {
           />
         </div>
 
-        <div className="form-group">
+        <div className="form-group flex flex-col gap-2 mb-4">
           <label className="label">{t('profile.edit.language')}</label>
           <LanguageSelector value={language} onChange={setLanguage} />
         </div>
 
-        <div className="form-group">
+        <div className="form-group flex flex-col gap-2 mb-4">
           <label className="label">{t('profile.security.twoFactor')}</label>
-          <div className="security-section profile-edit-security-section">
+          <div className="security-section profile-edit-security-section bg-bg-card border border-border rounded-xl p-6 mb-4">
             <p className="security-description">
               {t('profile.security.twoFactorDesc')}
             </p>
-            <div className="security-toggle">
-              <label className="security-toggle-label">
+            <div className="security-toggle flex items-center gap-3 cursor-pointer">
+              <label className="security-toggle-label flex items-center">
                 <input
                   type="checkbox"
                   checked={twoFactorEnabled}
                   onChange={() => setTwoFactorEnabled(!twoFactorEnabled)}
                 />
-                <span className="toggle-text">
+                <span className="toggle-text font-medium text-text-primary ml-2">
                   {twoFactorEnabled ? t('profile.security.enable') : t('profile.security.disable')}
                 </span>
               </label>
@@ -158,23 +158,23 @@ function ProfileEdit() {
           </div>
         </div>
 
-        <div className="form-group">
+        <div className="form-group flex flex-col gap-2 mb-4">
           <label className="label">{t('profile.edit.currentAvatar')}</label>
-          <div className="avatar-preview">
+          <div className="avatar-preview w-20 h-20 rounded-full overflow-hidden mb-2">
             <img src={avatarUrl || user.avatar} alt="Avatar preview" />
           </div>
           <div className="avatar-upload">
-            <label className={`upload-label ${isUploading ? 'uploading' : ''}`}>
+            <label className={`upload-label inline-flex items-center gap-2 px-4 py-2 bg-bg-input border-2 border-border rounded-lg text-text-secondary text-sm cursor-pointer hover:border-accent hover:text-accent ${isUploading ? 'uploading' : ''}`}>
               {isUploading ? (
                 <>
-                  <svg className="upload-spinner" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                  <svg className="upload-spinner w-[18px] h-[18px] shrink-0 animate-spin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
                     <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
                   </svg>
                   {t('profile.edit.uploading')}
                 </>
               ) : (
                 <>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[18px] h-[18px] shrink-0">
                     <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
                   </svg>
                   {t('profile.edit.uploadAvatar')}
@@ -188,23 +188,23 @@ function ProfileEdit() {
                 style={{ display: 'none' }}
               />
             </label>
-            {uploadError && <p className="avatar-upload-error">{uploadError}</p>}
+            {uploadError && <p className="avatar-upload-error text-xs text-error mt-2">{uploadError}</p>}
           </div>
         </div>
 
-        <button type="submit" className="btn btn-primary save-profile-btn">{t('profile.edit.saveChanges')}</button>
+        <button type="submit" className="btn btn-primary save-profile-btn mt-6">{t('profile.edit.saveChanges')}</button>
       </form>
 
       {/* Success Modal */}
       {showSuccessModal && (
-        <div className="modal-overlay" onClick={handleSuccessClose}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={handleSuccessClose}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('common.success')}</h2>
               <button className="modal-close" onClick={handleSuccessClose}>&times;</button>
             </div>
-            <div className="modal-body">
-              <div className="success-content">
+            <div className="modal-body p-5">
+              <div className="success-content text-center p-4">
                 <div className="success-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                     <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.22-.149l.97-1.164a.75.75 0 00.17-.263z" clipRule="evenodd" />
@@ -215,7 +215,7 @@ function ProfileEdit() {
                 </p>
               </div>
             </div>
-            <div className="modal-actions">
+            <div className="modal-actions flex justify-end gap-3">
               <button className="btn btn-primary" onClick={handleSuccessClose}>
                 {t('common.close')}
               </button>
