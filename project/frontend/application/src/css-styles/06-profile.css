@@ -234,6 +234,8 @@
   color: var(--text-secondary);
   max-width: 50ch;
   line-height: 1.6;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .profile-edit-btn {
