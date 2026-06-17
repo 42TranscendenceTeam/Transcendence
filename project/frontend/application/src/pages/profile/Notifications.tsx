@@ -148,12 +148,12 @@ function Notifications() {
       try {
         const teamsData = await api.getTeams();
         const foundTeam = teamsData.find(t => t.name === teamName);
-        
+
         if (foundTeam) {
           // Check if user is already a member using api.getMyTeams for authoritative list
           const myTeams = await api.getMyTeams();
           const isMember = myTeams.some(mt => mt.id === foundTeam.id);
-          
+
           if (isMember) {
             navigate(`/teams/${foundTeam.id}`);
           } else {
@@ -185,8 +185,8 @@ function Notifications() {
   ).length;
 
   return (
-    <div className="notifications-page">
-      <div className="notifications-header">
+    <div className="notifications-page flex w-full flex-col gap-3">
+      <div className="notifications-header flex items-center justify-between gap-4">
         <div>
           <h1 className="profile-page-title">{t('notifications.title')}</h1>
           <p className="profile-page-subtitle">
@@ -194,8 +194,11 @@ function Notifications() {
           </p>
         </div>
 
-        <button className="btn btn-danger-actions" onClick={deleteAllNotifications}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style={{ width: '0.875rem', height: '0.875rem' }}>
+        <button
+          className="btn btn-danger-actions inline-flex shrink-0 items-center gap-2"
+          onClick={deleteAllNotifications}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
             <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
           </svg>
 
@@ -203,35 +206,36 @@ function Notifications() {
         </button>
       </div>
 
-      <div className="notifications-section">
-        <h2 className="notifications-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style={{ marginRight: '0.4rem' }}>
+      <div className="notifications-section mt-4 flex flex-col gap-3 rounded-xl p-4">
+        <h2 className="notifications-section-title flex items-center text-base font-normal">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="mr-1.5 h-6 w-6">
             <path d={FRIEND_ICON} />
           </svg>
           {t('notifications.friendNotifications')}
           {unreadFriendNotifications > 0 && (
-            <span className="notifications-section-count">
+            <span className="notifications-section-count inline-flex items-center justify-center rounded-full font-bold">
               {unreadFriendNotifications}
             </span>
           )}
         </h2>
+
         {friendNotifications.length === 0 ? (
           <p className="empty-hint">{t('notifications.noFriendNotifications')}</p>
         ) : (
-          <div className="notifications-list">
+          <div className="notifications-list flex flex-col gap-2">
             {friendNotifications.map((notification) => (
               <Link
                 key={notification.id}
                 to="/profile/friends"
-                className={`notification-item${!notification.status_read ? ' unread' : ''}`}
+                className={`notification-item relative flex cursor-pointer items-center gap-4 rounded-xl${!notification.status_read ? ' unread' : ''}`}
                 onClick={() => markAsRead(notification.id)}
               >
-                <div className="notification-item-content">
-                  <span className="notification-item-text">
+                <div className="notification-item-content flex min-w-0 flex-1 flex-col">
+                  <span className="notification-item-text block font-normal">
                     {getNotificationText(notification.type, notification.content, t)}
                   </span>
 
-                  <span className="notification-item-time">
+                  <span className="notification-item-time mt-1 block">
                     {getRelativeTime(notification.created_at, t)}
                   </span>
                 </div>
@@ -252,33 +256,35 @@ function Notifications() {
         )}
       </div>
 
-      <div className="notifications-section">
-        <h2 className="notifications-section-title">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style={{ marginRight: '0.4rem' }}>
+      <div className="notifications-section mt-4 flex flex-col gap-3 rounded-xl p-4">
+        <h2 className="notifications-section-title flex items-center text-base font-normal">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="mr-1.5 h-6 w-6">
             <path d={TEAM_ICON} />
           </svg>
           {t('notifications.teamNotifications')}
           {unreadTeamNotifications > 0 && (
-            <span className="notifications-section-count">
+            <span className="notifications-section-count inline-flex items-center justify-center rounded-full font-bold">
               {unreadTeamNotifications}
             </span>
           )}
         </h2>
+
         {teamNotifications.length === 0 ? (
           <p className="empty-hint">{t('notifications.noTeamNotifications')}</p>
         ) : (
-          <div className="notifications-list">
+          <div className="notifications-list flex flex-col gap-2">
             {teamNotifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`notification-item${!notification.status_read ? ' unread' : ''}`}
+                className={`notification-item relative flex cursor-pointer items-center gap-4 rounded-xl${!notification.status_read ? ' unread' : ''}`}
                 onClick={() => handleTeamNotificationClick(notification)}
               >
-                <div className="notification-item-content">
-                  <span className="notification-item-text">
+                <div className="notification-item-content flex min-w-0 flex-1 flex-col">
+                  <span className="notification-item-text block font-normal">
                     {getNotificationText(notification.type, notification.content, t)}
                   </span>
-                  <span className="notification-item-time">
+
+                  <span className="notification-item-time mt-1 block">
                     {getRelativeTime(notification.created_at, t)}
                   </span>
                 </div>

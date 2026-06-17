@@ -158,13 +158,13 @@ function Friends() {
 
   return (
     <div className="friends-page">
-      <div className="friends-header">
+      <div className="friends-header mb-4 flex items-start justify-between gap-4">
         <div>
           <h1 className="profile-page-title">{t('friends.title')}</h1>
           <div className="friends-search-wrapper">
             <input
               type="text"
-              className="friends-search-input"
+              className="friends-search-input w-full px-4 py-3"
               placeholder={t('teams.searchFriends')}
               value={friendSearch}
               onChange={(e) => setFriendSearch(e.target.value)}
@@ -178,15 +178,17 @@ function Friends() {
       </div>
 
       <div className="profile-section">
-        <div className="friends-section-header">
-          <div className="friends-section-title">
+        <div className="friends-section-header mb-4 flex items-center justify-between">
+          <div className="friends-section-title flex items-center">
             <span className="friends-section-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
                 <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
               </svg>
             </span>
-            <h2 className="profile-section-title">{t('friends.myFriends')}</h2>
-            <span className="requests-count">{friends.length}</span>
+            <h2 className="profile-section-title mb-0">{t('friends.myFriends')}</h2>
+            <span className="requests-count inline-flex h-7 items-center justify-center rounded-lg px-3 font-bold">
+              {friends.length}
+            </span>
           </div>
         </div>
 
@@ -196,9 +198,9 @@ function Friends() {
             <p className="empty-hint">{t('teams.findCollaborators')}</p>
           </div>
         ) : (
-          <div className="friends-list">
+          <div className="friends-list grid grid-cols-4">
             {filteredFriends.map((friend) => (
-              <div key={friend.id} className="friend-card">
+              <div key={friend.id} className="friend-card relative flex flex-col items-center rounded-xl px-4 pb-4 pt-5">
                 <button
                   className="friend-card-menu"
                   onClick={() => handleRemoveClick(friend)}
@@ -206,23 +208,31 @@ function Friends() {
                 >
                   ×
                 </button>
+
                 <div className="relative inline-block">
-                  <img src={friend.avatar} alt={friend.username} className="friend-avatar" />
+                  <img
+                    src={friend.avatar}
+                    alt={friend.username}
+                    className="friend-avatar h-20 w-20 shrink-0 rounded-full object-cover"
+                  />
                   <span
                     className={`status-indicator ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'} absolute bottom-0 right-0`}
                   />
                 </div>
-                <div className="friend-info">
-                  <Link to={`/profile/${friend.id}`} className="friend-name">
+
+                <div className="friend-info min-w-0 text-center">
+                  <Link to={`/profile/${friend.id}`} className="friend-name block font-semibold">
                     {friend.username}
                   </Link>
                   <span className={`friend-status ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'}`}>
                     {onlineFriendIds.has(friend.id) ? t('common.online') : t('common.offline')}
                   </span>
                 </div>
+
                 <Link
                   to={`/profile/friends/${friend.id}`}
-                  className="btn btn-secondary btn-small friend-chat-btn" >
+                  className="btn btn-secondary btn-small friend-chat-btn w-4/5"
+                >
                   💬 {t('friends.chat')}
                 </Link>
               </div>
@@ -231,11 +241,11 @@ function Friends() {
         )}
       </div>
 
-      <div className="pending-requests-section">
-        <div className="pending-requests-header">
-          <h2 className="section-title">{t('friends.pendingRequests')}</h2>
+      <div className="pending-requests-section mb-4 rounded-xl p-4">
+        <div className="pending-requests-header mb-2 flex items-start justify-start">
+          <h2 className="section-title mb-4 text-base font-medium">{t('friends.pendingRequests')}</h2>
 
-          <span className="requests-count">
+          <span className="requests-count inline-flex h-7 items-center justify-center rounded-lg px-3 font-bold">
             {sentRequests.length + friendRequests.length}
           </span>
         </div>
@@ -246,25 +256,25 @@ function Friends() {
           {friendRequests.length === 0 ? (
             <p className="empty-hint">{t('friends.noReceivedRequests')}</p>
           ) : (
-            <div className="requests-list">
+            <div className="requests-list flex flex-col gap-0 overflow-hidden rounded-xl">
               {friendRequests.map((request) => (
-                <div key={request.request_id} className="request-card">
+                <div key={request.request_id} className="request-card grid items-center gap-4 px-4 py-2">
                   <img
                     src={getAvatarUrl(request.user.avatar_url)}
                     alt={request.user.username}
                     className="friend-avatar"
                   />
 
-                  <div className="request-info">
-                    <Link to={`/profile/${request.user.id}`} className="request-username">
+                  <div className="request-info min-w-0">
+                    <Link to={`/profile/${request.user.id}`} className="request-username block font-bold">
                       {request.user.username}
                     </Link>
-                    <span className="request-message">
+                    <span className="request-message block">
                       {t('teams.wantsToBeFriends')}
                     </span>
                   </div>
 
-                  <div className="request-actions">
+                  <div className="request-actions flex items-center gap-3">
                     <button
                       className="btn btn-primary btn-small"
                       onClick={() => acceptFriendRequest(request.request_id)}
@@ -291,26 +301,28 @@ function Friends() {
           {sentRequests.length === 0 ? (
             <p className="empty-hint">{t('friends.noSentRequests')}</p>
           ) : (
-            <div className="requests-list">
+            <div className="requests-list flex flex-col gap-0 overflow-hidden rounded-xl">
               {sentRequests.map((request) => (
-                <div key={request.request_id} className="request-card">
+                <div key={request.request_id} className="request-card grid items-center gap-4 px-4 py-2">
                   <img
                     src={getAvatarUrl(request.user.avatar_url)}
                     alt={request.user.username}
                     className="friend-avatar"
                   />
 
-                  <div className="request-info">
-                    <Link to={`/profile/${request.user.id}`} className="request-username">
+                  <div className="request-info min-w-0">
+                    <Link to={`/profile/${request.user.id}`} className="request-username block font-bold">
                       {request.user.username}
                     </Link>
-                    <span className="request-message">
+                    <span className="request-message block">
                       {t('teams.requestSent')}
                     </span>
                   </div>
 
-                  <div className="request-actions">
-                    <span className="request-status">{t('friends.pending')}</span>
+                  <div className="request-actions flex items-center gap-3">
+                    <span className="request-status inline-flex items-center justify-center rounded-lg font-semibold">
+                      {t('friends.pending')}
+                    </span>
                     <button
                       className="friend-card-menu"
                       aria-label={t('friends.remove')}
