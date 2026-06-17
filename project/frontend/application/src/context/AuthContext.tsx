@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 				const idx = prev.findIndex(item => item.id === n.id);
 				if (idx >= 0) {
 					const copy = [...prev];
-					copy.slice(idx, 1);
+					copy.splice(idx, 1);
 					return [
 						n,
 						...copy.filter(
