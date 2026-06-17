@@ -13,6 +13,7 @@
   border-radius: 0.75rem;
   padding: 1.5rem;
   margin-bottom: 1rem;
+  max-width: 600px;
 }
 
 /*
@@ -31,6 +32,8 @@
   font-size: 0.875rem;
   color: var(--text-secondary);
   margin-bottom: 1rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /*
@@ -53,6 +56,8 @@
  * Toggle text
  */
 .toggle-text {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /*

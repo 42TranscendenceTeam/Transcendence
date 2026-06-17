@@ -143,7 +143,7 @@ function Profile() {
             <Link key={team.id} to={`/teams/${team.id}`} className="team-card grid items-center">
               <div className="team-info flex min-w-0 flex-col">
                 <span className="team-name font-medium">{team.name}</span>
-                <span className="team-description block truncate">
+                <span className="team-description block">
                   {team.objective || 'No description added yet.'}
                 </span>
               </div>

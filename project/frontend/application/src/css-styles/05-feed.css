@@ -169,6 +169,8 @@
 
 /* Feed Cards General */
 .task-card {
+  width: 100%;
+  max-width: 100%;
   background: var(--task-gradient);
   padding: 1.5rem;
   border: var(--task-border);
@@ -223,6 +225,8 @@
   font-weight: 600;
   margin-bottom: 0.4rem;
   color: var(--text-primary);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .task-description {
@@ -230,6 +234,8 @@
   color: var(--text-secondary);
   margin-bottom: 0.8rem;
   line-height: 1.5;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .task-tags {

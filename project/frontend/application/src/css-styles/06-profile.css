@@ -315,6 +315,8 @@
 }
 
 .team-card {
+  width: 100%;
+  max-width: 100%;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 2rem;
   padding: 0.75rem 1.25rem;
@@ -333,11 +335,15 @@
 }
 
 .team-info {
+  overflow: hidden;
 }
 
 .team-name {
+  display: block;
   color: var(--text-primary);
   font-size: 1.15rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .team-description {
@@ -345,6 +351,8 @@
   color: var(--text-secondary);
   font-size: 0.82rem;
   line-height: 1.4;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .team-meta {
