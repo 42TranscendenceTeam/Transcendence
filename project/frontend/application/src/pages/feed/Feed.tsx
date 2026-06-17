@@ -97,8 +97,8 @@ const MOCK_AVAILABLE_TEAMS: Team[] = [
 ];
 
 function Feed() {
-  const { t } = useTranslation(undefined, { lng: 'en' });
   const { user, teamInvites } = useContext(AuthContext)!;
+  const { t } = useTranslation(undefined, user ? undefined : { lng: 'en' });
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -317,7 +317,7 @@ function Feed() {
       )}
 
       <h1 className="feed-title pl-4">
-        <span>Activity Feed</span>
+        <span>{t('feed.community', { lng: user ? undefined : 'en' })}</span>
       </h1>
       <p className="feed-subtitle pl-6 m-0">
         <RotatingText forceEnglish={!user} />

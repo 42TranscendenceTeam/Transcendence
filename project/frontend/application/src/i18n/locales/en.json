@@ -312,6 +312,7 @@
   },
   "feed": {
     "title": "Feed",
+    "community": "Community",
     "whatsNew": "What's new?",
     "post": "Post",
     "noPosts": "No posts yet",

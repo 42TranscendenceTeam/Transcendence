@@ -301,6 +301,7 @@
   },
   "feed": {
     "title": "Fil",
+    "community": "Communauté",
     "whatsNew": "Quoi de neuf ?",
     "post": "Publier",
     "noPosts": "Pas encore de publications",
