@@ -140,9 +140,6 @@ function ProfileEdit() {
         <div className="form-group flex flex-col gap-2 mb-4">
           <label className="label">{t('profile.security.twoFactor')}</label>
           <div className="security-section profile-edit-security-section bg-bg-card border border-border rounded-xl p-6 mb-4">
-            <p className="security-description">
-              {t('profile.security.twoFactorDesc')}
-            </p>
             <div className="security-toggle flex items-center gap-3 cursor-pointer">
               <label className="security-toggle-label flex items-center">
                 <input
@@ -155,6 +152,9 @@ function ProfileEdit() {
                 </span>
               </label>
             </div>
+            <p className="security-description">
+              {t('profile.security.twoFactorDesc')}
+            </p>
           </div>
         </div>
 

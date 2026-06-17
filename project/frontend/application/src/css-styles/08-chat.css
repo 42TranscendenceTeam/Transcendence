@@ -518,3 +518,11 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/*
+ * Back icon (used in FriendChat)
+ */
+.back-icon {
+  width: 32px;
+  height: 32px;
+}

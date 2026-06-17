@@ -441,6 +441,22 @@
 .profile-edit-page {
 }
 
+/* Security section (2FA in ProfileEdit) */
+.profile-edit-security-section,
+.security-section {
+  max-width: 600px;
+}
+
+.security-description {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.toggle-text {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 .avatar-preview {
   border-radius: 50%;
   overflow: hidden;

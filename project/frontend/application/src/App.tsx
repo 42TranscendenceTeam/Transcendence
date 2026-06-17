@@ -22,7 +22,6 @@ import Friends from './pages/profile/Friends';
 import FriendChat from './pages/profile/FriendChat';
 import Teams from './pages/profile/Teams';
 import Notifications from './pages/profile/Notifications';
-import Security from './pages/profile/Security';
 import TeamDetail from './pages/profile/TeamDetail';
 
 interface ProtectedRouteProps {
@@ -130,16 +129,6 @@ function App() {
               <ProtectedRoute>
                 <ProfileLayout>
                   <TeamDetail />
-                </ProfileLayout>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile/security"
-            element={
-              <ProtectedRoute>
-                <ProfileLayout>
-                  <Security />
                 </ProfileLayout>
               </ProtectedRoute>
             }
