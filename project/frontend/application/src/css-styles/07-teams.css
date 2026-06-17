@@ -160,6 +160,8 @@
 
 .member-name {
   color: var(--text-primary);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .member-name:hover {

@@ -124,6 +124,8 @@
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--text-primary);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /*
@@ -347,6 +349,8 @@
   font-size: 0.75rem;
   color: var(--text-primary);
   font-weight: 500;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /*
