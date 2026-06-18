@@ -1,6 +1,6 @@
 /**
  * Friend Chat Page Component
- * 
+ *
  * Direct messaging with a friend.
  */
 
@@ -18,13 +18,13 @@ function FriendChat() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const { user, sendFriendMessage, updateUser, onlineFriendIds } = useContext(AuthContext);
-  
+
   const friendId = parseInt(id || '0');
   const friend = user?.friends.find((f) => f.id === friendId);
   const [friendInfo, setFriendInfo] = useState<{ id: number; username: string; avatar: string } | null>(null);
   const [isLoadingFriend, setIsLoadingFriend] = useState(true);
   const [friendError, setFriendError] = useState(false);
-  
+
   const [message, setMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +96,7 @@ function FriendChat() {
       if (user) {
         const existingFriend = user.friends.find(f => f.id === friendId);
         let updatedFriends;
-        
+
         if (existingFriend) {
           updatedFriends = user.friends.map(f => {
             if (f.id === friendId) return { ...f, chat: formattedMessages };
@@ -110,7 +110,7 @@ function FriendChat() {
         } else {
           updatedFriends = user.friends;
         }
-        
+
         updateUser({ friends: updatedFriends });
       }
     } catch (err) {
@@ -155,14 +155,14 @@ function FriendChat() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || !user) return;
-    
+
     const newMessage: Message = {
       id: Date.now(),
       text: message,
       sender: { id: user.id, username: user.username, avatar: user.avatar },
       timestamp: new Date().toISOString(),
     };
-    
+
     await sendFriendMessage(friendId, newMessage);
     setMessage('');
   };
@@ -177,14 +177,16 @@ function FriendChat() {
     <div className="friend-chat-page">
       <div className="friend-chat-header">
         <Link to="/profile/friends" className="back-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="back-icon">
-            <path fillRule="evenodd" d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" clipRule="evenodd" />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="back-icon">
+            <path fillRule="evenodd" d="M17 10a.75.75 0 01-.75.75H5.56l3.22 3.22a.75.75 0 11-1.06 1.06l-4.5-4.5a.75.75 0 010-1.06l4.5-4.5a.75.75 0 111.06 1.06L5.56 9.25h10.69A.75.75 0 0117 10z" clipRule="evenodd"/>
           </svg>
           {t('friends.backToFriends') || 'Back to Friends'}
         </Link>
         <div className="friend-chat-title">
-          <img src={displayFriend.avatar} alt={displayFriend.username} className="friend-chat-avatar" />
-          <span className={`status-indicator ${onlineFriendIds.has(displayFriend.id) ? 'online' : 'offline'}`} />
+          <div className="friend-chat-avatar-wrapper">
+            <img src={displayFriend.avatar} alt={displayFriend.username} className="friend-chat-avatar" />
+            <span className={`status-indicator ${onlineFriendIds.has(displayFriend.id) ? 'online' : 'offline'}`} />
+          </div>
           <Link to={`/profile/${displayFriend.id}`}><h1>{displayFriend.username}</h1></Link>
         </div>
       </div>

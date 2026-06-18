@@ -80,15 +80,25 @@ function TeamDetail() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const teamIdInt = parseInt(id || '0');
+  const parsedId = parseInt(id || '0');
+  const numericId = isNaN(parsedId) || parsedId <= 0 ? 0 : parsedId;
+  const teamIdInt = numericId;
 
   const fetchTeamData = async (silent = false) => {
     if (!id) return;
+    const numericId = parseInt(id);
+    if (isNaN(numericId) || numericId <= 0) {
+      if (!silent) {
+        setLoadingTeam(false);
+        setTeamError(t('teams.notFound'));
+      }
+      return;
+    }
     try {
       if (!silent) setLoadingTeam(true);
-      const teamData = await api.getTeam(parseInt(id));
-      const messagesData = await api.getTeamMessages(parseInt(id), 50);
-
+      const teamData = await api.getTeam(numericId);
+      const messagesData = await api.getTeamMessages(numericId, 50);
+      
       const formattedMessages: Message[] = messagesData.message_list.map((m: any) => {
         const sender = teamData.members.find((member: any) => member.id === m.sender_id) ||
           (teamData.owner.id === m.sender_id ? teamData.owner : null);
@@ -105,8 +115,7 @@ function TeamDetail() {
         chat: formattedMessages
       });
     } catch (err) {
-      console.error('Failed to fetch team:', err);
-      if (!silent) setTeamError('Failed to load team');
+      if (!silent) setTeamError(t('teams.notFound'));
     } finally {
       if (!silent) setLoadingTeam(false);
     }
@@ -184,7 +193,7 @@ function TeamDetail() {
     const fetchJoinRequests = async () => {
       if (!id || team?.role !== 'Leader') return;
       try {
-        const data = await api.getJoinRequests(parseInt(id));
+        const data = await api.getJoinRequests(numericId);
         setJoinRequests(data.request_list || []);
       } catch {
       }
@@ -196,7 +205,7 @@ function TeamDetail() {
     const fetchTeamInvitesSent = async () => {
       if (!id || team?.role !== 'Leader') return;
       try {
-        const data = await api.getTeamInvitesSent(parseInt(id));
+        const data = await api.getTeamInvitesSent(numericId);
         setTeamInvitesSent(data || []);
       } catch {
       }
@@ -208,7 +217,7 @@ function TeamDetail() {
     const fetchTasks = async () => {
       if (!id) return;
       try {
-        const taskData = await api.getTasks(parseInt(id));
+        const taskData = await api.getTasks(numericId);
         const tasksWithFiles = await Promise.all(
           taskData.map(async (task) => {
             try {
@@ -419,7 +428,7 @@ function TeamDetail() {
     try {
       await api.acceptJoinRequest(team.id, requestId);
       setJoinRequests(prev => prev.filter(r => r.request_id !== requestId));
-      const updatedTeam = await api.getTeam(parseInt(id));
+      const updatedTeam = await api.getTeam(numericId);
       setTeam(updatedTeam);
       setSuccessMessage(t('teams.joinRequestAccepted'));
       setSuccessReload(false);

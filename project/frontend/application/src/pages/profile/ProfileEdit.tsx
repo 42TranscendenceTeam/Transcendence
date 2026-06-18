@@ -24,9 +24,9 @@ function ProfileEdit() {
   const initialAvatar = user?.avatar || '';
 
   const [username, setUsername] = useState(initialUsername);
-  const [email, setEmail] = useState(initialEmail);
   const [description, setDescription] = useState(initialDescription);
   const [avatarUrl, setAvatarUrl] = useState(initialAvatar);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [language, setLanguage] = useState((i18n.language || '').split('-')[0] || 'en');
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(user?.twoFactorEnabled || false);
 
@@ -49,16 +49,8 @@ function ProfileEdit() {
       setUploadError(t('profile.edit.uploadInvalidType'));
       return;
     }
-    setIsUploading(true);
-    try {
-      const result = await api.uploadAvatar(file);
-      setAvatarUrl(result.avatar_url);
-      updateUser({ avatar: result.avatar_url });
-    } catch (err: any) {
-      setUploadError(err.message || t('profile.edit.uploadFailed'));
-    } finally {
-      setIsUploading(false);
-    }
+    setAvatarFile(file);
+    setAvatarUrl(URL.createObjectURL(file));
   };
 
   const handleSuccessClose = () => {
@@ -75,19 +67,26 @@ function ProfileEdit() {
       showError(t('common.error'), t('profile.edit.descriptionTooLong'));
       return;
     }
+    setIsUploading(true);
+    let newAvatarUrl = avatarUrl;
     try {
+      if (avatarFile) {
+        const result = await api.uploadAvatar(avatarFile);
+        newAvatarUrl = result.avatar_url;
+        setAvatarUrl(result.avatar_url);
+      }
       const result = await api.updateCurrentUser({
         username,
-        email,
         description,
       });
       updateUser({
         username: result.username,
-        email: result.email,
         description: result.description,
+        avatar: newAvatarUrl,
       });
     } catch (err: any) {
       setUploadError(err.message || 'Failed to update profile');
+      setIsUploading(false);
       return;
     }
     if (language !== i18n.language) {
@@ -97,6 +96,8 @@ function ProfileEdit() {
       await toggle2FA();
       updateUser({ twoFactorEnabled });
     }
+    setAvatarFile(null);
+    setIsUploading(false);
     setShowSuccessModal(true);
   };
 
@@ -121,13 +122,12 @@ function ProfileEdit() {
         </div>
 
         <div className="form-group flex flex-col gap-2 mb-4">
-          <label className="label">{t('profile.edit.email')}</label>
+          <label className="label">{t('profile.edit.email')} ({t('profile.edit.emailNotEditable')})</label>
           <input
             type="email"
             className="input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder={t('auth.login.emailPlaceholder')}
+            value={user?.email || ''}
+            disabled
           />
         </div>
 

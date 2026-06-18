@@ -12,13 +12,14 @@
  */
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import { api } from '../../services/api';
 
 function Register() {
   const { t } = useTranslation(undefined, { lng: 'en' });
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -32,7 +33,7 @@ function Register() {
     setError('');
 
     if (username.length > 25) {
-      setError('Username must be 25 characters or less');
+      setError(t('auth.register.usernameTooLong') || 'Username must be 25 characters or less');
       return;
     }
     if (!username.trim()) {
@@ -60,8 +61,12 @@ function Register() {
     setLoading(true);
     try {
       const result = await api.register({ email, username, password });
-      localStorage.setItem('authToken', result.token);
-      setShowSuccessModal(true);
+      if (result.requires_verification && result.temp_token) {
+        navigate(`/verify-email?token=${result.temp_token}&email=${encodeURIComponent(email)}`);
+      } else if (result.token) {
+        localStorage.setItem('authToken', result.token);
+        setShowSuccessModal(true);
+      }
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
     } finally {

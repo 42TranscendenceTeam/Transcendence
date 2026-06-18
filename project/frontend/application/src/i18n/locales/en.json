@@ -85,6 +85,7 @@
       "language": "Language",
       "username": "Username",
       "email": "Email",
+      "emailNotEditable": "not editable",
       "description": "Description",
       "descriptionPlaceholder": "Tell us about yourself...",
       "currentAvatar": "Current Avatar",
