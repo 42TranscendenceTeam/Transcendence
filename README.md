@@ -265,7 +265,7 @@ The minimum requirements are:
 -Document any browser-specific limitations.
 -Consistent UI/UX across all supported browsers.
 - Justification: Ensures cross-platform reliability.
-- Implementation: Styled carefully and tested across Chrome, Firefox, and Safari to ensure consistent UI/UX.
+- Implementation: No known limitations were identified during testing on Chrome, Firefox, and Safari.
 - Team Member(s): `tialbert`, `diolivei`, `vafernan`, `nsimao-f`
 
 > IV.3 User Management
@@ -294,7 +294,7 @@ The minimum requirements are:
 - Team Member(s): `tialbert`, `diolivei`, `vafernan`, `nsimao-f`
 
 
-**Implement a complete 2FA (Two-Factor Authentication) system for the users. `(1)**
+**Implement a complete 2FA (Two-Factor Authentication) system for the users. `(1)`**
 - Justification: Adds a layer of security for sensitive accounts.
 - Implementation: Used Time-based One-Time Passwords / email verification codes upon login if the user has 2FA enabled in their profile.
 - Team Member(s): `diolivei`, `vafernan`
@@ -339,6 +339,7 @@ All team members contributed to development, testing, code review, and documenta
 
 The team followed a lightweight collaborative workflow:
 
+- Weekly synchronization meetings were held to review progress, discuss blockers, and plan upcoming work.
 - Tasks were divided into smaller issues or feature branches.
 - Work was distributed between team members.
 - Code was reviewed through pull requests before merging.
