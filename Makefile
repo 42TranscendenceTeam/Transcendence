@@ -6,7 +6,7 @@
 ###############################################################################
 
 # Build and start website
-all: up migrate
+all: up
 
 # Create and start containers and database storage
 up:
