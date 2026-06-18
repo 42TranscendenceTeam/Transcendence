@@ -8,6 +8,9 @@ ENV VITE_API_URL=$VITE_API_URL
 
 COPY ./application .
 
+# NOTE: Using a shared folder inside a VM removed permissions for the files (problems loading the website images)
+RUN chmod -R 755 .
+
 RUN npm install
 
 COPY ./setup/entrypoint.sh .
