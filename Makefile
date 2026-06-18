@@ -6,16 +6,17 @@
 ###############################################################################
 
 # Build and start website
-all: build up
+all: up migrate
 
-# Create database storage and build containers
+# Create and start containers and database storage
+up:
+	@mkdir -p ${HOME}/data/database
+	@docker compose -f ./project/docker-compose.yml up -d --build
+
+# Build containers
 build:
 	@mkdir -p ${HOME}/data/database
 	@docker compose -f ./project/docker-compose.yml build
-
-# Create and start containers
-up:
-	@docker compose -f ./project/docker-compose.yml up -d --build
 
 # Stop and remove containers and networks
 down:
@@ -48,20 +49,20 @@ fclean: clean
 # Rebuild only the frontend container
 frontRebuild:
 	@docker compose -f ./project/docker-compose.yml build --no-cache frontend
-	@docker compose -f ./project/docker-compose.yml up
+	@docker compose -f ./project/docker-compose.yml up -d
 
 # Rebuild only the backend container
 backRebuild:
 	@docker compose -f ./project/docker-compose.yml build --no-cache backend
-	@docker compose -f ./project/docker-compose.yml up
+	@docker compose -f ./project/docker-compose.yml up -d
 
 # Rebuild only the database container
 dataRebuild:
 	@docker compose -f ./project/docker-compose.yml build --no-cache postgresql
-	@docker compose -f ./project/docker-compose.yml up
+	@docker compose -f ./project/docker-compose.yml up -d
 
 # Clean build - removes containers for fresh start
-re: clean build up
+re: clean up
 
 ###############################################################################
 ################################# DEV UTILS ###################################
@@ -78,9 +79,5 @@ migrate:
 # Seed DB
 seed:
 	@docker exec -it backend npm run seed
-
-# Create dummy env files
-env:
-	@bash setup_env.sh
 
 .PHONY: all build up down stop start clean fclean frontRebuild backRebuild dataRebuild re studio migrate seed
