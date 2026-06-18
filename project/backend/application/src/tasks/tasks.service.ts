@@ -5,6 +5,10 @@ import fs from "fs";
 import path from 'path';
 
 export const createTask = async ( creatorId: number, teamId: number, data: CreateTaskDTO) => {
+
+	if (data.title.length > 25)
+		return { error: "task title length >25" };
+
   const team = await prisma.team.findUnique({
     where: { id: teamId },
   });

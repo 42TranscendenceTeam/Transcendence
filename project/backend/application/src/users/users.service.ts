@@ -27,6 +27,9 @@ export const getMe = async (userId: number) => {
 export const updateMe = async (userId: number, data: UpdateUserDTO) => {
   const { username } = data;
 
+  if (data.bio && data.bio.length > 100)
+	  return { error: "bio length >100" };
+
   if (username) {
     const existingUsername = await prisma.user.findFirst({
       where: {
