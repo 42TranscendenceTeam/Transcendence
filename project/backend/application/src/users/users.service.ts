@@ -27,6 +27,9 @@ export const getMe = async (userId: number) => {
 export const updateMe = async (userId: number, data: UpdateUserDTO) => {
   const { username } = data;
 
+  if (username && username.length > 25)
+	  return { error: "username length >25" };
+
   if (data.bio && data.bio.length > 100)
 	  return { error: "bio length >100" };
 

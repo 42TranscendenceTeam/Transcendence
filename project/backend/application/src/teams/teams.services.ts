@@ -110,6 +110,9 @@ export const getTeam = async (teamId: number) => {
 // Update team info with team id
 export const updateTeam = async (userId: number, teamId: number, info: UpdateTeamDTO) => {
 
+	if (info.name && info.name.length > 25)
+		return { error: "team name length >25" };
+
 	const team = await prisma.team.findUnique({
 		where: {
 			id: teamId,
