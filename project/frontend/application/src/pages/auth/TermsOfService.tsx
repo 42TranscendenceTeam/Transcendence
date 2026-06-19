@@ -7,6 +7,7 @@
 
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import ProfileLayout from '../../components/layouts/ProfileLayout';
@@ -37,12 +38,15 @@ function TermsOfService() {
         <h2 className="mt-4 text-text-primary font-semibold">{t('legal.terms.changesToTerms')}</h2>
         <p className="mb-2">{t('legal.terms.changesToTermsText')}</p>
       </div>
+      <Link to="/" className="legal-brand">
+        <img src="/sidebar-logo.png" alt="Transcendence" className="sidebar-logo-img" />
+      </Link>
     </section>
   );
 
   return user ? (
     <ProfileLayout>
-      <div className="legal-layout-card w-full max-w-2xl mx-auto p-6 md:p-8">
+      <div className="legal-layout-card max-w-2xl mx-auto p-6 md:p-8">
         {pageContent}
       </div>
     </ProfileLayout>
