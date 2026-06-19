@@ -14,12 +14,12 @@ const client = new OAuth2Client(GOOGLE_CLIENT_ID);
 export const register = async (data: RegisterDTO) => {
   const { email, username, password } = data;
 
-  if (username.length > 25)
-	  return { error: "username length >25" };
-
   if (!email || !username || !password) {
     throw new AppError('Missing required fields', 400);
   }
+
+  if (username.length > 25)
+	  return { error: "username length >25" };
 
   const existingEmail = await prisma.user.findUnique({
     where: { email },

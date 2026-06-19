@@ -35,7 +35,7 @@ export const getTeamsList = async () => {
 // Create new team
 export const createTeam = async (userId: number, info: CreateTeamDTO) => {
 
-	if (info.name.length > 25)
+	if (info.name && info.name.length > 25)
 		return { error: "team name length >25" };
 
 	const teamExists = await prisma.team.findUnique({
