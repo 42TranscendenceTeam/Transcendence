@@ -89,7 +89,7 @@ function Register() {
           />
         </div>
         <div className="mb-4">
-          <label className="label" htmlFor="email">{t('auth.register.email')} ({t('common.optional')})</label>
+          <label className="label" htmlFor="email">{t('auth.register.email')}</label>
           <input
             type="email"
             id="email"
