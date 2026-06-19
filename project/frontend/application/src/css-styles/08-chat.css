@@ -52,7 +52,13 @@
   border-radius: 0.75rem;
   display: flex;
   flex-direction: column;
-  height: 300px;
+  height: 600px;
+}
+
+@media (max-width: 768px) {
+  .chat-container {
+    height: min(70vh, 400px);
+  }
 }
 
 /*
