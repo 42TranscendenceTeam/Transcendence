@@ -90,8 +90,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const sock = getSocket();
         if (sock) {
           const handler = (n: AppNotification) => {
-            setNotifications((prev) => [n, ...prev]);
-            if (!n.status_read) setUnreadCount((c) => c + 1);
+            setNotifications((prev) => {
+				const idx = prev.findIndex(item => item.id === n.id);
+				if (idx >= 0) {
+					const copy = [...prev];
+					copy.splice(idx, 1);
+					return [
+						n,
+						...copy.filter(
+							item => !(item.type === n.type && item.user_id_trigger === n.user_id_trigger && !item.status_read)
+						),
+					];
+				}
+
+				if (!n.status_read) setUnreadCount((c) => c + 1);
+				return [n, ...prev];
+			});
 
             if (n.type === 'friend_request' || n.type === 'friend_request_accepted'
                 || n.type === 'friend_request_rejected'
@@ -115,6 +129,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 || n.type === 'team_user_left' || n.type === 'team_join_request_accepted'
                 || n.type === 'team_join_request') {
               setTeamRefreshTrigger((c) => c + 1);
+            }
+            if (n.type === 'direct_message') {
+				fetchFriends();
             }
           };
           sock.on('notification:new', handler);

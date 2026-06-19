@@ -1,5 +1,6 @@
 import { AppError } from '../utils/AppError.js';
 import { prisma } from '../prisma.js';
+import { createNotification } from '../notifications/notifications.service.js';
 
 // Returns messages sent to a friend
 export const getSentMessages = async (userId: number, friendId: number, amount: number) => {
@@ -159,7 +160,7 @@ export const sendMessage = async (userId: number, friendId: number, message: str
 	if (!message)
 		throw new AppError("Message cannot be empty.", 400);
 
-	return prisma.directMessage.create({
+	const request = await prisma.directMessage.create({
 		data: {
 			sender_id: userId,
 			receiver_id: friendId,
@@ -167,6 +168,26 @@ export const sendMessage = async (userId: number, friendId: number, message: str
 			status_read: false,
 		},
 	});
+
+	const sender = await prisma.user.findUnique({
+		where: {
+			id:userId,
+		},
+		select: {
+			username: true,
+		}
+	});
+
+	await createNotification(
+		friendId,
+		'direct_message',
+		friendId,
+		'direct_message',
+		userId,
+		`You got a message from ${sender?.username ?? 'someone'}.`,
+	);
+
+	return request;
 };
 
 // Update read status

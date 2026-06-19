@@ -356,6 +356,7 @@
     "teamRemoved": "Vous avez été retiré de l'équipe {{team}}.",
     "teamUserLeft": "{{username}} a quitté {{team}}.",
     "teamDeleted": "L'équipe {{team}} a été supprimée par son propriétaire.",
+    "directMessage": "Vous avez reçu une message de {{username}}.",
     "teamLoadFailed": "Échec du chargement des informations de l'équipe.",
     "subtitle": "Restez informé des demandes d'amitié, de l'activité des équipes et des mises à jour du compte."
   },

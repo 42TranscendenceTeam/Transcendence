@@ -90,6 +90,11 @@ const NOTIFICATION_PATTERNS: Record<string, { regex: RegExp; vars: string[]; key
     vars: ['team'],
     key: 'teamDeleted',
   },
+  direct_message: {
+    regex: /^You got a message from (.+?)\.$/,
+    vars: ['username'],
+    key: 'directMessage',
+  },
 };
 
 function extractTeamName(type: string, content: string | null): string | null {
@@ -125,7 +130,7 @@ function getNotificationText(
 }
 
 function isFriendType(type: string): boolean {
-  return type.startsWith('friend_');
+  return type.startsWith('friend_') || type === 'direct_message';
 }
 
 function isTeamType(type: string): boolean {
@@ -220,34 +225,64 @@ function Notifications() {
         ) : (
           <div className="notifications-list">
             {friendNotifications.map((notification) => (
-              <Link
-                key={notification.id}
-                to="/profile/friends"
-                className={`notification-item${!notification.status_read ? ' unread' : ''}`}
-                onClick={() => markAsRead(notification.id)}
-              >
-                <div className="notification-item-content">
-                  <span className="notification-item-text">
-                    {getNotificationText(notification.type, notification.content, t)}
-                  </span>
+				notification.type === 'direct_message' ? (
+				  <Link
+					key={`${notification.id}-${notification.created_at}`}
+					to={`/profile/friends/${notification.user_id_trigger}`}
+					className={`notification-item${!notification.status_read ? ' unread' : ''}`}
+					onClick={() => deleteNotification(notification.id)}
+				  >
+					<div className="notification-item-content">
+					  <span className="notification-item-text">
+						{getNotificationText(notification.type, notification.content, t)}
+					  </span>
 
-                  <span className="notification-item-time">
-                    {getRelativeTime(notification.created_at, t)}
-                  </span>
-                </div>
+					  <span className="notification-item-time">
+						{getRelativeTime(notification.created_at, t)}
+					  </span>
+					</div>
 
-                <button
-                  className="btn btn-danger-actions btn-small"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    deleteNotification(notification.id);
-                  }}
-                >
-                  {t('notifications.delete')}
-                </button>
-              </Link>
-            ))}
+					<button
+					  className="btn btn-danger-actions btn-small"
+					  onClick={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						deleteNotification(notification.id);
+					  }}
+					>
+					  {t('notifications.delete')}
+					</button>
+				  </Link>
+				) : (
+				  <Link
+					key={notification.id}
+					to="/profile/friends"
+					className={`notification-item${!notification.status_read ? ' unread' : ''}`}
+					onClick={() => markAsRead(notification.id)}
+				  >
+					<div className="notification-item-content">
+					  <span className="notification-item-text">
+						{getNotificationText(notification.type, notification.content, t)}
+					  </span>
+
+					  <span className="notification-item-time">
+						{getRelativeTime(notification.created_at, t)}
+					  </span>
+					</div>
+
+					<button
+					  className="btn btn-danger-actions btn-small"
+					  onClick={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						deleteNotification(notification.id);
+					  }}
+					>
+					  {t('notifications.delete')}
+					</button>
+				  </Link>
+				)
+			))}
           </div>
         )}
       </div>

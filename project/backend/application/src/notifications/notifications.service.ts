@@ -131,6 +131,30 @@ export const createNotification = async (
 	content?: string,
 
 ) => {
+	const existing = await prisma.notification.findFirst({
+		where: {
+			user_id_receiver: userIdReceiver,
+			user_id_trigger: userIdTrigger,
+			type: type,
+			status_read: false,
+		},
+		orderBy: { created_at: 'desc' },
+	});
+
+	if (existing) {
+		const updated = await prisma.notification.update({
+			where: { id: existing.id, },
+			data: {
+				entity_id: entityId ?? existing.entity_id,
+				created_at: new Date(),
+			},
+		});
+
+		const io = getIO();
+		io.to(`user:${userIdReceiver}`).emit('notification:new', updated);
+		return updated;
+	}
+
 	const notification = await prisma.notification.create({
 		data: {
 			user_id_receiver: userIdReceiver,

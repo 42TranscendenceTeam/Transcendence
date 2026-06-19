@@ -357,6 +357,7 @@
     "teamRemoved": "Foi removido da equipa {{team}}.",
     "teamUserLeft": "{{username}} saiu de {{team}}.",
     "teamDeleted": "A equipa {{team}} foi eliminada pelo seu proprietário.",
+    "directMessage": "Você recebeu uma mensagem de {{username}}.",
     "teamLoadFailed": "Falha ao carregar informações da equipa.",
     "subtitle": "Mantém-te a par dos pedidos de amizade, da atividade das equipas e das atualizações da conta."
   },
