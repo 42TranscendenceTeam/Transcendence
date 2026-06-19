@@ -17,7 +17,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 import { getAvatarUrl } from '../../utils/avatar';
-import { ALLOWED_TASK_EXTENSIONS } from '../../utils/fileValidation';
+import { ALLOWED_TASK_EXTENSIONS, truncateFileName } from '../../utils/fileValidation';
 import { getSocket } from '../../services/socket';
 import type { Task, Member, TaskFile, Message } from '../../types';
 import { groupConsecutiveMessages } from '../../utils/messageUtils';
@@ -1054,7 +1054,7 @@ function TeamDetail() {
                       className="file-link cursor-pointer"
                       onClick={() => handleDownload(file)}
                     >
-                      {downloadingFileId === file.id ? t('teams.downloading') || '...' : file.file_name}
+                      {downloadingFileId === file.id ? t('teams.downloading') || '...' : truncateFileName(file.file_name)}
                     </span>
                       {canEdit && (
                         <button

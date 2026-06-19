@@ -253,6 +253,10 @@
   margin-top: 0.2rem;
   color: var(--text-secondary);
   font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 250px;
 }
 
 .request-actions {}
