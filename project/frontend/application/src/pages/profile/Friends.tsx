@@ -209,14 +209,11 @@ function Friends() {
                   ×
                 </button>
 
-                <div className="relative inline-block">
+                <div>
                   <img
                     src={friend.avatar}
                     alt={friend.username}
                     className="friend-avatar h-20 w-20 shrink-0 rounded-full object-cover"
-                  />
-                  <span
-                    className={`status-indicator ${onlineFriendIds.has(friend.id) ? 'online' : 'offline'} absolute bottom-0 right-0`}
                   />
                 </div>
 

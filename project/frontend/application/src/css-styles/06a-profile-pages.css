@@ -67,7 +67,7 @@
   width: 28px;
   height: 28px;
   padding: 0;
-  padding-top: 4px;
+  padding-top: 1px;
   display: grid;
   place-items: center;
   border: var(--task-border);
@@ -135,19 +135,29 @@
   color: var(--error);
 }
 
+.profile-header-info .friend-status {
+  transform: translateY(0.5rem);
+}
+
+.profile-header-info .friend-status::before {
+  display: none;
+}
+
 .status-indicator {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   display: inline-block;
+  border: 1px solid var(--bg-primary);
 }
 
 .status-indicator.online {
-  color: var(--success);
+  background: var(--success);
+  box-shadow: 0 0 8px var(--success);
 }
 
 .status-indicator.offline {
-  color: var(--error);
+  background: var(--error);
 }
 
 .friend-chat-btn {}
