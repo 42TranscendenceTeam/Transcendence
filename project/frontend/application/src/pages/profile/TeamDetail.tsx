@@ -75,7 +75,9 @@ const { showError } = useError();
   const [showFormAssigneeDropdown, setShowFormAssigneeDropdown] = useState(false);
   const [openAssigneeTask, setOpenAssigneeTask] = useState<number | null>(null);
   const [downloadingFileId, setDownloadingFileId] = useState<number | null>(null);
+  const [uploadingFileId, setUploadingFileId] = useState<number | null>(null);
   const formAssigneeRef = useRef<HTMLDivElement>(null);
+  const [userTeamIds, setUserTeamIds] = useState<number[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -83,10 +85,17 @@ const { showError } = useError();
   const numericId = isNaN(parsedId) || parsedId <= 0 || !Number.isSafeInteger(parsedId) ? 0 : parsedId;
   const teamIdInt = numericId;
 
-  const fetchTeamData = async (silent = false) => {
+  const fetchTeamData = async (silent = false, teamIds: number[] = []) => {
     if (!id) return;
     const numericId = Number(id);
     if (isNaN(numericId) || numericId <= 0 || !Number.isSafeInteger(numericId)) {
+      if (!silent) {
+        setLoadingTeam(false);
+        setTeamError(t('teams.notFound'));
+      }
+      return;
+    }
+    if (teamIds.length === 0 || !teamIds.includes(numericId)) {
       if (!silent) {
         setLoadingTeam(false);
         setTeamError(t('teams.notFound'));
@@ -123,14 +132,34 @@ const { showError } = useError();
   const [memberOnlineStatus, setMemberOnlineStatus] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
-    fetchTeamData();
+    api.getMyTeams().then((teams) => {
+      const ids = teams.map((t: any) => t.id);
+      setUserTeamIds(ids);
+      if (ids.includes(numericId)) {
+        fetchTeamData(false, ids);
+      } else {
+        setLoadingTeam(false);
+        setTeamError(t('teams.notFound'));
+      }
+    }).catch(() => {
+      setLoadingTeam(false);
+      setTeamError(t('teams.notFound'));
+    });
   }, [id]);
 
   useEffect(() => {
-    if (team) {
-      fetchTeamData(true);
-    }
+    if (teamRefreshTrigger === 0) return;
+    api.getMyTeams().then((teams) => {
+      const ids = teams.map((t: any) => t.id);
+      setUserTeamIds(ids);
+    }).catch(() => {});
   }, [teamRefreshTrigger]);
+
+  useEffect(() => {
+    if (team && userTeamIds.length > 0) {
+      fetchTeamData(true, userTeamIds);
+    }
+  }, [teamRefreshTrigger, userTeamIds]);
 
   useEffect(() => {
     if (!teamIdInt || teamError) return;
@@ -143,7 +172,7 @@ const { showError } = useError();
 
       const handleNewTeamMessage = (content: string, ack?: (ok: boolean) => void) => {
         if (ack) ack(true);
-        fetchTeamData(true);
+        fetchTeamData(true, userTeamIds);
       };
 
       socket.on('team message', handleNewTeamMessage);
@@ -153,9 +182,9 @@ const { showError } = useError();
           console.log('Left team chat:', res);
         });
         socket.off('team message', handleNewTeamMessage);
-      };
+      }
     }
-  }, [teamIdInt, teamError]);
+  }, [teamIdInt, teamError, userTeamIds]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -215,6 +244,7 @@ const { showError } = useError();
   useEffect(() => {
     const fetchTasks = async () => {
       if (!id || !numericId || teamError) return;
+      if (userTeamIds.length === 0 || !userTeamIds.includes(numericId)) return;
       try {
         const taskData = await api.getTasks(numericId);
         const tasksWithFiles = await Promise.all(
@@ -232,7 +262,7 @@ const { showError } = useError();
       }
     };
     fetchTasks();
-  }, [id, teamRefreshTrigger, teamError]);
+  }, [id, teamRefreshTrigger, teamError, userTeamIds]);
 
   useEffect(() => {
     if (showAddMemberModal) {
