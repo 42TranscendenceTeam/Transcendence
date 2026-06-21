@@ -28,10 +28,10 @@ export const updateMe = async (userId: number, data: UpdateUserDTO) => {
   const { username } = data;
 
   if (username && username.length > 25)
-	  return { error: "username length >25" };
+      throw new AppError('username field exceeds maximum characters', 400);
 
   if (data.bio && data.bio.length > 100)
-	  return { error: "bio length >100" };
+      throw new AppError('bio field exceeds maximum characters', 400);
 
   if (username) {
     const existingUsername = await prisma.user.findFirst({
