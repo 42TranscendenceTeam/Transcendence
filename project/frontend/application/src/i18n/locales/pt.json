@@ -313,12 +313,16 @@
     "lookingFor": "Procura-se",
     "collaborator": "colaborador",
     "collaborators": "colaboradores",
-    "rotatingPhrase1": "Encontre a sua equipa. Partilhe ideias. Construa algo ótimo.",
-    "rotatingPhrase2": "Forme equipas, colabore e transforme ideias em realidade.",
-    "rotatingPhrase3": "Conecte. Colabore. Crie.",
-    "rotatingPhrase4": "Grandes coisas acontecem quando as pessoas certas constroem juntas.",
-    "rotatingPhrase5": "De ideias a impacto — juntos.",
-    "rotatingPhrase6": "Junte-se a uma equipa, desperte ideias e construa o que importa."
+    "rotatingPhrase1": "Encontra a tua equipa. Partilha ideias. Constrói o futuro.",
+    "rotatingPhrase2": "As grandes ideias crescem quando as pessoas constroem juntas.",
+    "rotatingPhrase3": "Liga-te. Colabora. Cria.",
+    "rotatingPhrase4": "Todo grande projeto começa com as pessoas certas.",
+    "rotatingPhrase5": "Transforma ideias em realidade.",
+    "rotatingPhrase6": "Constrói algo maior do que tu.",
+    "globalChat": "Chat Global",
+    "collaborationTitleStart": "Coisas incríveis acontecem quando",
+    "collaborationTitleAccent": "construímos juntos.",
+    "collaborationDescription": "Colabora com pessoas talentosas, partilha ideias e transforma inspiração em impacto real."
   },
   "notifications": {
     "title": "Notificações",
