@@ -396,5 +396,10 @@
       "changesToTerms": "Modifications des Conditions",
       "changesToTermsText": "Nous nous réservons le droit de modifier ces conditions à tout moment. Votre utilisation continue du service constitue l'acceptation de tout changement."
     }
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "text": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "backHome": "Retour à l'accueil"
   }
 }
