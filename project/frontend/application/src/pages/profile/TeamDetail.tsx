@@ -79,6 +79,7 @@ function TeamDetail() {
   const formAssigneeRef = useRef<HTMLDivElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const parsedId = parseInt(id || '0');
   const numericId = isNaN(parsedId) || parsedId <= 0 ? 0 : parsedId;
@@ -145,6 +146,11 @@ function TeamDetail() {
       const handleNewTeamMessage = (content: string, ack?: (ok: boolean) => void) => {
         if (ack) ack(true);
         fetchTeamData(true);
+        setTimeout(() => {
+          if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+          }
+        }, 100);
       };
 
       socket.on('team message', handleNewTeamMessage);
@@ -1094,7 +1100,7 @@ function TeamDetail() {
       <div className="team-section mb-6 rounded-2xl p-5">
         <h2 className="team-section-title mb-3 text-base font-semibold">{t('teams.chat')}</h2>
         <div className="chat-container">
-          <div className="chat-messages">
+          <div className="chat-messages" ref={chatContainerRef}>
             {team.chat && team.chat.length > 0 ? (
               groupConsecutiveMessages(team.chat, user.id).map((group) =>
                 group.messages.map((msg, idx) => (
