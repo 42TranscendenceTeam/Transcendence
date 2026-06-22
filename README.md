@@ -244,7 +244,7 @@ The minimum requirements are:
 -Progress indicators for uploads.
 -Ability to delete uploaded files
 - Justification: Allows teams to share resources and attach documents to tasks.
-- Implementation: Handled via `multer` in Express for server-side validation and storage, with secure download routes.
+- Implementation: Handled via `multer` in Express for server-side validation and storage, with secure download routes. Accepts `.pdf` `.png` `.jpeg` `.zip` `.txt` `.docx` as file types.
 - Team Member(s): `diolivei`, `vafernan`
 
 
@@ -479,11 +479,6 @@ Run Prisma migrations inside the backend container.
 make seed
 ```
 Populate the database with mock data.
-
-```bash
-make env
-```
-Generate the env files for testing.
 
 ---
 
