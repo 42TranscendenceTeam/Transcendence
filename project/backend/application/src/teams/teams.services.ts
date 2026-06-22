@@ -38,6 +38,9 @@ export const createTeam = async (userId: number, info: CreateTeamDTO) => {
 	if (info.name && info.name.length > 25)
 		throw new AppError('name field exceeds maximum characters', 400);
 
+	if (info.about && info.about.length > 200)
+		throw new AppError('about field exceeds maximum characters', 400);
+
 	const teamExists = await prisma.team.findUnique({
 		where: {
 			name: info.name,
@@ -112,6 +115,9 @@ export const updateTeam = async (userId: number, teamId: number, info: UpdateTea
 
 	if (info.name && info.name.length > 25)
 		throw new AppError('name field exceeds maximum characters', 400);
+
+	if (info.about && info.about.length > 200)
+		throw new AppError('about field exceeds maximum characters', 400);
 
 	const team = await prisma.team.findUnique({
 		where: {

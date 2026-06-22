@@ -6,8 +6,11 @@ import path from 'path';
 
 export const createTask = async ( creatorId: number, teamId: number, data: CreateTaskDTO) => {
 
-	if (data.title.length > 25)
-      throw new AppError('title field exceeds maximum characters', 400);
+  if (data.title && data.title.length > 25)
+    throw new AppError('title field exceeds maximum characters', 400);
+
+  if (data.description && data.description.length > 200)
+    throw new AppError('description field exceeds maximum characters', 400);
 
   const team = await prisma.team.findUnique({
     where: { id: teamId },
