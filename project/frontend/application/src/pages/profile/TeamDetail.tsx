@@ -159,12 +159,6 @@ function TeamDetail() {
   }, [teamIdInt]);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [team?.chat]);
-
-  useEffect(() => {
     if (!team?.members) return;
     const nonFriendMembers = team.members.filter((m: Member) => m.id !== user?.id && !onlineFriendIds.has(m.id));
     if (nonFriendMembers.length === 0) return;
