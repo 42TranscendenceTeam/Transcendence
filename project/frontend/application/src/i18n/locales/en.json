@@ -241,7 +241,8 @@
     "status": "Status",
     "members": "Members",
     "created": "Created",
-    "teamNameTooLong": "Team name must be 25 characters or less"
+    "teamNameTooLong": "Team name must be 25 characters or less",
+    "teamDescriptionTooLong": "Team description must be 200 characters or less"
   },
   "tasks": {
     "title": "Tasks",
@@ -264,7 +265,8 @@
     "pleaseAddDescription": "Please add a description",
     "noTasks": "No tasks found",
     "createFirst": "Create your first task!",
-    "taskTitleTooLong": "Task title must be 25 characters or less"
+    "taskTitleTooLong": "Task title must be 25 characters or less",
+    "taskDescriptionTooLong": "Task description must be 200 characters or less"
   },
   "friends": {
     "title": "Friends",

@@ -241,7 +241,8 @@
     "status": "Estado",
     "members": "Membros",
     "created": "Criada",
-    "teamNameTooLong": "O nome da equipa deve ter no máximo 25 caracteres"
+    "teamNameTooLong": "O nome da equipa deve ter no máximo 25 caracteres",
+    "teamDescriptionTooLong": "A descrição da equipa deve ter no máximo 200 caracteres"
   },
   "tasks": {
     "title": "Tarefas",
@@ -264,7 +265,8 @@
     "pleaseAddDescription": "Por favor, adicione uma descrição",
     "noTasks": "Nenhuma tarefa encontrada",
     "createFirst": "Crie a sua primeira tarefa!",
-    "taskTitleTooLong": "O título da tarefa deve ter no máximo 25 caracteres"
+    "taskTitleTooLong": "O título da tarefa deve ter no máximo 25 caracteres",
+    "taskDescriptionTooLong": "A descrição da tarefa deve ter no máximo 200 caracteres"
   },
   "friends": {
     "title": "Amigos",

@@ -463,6 +463,10 @@ function TeamDetail() {
       showError(t('common.error'), t('tasks.taskTitleTooLong'));
       return;
     }
+    if (newTask.description.length > 200) {
+      showError(t('common.error'), t('tasks.taskDescriptionTooLong'));
+      return;
+    }
 
     if (!newTask.description.trim()) {
       showError(t('common.error'), t('tasks.pleaseAddDescription') || 'Please add a description');
