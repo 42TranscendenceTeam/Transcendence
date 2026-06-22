@@ -225,9 +225,9 @@ function ProfileEdit() {
                 </p>
               </div>
             </div>
-            <div className="modal-actions flex justify-end gap-3">
+            <div className="modal-actions flex justify-end gap-3 mb-4 mr-4">
               <button className="btn btn-primary" onClick={handleSuccessClose}>
-                {t('common.close')}
+                OK
               </button>
             </div>
           </div>
