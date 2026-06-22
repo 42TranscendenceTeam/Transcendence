@@ -136,9 +136,14 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className={`mobile-menu-nav-item ${location.pathname === item.path ? 'active' : ''}`}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="mobile-menu-icon">
-                      <path fillRule="evenodd" d={item.icon} clipRule="evenodd" />
-                    </svg>
+                    <div className="mobile-menu-icon-wrapper relative flex">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="mobile-menu-icon">
+                        <path fillRule="evenodd" d={item.icon} clipRule="evenodd" />
+                      </svg>
+                      {item.path === '/profile/notifications' && unreadCount > 0 && (
+                        <span className="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+                      )}
+                    </div>
                     <span>{item.label}</span>
                   </Link>
                 )
