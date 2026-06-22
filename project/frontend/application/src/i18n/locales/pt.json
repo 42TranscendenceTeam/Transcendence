@@ -5,6 +5,7 @@
     "confirm": "Confirmar",
     "close": "Fechar",
     "loading": "A carregar...",
+    "uploading": "A carregar...",
     "error": "Erro",
     "success": "Sucesso",
     "info": "Informação",
@@ -59,7 +60,8 @@
       "login": "Iniciar sessão",
       "passwordMismatch": "As palavras-passe não coincidem",
       "success": "Conta criada com sucesso.",
-      "passwordTooShort": "A palavra-passe deve ter pelo menos 8 caracteres"
+      "passwordTooShort": "A palavra-passe deve ter pelo menos 8 caracteres",
+      "usernameTooLong": "O nome de utilizador deve ter no máximo 25 caracteres"
     },
     "logout": "Terminar sessão"
   },
@@ -74,7 +76,6 @@
   },
   "profile": {
     "title": "Perfil",
-    "userNotFound": "Utilizador não encontrado",
     "collaboration": "Colaboração",
     "teamStats": "Estatísticas de Equipas",
     "totalTeams": "Total",
@@ -83,10 +84,10 @@
       "title": "Editar Perfil",
       "username": "Nome de utilizador",
       "email": "Email",
-      "emailNotEditable": " (não editável)",
+      "emailNotEditable": "não editável",
       "description": "Descrição",
       "descriptionPlaceholder": "Conte-nos sobre si...",
-      "currentAvatar": "Avatar Atual",
+"currentAvatar": "Avatar Atual",
       "selectDefaultAvatar": "Selecione um avatar padrão:",
       "uploadAvatar": "Carregar avatar personalizado",
       "saveChanges": "Guardar Alterações",
@@ -99,7 +100,9 @@
       "uploading": "A carregar...",
       "uploadTooLarge": "A imagem deve ter menos de 4,5 MB",
       "uploadInvalidType": "Apenas JPG, PNG, GIF e WebP são permitidos",
-      "uploadFailed": "Falha ao carregar avatar"
+      "uploadFailed": "Falha ao carregar avatar",
+      "usernameTooLong": "O nome de utilizador deve ter no máximo 25 caracteres",
+      "descriptionTooLong": "A descrição deve ter no máximo 100 caracteres"
     },
     "security": {
       "title": "Segurança",
@@ -237,7 +240,8 @@
     "role": "Função",
     "status": "Estado",
     "members": "Membros",
-    "created": "Criada"
+    "created": "Criada",
+    "teamNameTooLong": "O nome da equipa deve ter no máximo 25 caracteres"
   },
   "tasks": {
     "title": "Tarefas",
@@ -259,7 +263,8 @@
     "high": "Alta",
     "pleaseAddDescription": "Por favor, adicione uma descrição",
     "noTasks": "Nenhuma tarefa encontrada",
-    "createFirst": "Crie a sua primeira tarefa!"
+    "createFirst": "Crie a sua primeira tarefa!",
+    "taskTitleTooLong": "O título da tarefa deve ter no máximo 25 caracteres"
   },
   "friends": {
     "title": "Amigos",
@@ -299,6 +304,7 @@
   },
   "feed": {
     "title": "Feed",
+    "community": "Comunidade",
     "whatsNew": "O que há de novo?",
     "post": "Publicar",
     "noPosts": "Ainda sem publicações",
@@ -307,13 +313,12 @@
     "lookingFor": "Procura-se",
     "collaborator": "colaborador",
     "collaborators": "colaboradores",
-    "rotatingPhrase1": "Encontra a tua equipa. Partilha ideias. Constrói o futuro.",
-    "rotatingPhrase2": "As grandes ideias crescem quando as pessoas constroem juntas.",
-    "rotatingPhrase3": "Liga-te. Colabora. Cria.",
-    "rotatingPhrase4": "Todo grande projeto começa com as pessoas certas.",
-    "rotatingPhrase5": "Transforma ideias em realidade.",
-    "rotatingPhrase6": "Constrói algo maior do que tu.",
-    "globalChat": "Chat Global"
+    "rotatingPhrase1": "Encontre a sua equipa. Partilhe ideias. Construa algo ótimo.",
+    "rotatingPhrase2": "Forme equipas, colabore e transforme ideias em realidade.",
+    "rotatingPhrase3": "Conecte. Colabore. Crie.",
+    "rotatingPhrase4": "Grandes coisas acontecem quando as pessoas certas constroem juntas.",
+    "rotatingPhrase5": "De ideias a impacto — juntos.",
+    "rotatingPhrase6": "Junte-se a uma equipa, desperte ideias e construa o que importa."
   },
   "notifications": {
     "title": "Notificações",
@@ -388,10 +393,5 @@
       "changesToTerms": "Alterações aos Termos",
       "changesToTermsText": "Reservamo-nos o direito de modificar estes termos a qualquer momento. A sua utilização contínua do serviço constitui aceitação de quaisquer alterações."
     }
-  },
-  "notFound": {
-    "title": "Página não encontrada",
-    "text": "A página que procura não existe ou foi movida.",
-    "backHome": "Voltar ao início"
   }
 }

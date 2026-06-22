@@ -51,7 +51,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             twoFactorEnabled: userData.twoFactorEnabled || false,
             friends: [],
             teams: [],
-            globalChat: [],
           });
           fetchNotifications();
           fetchTeamInvites();
@@ -237,11 +236,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
     } catch (err) {
       console.error('Failed to send friend message:', err);
     }
-  };
-
-  const sendGlobalMessage = (message: Message) => {
-    if (!user) return;
-    setUser({ ...user, globalChat: [...(user.globalChat || []), message] });
   };
 
   const updateTaskStatus = async (teamId: number, taskId: number, status: Task['status']) => {
@@ -668,7 +662,6 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
       leaveTeam,
       addChatMessage,
       sendFriendMessage,
-      sendGlobalMessage,
       updateTaskStatus,
       addTask,
       uploadFile,

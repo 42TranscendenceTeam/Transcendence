@@ -5,6 +5,7 @@
     "confirm": "Confirmer",
     "close": "Fermer",
     "loading": "Chargement...",
+    "uploading": "Téléchargement...",
     "error": "Erreur",
     "success": "Succès",
     "info": "Information",
@@ -59,7 +60,8 @@
       "login": "Se connecter",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
       "success": "Compte créé avec succès.",
-      "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères"
+      "passwordTooShort": "Le mot de passe doit contenir au moins 8 caractères",
+      "usernameTooLong": "Le nom d'utilisateur doit comporter au maximum 25 caractères"
     },
     "logout": "Déconnexion"
   },
@@ -74,7 +76,6 @@
   },
   "profile": {
     "title": "Profil",
-    "userNotFound": "Utilisateur non trouvé",
     "collaboration": "Collaboration",
     "teamStats": "Statistiques des équipes",
     "totalTeams": "Total",
@@ -83,10 +84,10 @@
       "title": "Modifier le profil",
       "username": "Nom d'utilisateur",
       "email": "Email",
-      "emailNotEditable": " (non modifiable)",
+      "emailNotEditable": "non modifiable",
       "description": "Description",
       "descriptionPlaceholder": "Parlez-nous de vous...",
-      "currentAvatar": "Avatar actuel",
+"currentAvatar": "Avatar actuel",
       "selectDefaultAvatar": "Sélectionner un avatar par défaut :",
       "uploadAvatar": "Télécharger un avatar personnalisé",
       "saveChanges": "Enregistrer les modifications",
@@ -99,7 +100,9 @@
       "uploading": "Téléchargement...",
       "uploadTooLarge": "L'image doit faire moins de 4,5 Mo",
       "uploadInvalidType": "Seuls JPG, PNG, GIF et WebP autorisés",
-      "uploadFailed": "Échec du téléchargement de l'avatar"
+      "uploadFailed": "Échec du téléchargement de l'avatar",
+      "usernameTooLong": "Le nom d'utilisateur doit comporter au maximum 25 caractères",
+      "descriptionTooLong": "La bio doit comporter au maximum 100 caractères"
     },
     "security": {
       "title": "Sécurité",
@@ -236,7 +239,8 @@
     "role": "Rôle",
     "status": "Statut",
     "members": "Membres",
-    "created": "Créé"
+    "created": "Créé",
+    "teamNameTooLong": "Le nom de l'équipe doit comporter au maximum 25 caractères"
   },
   "tasks": {
     "title": "Tâches",
@@ -258,7 +262,8 @@
     "high": "Haute",
     "pleaseAddDescription": "Veuillez ajouter une description",
     "noTasks": "Aucune tâche trouvée",
-    "createFirst": "Créez votre première tâche !"
+    "createFirst": "Créez votre première tâche !",
+    "taskTitleTooLong": "Le titre de la tâche doit comporter au maximum 25 caractères"
   },
   "friends": {
     "title": "Amis",
@@ -298,6 +303,7 @@
   },
   "feed": {
     "title": "Fil",
+    "community": "Communauté",
     "whatsNew": "Quoi de neuf ?",
     "post": "Publier",
     "noPosts": "Pas encore de publications",
@@ -306,13 +312,12 @@
     "lookingFor": "Recherche",
     "collaborator": "collaborateur",
     "collaborators": "collaborateurs",
-    "rotatingPhrase1": "Trouvez votre équipe. Partagez des idées. Construisez l'avenir.",
-    "rotatingPhrase2": "Les grandes idées grandissent lorsque les gens construisent ensemble.",
-    "rotatingPhrase3": "Rencontrez. Collaborez. Créez.",
-    "rotatingPhrase4": "Chaque grand projet commence avec les bonnes personnes.",
-    "rotatingPhrase5": "Transformez les idées en réalité.",
-    "rotatingPhrase6": "Construisez quelque chose de plus grand que vous.",
-    "globalChat": "Chat Global"
+    "rotatingPhrase1": "Trouvez votre équipe. Partagez vos idées. Construisez quelque chose de great.",
+    "rotatingPhrase2": "Formez une équipe, collaborez et transformez vos idées en réalité.",
+    "rotatingPhrase3": "Connectez-vous. Collaborez. Créez.",
+    "rotatingPhrase4": "De grandes choses se produisent quand les bonnes personnes construisent ensemble.",
+    "rotatingPhrase5": "Des idées à l'impact — ensemble.",
+    "rotatingPhrase6": "Rejoignez une équipe, suscitez des idées et construisez ce qui compte."
   },
   "notifications": {
     "title": "Notifications",
@@ -387,10 +392,5 @@
       "changesToTerms": "Modifications des Conditions",
       "changesToTermsText": "Nous nous réservons le droit de modifier ces conditions à tout moment. Votre utilisation continue du service constitue l'acceptation de tout changement."
     }
-  },
-  "notFound": {
-    "title": "Page introuvable",
-    "text": "La page que vous recherchez n'existe pas ou a été déplacée.",
-    "backHome": "Retour à l'accueil"
   }
 }

@@ -7,6 +7,7 @@
 
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import ProfileLayout from '../../components/layouts/ProfileLayout';
@@ -16,37 +17,40 @@ function PrivacyPolicy() {
   const { t } = useTranslation(undefined, { lng: user ? undefined : 'en' });
 
   const pageContent = (
-    <section className="legal-page">
-      <h1 className="legal-title">{t('legal.privacy.title')}</h1>
+    <section className="legal-page mx-auto rounded-xl">
+      <h1 className="legal-title mb-4 text-center">{t('legal.privacy.title')}</h1>
 
-      <div className="legal-content">
-        <p>{t('legal.privacy.intro')}</p>
+      <div className="legal-content text-text-secondary text-sm leading-relaxed">
+        <p className="mb-2">{t('legal.privacy.intro')}</p>
 
-        <h2>{t('legal.privacy.infoCollect')}</h2>
-        <p>{t('legal.privacy.infoCollectText')}</p>
+        <h2 className="mt-4 text-text-primary font-semibold">{t('legal.privacy.infoCollect')}</h2>
+        <p className="mb-2">{t('legal.privacy.infoCollectText')}</p>
 
-        <h2>{t('legal.privacy.infoUse')}</h2>
-        <p>{t('legal.privacy.infoUseText')}</p>
+        <h2 className="mt-4 text-text-primary font-semibold">{t('legal.privacy.infoUse')}</h2>
+        <p className="mb-2">{t('legal.privacy.infoUseText')}</p>
 
-        <h2>{t('legal.privacy.dataProtection')}</h2>
-        <p>{t('legal.privacy.dataProtectionText')}</p>
+        <h2 className="mt-4 text-text-primary font-semibold">{t('legal.privacy.dataProtection')}</h2>
+        <p className="mb-2">{t('legal.privacy.dataProtectionText')}</p>
 
-        <h2>{t('legal.privacy.contact')}</h2>
-        <p>{t('legal.privacy.contactText')}</p>
+        <h2 className="mt-4 text-text-primary font-semibold">{t('legal.privacy.contact')}</h2>
+        <p className="mb-2">{t('legal.privacy.contactText')}</p>
 
-        <p className="legal-contact-list">
+        <p className="legal-contact-list mt-2 text-xs text-text-secondary">
           nsimao-f@student.42porto.com<br />
           diolivei@student.42porto.com<br />
           tialbert@student.42porto.com<br />
           vafernan@student.42porto.com
         </p>
       </div>
+      <Link to="/" className="legal-brand">
+        <img src="/sidebar-logo.png" alt="Transcendence" className="sidebar-logo-img" />
+      </Link>
     </section>
   );
 
   return user ? (
     <ProfileLayout>
-      <div className="legal-layout-card">
+      <div className="legal-layout-card max-w-2xl mx-auto p-6 md:p-8">
         {pageContent}
       </div>
     </ProfileLayout>

@@ -67,6 +67,10 @@ function Teams() {
   const handleCreateTeam = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTeam.name.trim() || !newTeam.description.trim()) return;
+    if (newTeam.name.length > 25) {
+      showError(t('common.error'), t('teams.teamNameTooLong'));
+      return;
+    }
     try {
       await createTeam({
         name: newTeam.name,
@@ -95,9 +99,9 @@ function Teams() {
 
   return (
     <div className="teams-page">
-      <div className="teams-header">
+      <div className="teams-header mb-2 flex items-center justify-between">
         <h1 className="profile-page-title">{t('teams.title')}</h1>
-        <div className="teams-header-buttons">
+        <div className="teams-header-buttons flex gap-2">
           <button className="btn btn-accent" onClick={() => setShowCreateModal(true)}>
             + {t('teams.createTeam')}
           </button>
@@ -109,26 +113,27 @@ function Teams() {
 
       {!loading && !error && (
         <div className="teams-content">
+          <p className="profile-page-subtitle">
+            {t('teams.youAreIn') || 'You are in'} {teams.length} {t('teams.activeTeams') || 'active teams'}
+          </p>
 
-          <p className="profile-page-subtitle">{t('teams.youAreIn') || 'You are in'} {teams.length} {t('teams.activeTeams') || 'active teams'}</p>
-
-          <div className="teams-list teams-page-list">
+          <div className="teams-list teams-page-list flex flex-col">
             {teams.map((team) => (
-              <Link key={team.id} to={`/teams/${team.id}`} className="team-card">
-                <div className="team-info">
-                  <span className="team-name">{team.name}</span>
-                  <span className="team-description">
+              <Link key={team.id} to={`/teams/${team.id}`} className="team-card grid items-center">
+                <div className="team-info flex min-w-0 flex-col">
+                  <span className="team-name font-medium">{team.name}</span>
+                  <span className="team-description block">
                     {team.objective || 'No description added yet.'}
                   </span>
                 </div>
 
-                <div className="team-meta">
+                <div className="team-meta grid items-center">
                   <div className="team-meta-item">
-                    <span className="team-meta-label">{t('teams.role')}</span>
+                    <span className="team-meta-label block font-medium leading-none">{t('teams.role')}</span>
                     <span className={`team-role inline-center ${team.role?.toLowerCase()}`}>
                       {team.role}
                       {team.role?.toLowerCase() === 'leader' && (
-                        <span className="team-role-crown" aria-hidden="true">
+                        <span className="team-role-crown inline-flex items-center justify-center align-middle" aria-hidden="true">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 7.5 7.5 12 12 6l4.5 6 4.5-4.5L19.5 18h-15L3 7.5Z" />
                           </svg>
@@ -138,8 +143,8 @@ function Teams() {
                   </div>
 
                   <div className="team-meta-item">
-                    <span className="team-meta-label">{t('teams.status')}</span>
-                    <span className={`team-status ${team.status}`}>
+                    <span className="team-meta-label block font-medium leading-none">{t('teams.status')}</span>
+                    <span className={`team-status ${team.status} inline-flex w-fit rounded-full`}>
                       {team.status === 'active'
                         ? t('teams.active')
                         : team.status === 'finished'
@@ -149,10 +154,10 @@ function Teams() {
                   </div>
 
                   <div className="team-meta-item">
-                    <span className="team-meta-label">{t('teams.members')}</span>
+                    <span className="team-meta-label block font-medium leading-none">{t('teams.members')}</span>
                     <span className="team-meta-value">
-                      <span className="team-meta-icon" aria-hidden="true">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+                      <span className="team-meta-icon inline-flex items-center justify-center" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="h-4 w-4">
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -166,7 +171,7 @@ function Teams() {
                   </div>
 
                   <div className="team-meta-item">
-                    <span className="team-meta-label">{t('teams.created')}</span>
+                    <span className="team-meta-label block font-medium leading-none">{t('teams.created')}</span>
                     <span className="team-meta-value">
                       {team.created_at
                         ? new Date(team.created_at).toLocaleDateString('en-US', {
@@ -191,15 +196,15 @@ function Teams() {
           {pendingInvites.length > 0 && (
             <div className="profile-section">
               <h2 className="profile-section-title">{t('teams.pendingInvites')}</h2>
-              <div className="requests-list">
+              <div className="requests-list flex flex-col gap-0 overflow-hidden rounded-xl">
                 {pendingInvites.map((invite) => (
-                  <div key={invite.invite_id} className="request-card team-invite-card">
-                    <div className="request-info">
-                      <span className="request-username">{invite.team_name}</span>
-                      <span className="request-message">{invite.team_about}</span>
+                  <div key={invite.invite_id} className="request-card team-invite-card grid items-center gap-4 px-4 py-2">
+                    <div className="request-info min-w-0">
+                      <span className="request-username block font-bold">{invite.team_name}</span>
+                      <span className="request-message block">{invite.team_about}</span>
                     </div>
 
-                    <div className="request-actions">
+                    <div className="request-actions flex items-center gap-3">
                       <button
                         className="btn btn-primary btn-small"
                         onClick={() => acceptTeamInvite(invite.invite_id)}
@@ -219,18 +224,17 @@ function Teams() {
               </div>
             </div>
           )}
-
         </div>
       )}
 
       {showCreateModal && (
-        <div className="modal-overlay" onClick={() => setShowCreateModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowCreateModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.createTeam')}</h2>
               <button className="modal-close" onClick={() => setShowCreateModal(false)}>&times;</button>
             </div>
-            <form onSubmit={handleCreateTeam} className="modal-body">
+            <form onSubmit={handleCreateTeam} className="p-5 flex flex-col gap-4">
               <div className="form-group">
                 <label className="input-label">{t('teams.teamName')}</label>
                 <input
@@ -283,7 +287,7 @@ function Teams() {
                 </div>
               </div>
 
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3">
                 <button type="button" className="btn btn-danger-actions" onClick={() => setShowCreateModal(false)}>
                   {t('common.cancel')}
                 </button>

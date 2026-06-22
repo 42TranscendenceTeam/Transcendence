@@ -324,7 +324,6 @@ export const api = {
       twoFactorEnabled: data.two_factor_enabled || false,
       friends: [],
       teams: [],
-      globalChat: [],
     }));
   },
 

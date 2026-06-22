@@ -1,9 +1,7 @@
 /* ========================================
-  All Pages Layout Styles
-  ======================================== */
+   All Pages Layout Styles
+   ======================================== */
 .profile-layout {
-  min-height: 100vh;
-  display: flex;
   background-image: url('/main-background.webp');
   background-size: cover;
   background-position: center;
@@ -22,19 +20,11 @@
 
 /* Sidebar Navigation Menu */
 .profile-sidebar {
-  width: 240px;
   background: var(--sidebar-background);
   border-right: 1px solid rgba(148, 163, 184, 0.12);
   border-left: none;
   padding: 1.5rem 1rem;
   padding-bottom: 3rem;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 }
 
 .profile-sidebar {
@@ -42,7 +32,6 @@
 }
 
 .profile-sidebar-nav {
-  flex-shrink: 0;
 }
 
 .profile-sidebar .bottom-nav {
@@ -73,11 +62,6 @@
 }
 
 .profile-sidebar-nav-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.75rem;
   padding: 0.75rem 0.5rem;
   border-radius: 0.5rem;
   color: var(--text-secondary);
@@ -114,8 +98,6 @@
 }
 
 .nav-icon-wrapper {
-  position: relative;
-  display: flex;
 }
 
 .notification-badge {
@@ -138,13 +120,6 @@
 
 /* All Pages Main Content Area */
 .profile-main {
-  flex: 1;
-  min-height: 100vh;
-  margin-left: 240px;
-  width: calc(100% - 240px);
-  padding: 5rem 2rem;
-  display: flex;
-  justify-content: center;
 }
 
 .profile-main>* {
@@ -221,12 +196,6 @@
 
 /* Hero Section */
 .profile-header {
-  margin-bottom: 2rem;
-  padding: 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 2rem;
   background: var(--task-gradient);
   border: var(--task-border);
   border-radius: 1.25rem;
@@ -239,43 +208,37 @@
 }
 
 .profile-header-main {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
 }
 
 .profile-header-info {
-  text-align: left;
 }
 
 .profile-avatar-large {
   width: 140px;
   height: 140px;
-  border-radius: 50%;
   border: 2px solid var(--accent);
 }
 
 .profile-username {
   font-size: 2rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .profile-email {
-  font-size: 0.875rem;
   color: var(--neon-purple);
   margin-top: -0.15rem;
-  margin-bottom: 0.35rem;
 }
 
 .profile-description {
-  font-size: 0.875rem;
   color: var(--text-secondary);
   max-width: 50ch;
   line-height: 1.6;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .profile-edit-btn {
-  flex-shrink: 0;
-  align-self: flex-end;
   min-width: 150px;
   box-shadow: var(--btn-box-shadow-hover);
   border: var(--btn-border);
@@ -283,17 +246,9 @@
 
 /* Profile Stats Row Section */
 .profile-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.75rem;
 }
 
 .profile-stat-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1rem;
   background: var(--task-gradient);
   border: var(--task-border);
   border-radius: 1rem;
@@ -303,11 +258,6 @@
 .profile-stat-icon {
   width: 60px;
   height: 60px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
   color: var(--accent);
   background: var(--btn-background);
   border: var(--sidebar-border);
@@ -315,29 +265,20 @@
 }
 
 .profile-stat-icon svg {
-  width: 40px;
-  height: 40px;
 }
 
 .profile-stat-value {
-  display: block;
   color: var(--text-primary);
   font-size: 1.75rem;
-  font-weight: 500;
-  line-height: 1;
   letter-spacing: -0.03em;
 }
 
 .profile-stat-label {
-  display: block;
   margin-top: 0.3rem;
   color: var(--text-secondary);
-  font-size: 1rem;
 }
 
 .profile-stat-subtext {
-  display: flex;
-  flex-wrap: wrap;
   gap: 0.35rem;
   margin-top: 0.45rem;
 }
@@ -374,16 +315,14 @@
 }
 
 .teams-list {
-  display: flex;
-  flex-direction: column;
   gap: 0.65rem;
 }
 
 .team-card {
-  display: grid;
+  width: 100%;
+  max-width: 100%;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 2rem;
-  align-items: center;
   padding: 0.75rem 1.25rem;
   background: var(--btn-background);
   border: var(--task-border);
@@ -400,42 +339,35 @@
 }
 
 .team-info {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
+  overflow: hidden;
 }
 
 .team-name {
+  display: block;
   color: var(--text-primary);
   font-size: 1.15rem;
-  font-weight: 500;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .team-description {
-  display: block;
   margin-top: 0.25rem;
   color: var(--text-secondary);
   font-size: 0.82rem;
   line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .team-meta {
-  display: grid;
   grid-template-columns: 90px 100px 90px 100px;
   gap: 1.25rem;
-  align-items: center;
 }
 
 .team-meta-label {
-  display: block;
   margin-bottom: 0.35rem;
   color: var(--text-secondary);
   font-size: 0.72rem;
-  font-weight: 500;
-  line-height: 1;
 }
 
 .team-meta-value,
@@ -448,10 +380,7 @@
 }
 
 .team-card .team-status {
-  display: inline-flex;
-  width: fit-content;
   padding: 0.25rem 0.55rem;
-  border-radius: 999px;
   font-size: 0.72rem;
 }
 
@@ -467,12 +396,8 @@
 }
 
 .team-role-crown {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   margin-left: 0.35rem;
   color: var(--accent);
-  vertical-align: middle;
 }
 
 .team-role-crown svg {
@@ -485,16 +410,11 @@
 }
 
 .team-meta-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   margin-right: 0.4rem;
   color: var(--text-secondary);
 }
 
 .team-meta-icon svg {
-  width: 1rem;
-  height: 1rem;
 }
 
 .profile-section.profile-teams-section .profile-section-title {
@@ -523,12 +443,25 @@
 
 /* Main Form */
 .profile-edit-page {
-  width: 100%;
+}
+
+/* Security section (2FA in ProfileEdit) */
+.profile-edit-security-section,
+.security-section {
+  max-width: 600px;
+}
+
+.security-description {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.toggle-text {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .avatar-preview {
-  width: 80px;
-  height: 80px;
   border-radius: 50%;
   overflow: hidden;
   margin-bottom: 0.5rem;
@@ -540,23 +473,13 @@
 }
 
 .profile-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
 }
 
 /* Custom language dropdown */
 .language-dropdown {
-  position: relative;
-  width: 100%;
 }
 
 .language-dropdown-trigger {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
@@ -581,8 +504,6 @@
 }
 
 .language-name {
-  flex: 1;
-  text-align: left;
 }
 
 .language-arrow {
@@ -596,12 +517,6 @@
 }
 
 .language-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 0.25rem);
-  left: 0;
-  right: 0;
-  display: flex !important;
-  flex-direction: column !important;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 0.5rem;
@@ -609,9 +524,6 @@
 }
 
 .language-dropdown-item {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center;
   gap: 0.75rem;
   padding: 0.3rem 1rem;
   width: 100%;
@@ -632,10 +544,6 @@
 
 /* Avatar upload label */
 .upload-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
   background: var(--bg-input);
   border: 2px solid var(--border);
   border-radius: 0.5rem;
@@ -652,9 +560,6 @@
 }
 
 .upload-label svg {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
 }
 
 .upload-label.uploading {

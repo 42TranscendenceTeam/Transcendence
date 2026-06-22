@@ -123,15 +123,17 @@
  */
 .chat-username {
   font-size: 0.9rem;
-  color: var(--text-primary);
   font-weight: 400;
+  color: var(--text-primary);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /*
  * Chat time
  */
 .chat-time {
-  font-size: 0.7rem;
+  font-size: 0.625rem;
   color: var(--text-secondary);
 }
 
@@ -144,6 +146,8 @@
   border-radius: 0.75rem;
   font-size: 0.875rem;
   margin-top: 0.25rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /*
@@ -193,7 +197,7 @@
 .chat-input:focus {
   outline: none;
   border-color: var(--neon-purple);
-  box-shadow: var(--sidebar-box-shadow);
+  box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-purple);
 }
 
 /*
@@ -253,15 +257,6 @@
   gap: 0.75rem;
 }
 
-/*
- * Friend chat avatar
- */
-.friend-chat-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-}
-
 .friend-chat-avatar-wrapper {
   position: relative;
   display: inline-block;
@@ -275,6 +270,15 @@
   width: 12px;
   height: 12px;
   border: 2px solid var(--bg-primary);
+}
+
+/*
+ * Friend chat avatar
+ */
+.friend-chat-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
 }
 
 /*
@@ -362,13 +366,15 @@
   font-size: 0.9rem;
   color: var(--text-primary);
   font-weight: 400;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /*
  * Friend chat message time
  */
 .friend-chat-message .chat-time {
-  font-size: 0.7rem;
+  font-size: 0.625rem;
   color: var(--text-secondary);
 }
 
@@ -383,6 +389,8 @@
   color: var(--text-primary);
   font-size: 0.875rem;
   line-height: 1.4;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /*
@@ -424,7 +432,7 @@
 .friend-chat-input:focus {
   outline: none;
   border-color: var(--neon-purple);
-  box-shadow: var(--sidebar-box-shadow);
+  box-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-purple);
 }
 
 /*
@@ -530,4 +538,12 @@
 .team-chat-input:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/*
+ * Back icon (used in FriendChat)
+ */
+.back-icon {
+  width: 32px;
+  height: 32px;
 }

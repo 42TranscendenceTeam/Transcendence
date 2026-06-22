@@ -679,6 +679,7 @@
   .legal-layout-card {
     margin-top: 4rem;
     padding: 1rem;
+    min-width: auto;
   }
 
   .not-found-title {

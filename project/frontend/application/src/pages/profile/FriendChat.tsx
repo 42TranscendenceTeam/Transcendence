@@ -185,7 +185,7 @@ function FriendChat() {
         <div className="friend-chat-title">
           <div className="friend-chat-avatar-wrapper">
             <img src={displayFriend.avatar} alt={displayFriend.username} className="friend-chat-avatar" />
-            <span className={`status-indicator ${onlineFriendIds.has(displayFriend.id) ? 'online' : 'offline'}`} />
+            <span className={`status-indicator ${onlineFriendIds.has(displayFriend.id) ? 'online' : 'offline'} absolute bottom-0 right-0`} />
           </div>
           <Link to={`/profile/${displayFriend.id}`}><h1>{displayFriend.username}</h1></Link>
         </div>

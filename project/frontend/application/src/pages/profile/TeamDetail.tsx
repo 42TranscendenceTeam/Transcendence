@@ -17,7 +17,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { useError } from '../../context/ErrorContext';
 import { api } from '../../services/api';
 import { getAvatarUrl } from '../../utils/avatar';
-import { ALLOWED_TASK_EXTENSIONS } from '../../utils/fileValidation';
+import { ALLOWED_TASK_EXTENSIONS, truncateFileName } from '../../utils/fileValidation';
 import { getSocket } from '../../services/socket';
 import type { Task, Member, TaskFile, Message } from '../../types';
 import { groupConsecutiveMessages } from '../../utils/messageUtils';
@@ -31,7 +31,7 @@ function TeamDetail() {
   const { t } = useTranslation();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-const { showError } = useError();
+  const { showError } = useError();
   const { user, leaveTeam, addChatMessage, updateTaskStatus, addTask, uploadFile, deleteTaskFile, updateTaskAssignee, addTeamMember, findUserByUsername, removeTeamMember, updateTeamStatus, updateTeamSettings, fetchNotifications, teamRefreshTrigger, updateUser, onlineFriendIds } = useContext(AuthContext);
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -75,6 +75,7 @@ const { showError } = useError();
   const [showFormAssigneeDropdown, setShowFormAssigneeDropdown] = useState(false);
   const [openAssigneeTask, setOpenAssigneeTask] = useState<number | null>(null);
   const [downloadingFileId, setDownloadingFileId] = useState<number | null>(null);
+  const [uploadingFileId, setUploadingFileId] = useState<number | null>(null);
   const formAssigneeRef = useRef<HTMLDivElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -99,8 +100,8 @@ const { showError } = useError();
       const messagesData = await api.getTeamMessages(numericId, 50);
       
       const formattedMessages: Message[] = messagesData.message_list.map((m: any) => {
-        const sender = teamData.members.find((member: any) => member.id === m.sender_id) || 
-                      (teamData.owner.id === m.sender_id ? teamData.owner : null);
+        const sender = teamData.members.find((member: any) => member.id === m.sender_id) ||
+          (teamData.owner.id === m.sender_id ? teamData.owner : null);
         return {
           id: m.id,
           text: m.content,
@@ -274,9 +275,9 @@ const { showError } = useError();
     try {
       const users = await api.searchUsers('');
       setAllUsers(users);
-      } catch {
+    } catch {
       setErrorUsers(t('teams.failedToLoadUsers') || 'Failed to load users');
-      } finally {
+    } finally {
       setLoadingUsers(false);
     }
   };
@@ -388,6 +389,10 @@ const { showError } = useError();
   };
 
   const handleSaveTeamSettings = async () => {
+    if (editTeamName.length > 25) {
+      showError(t('common.error'), t('teams.teamNameTooLong'));
+      return;
+    }
     try {
       await updateTeamSettings(team.id, {
         name: editTeamName,
@@ -454,7 +459,11 @@ const { showError } = useError();
       showError(t('common.error'), t('teams.taskTitleRequired') || 'Title is required');
       return;
     }
-    
+    if (newTask.title.length > 25) {
+      showError(t('common.error'), t('tasks.taskTitleTooLong'));
+      return;
+    }
+
     if (!newTask.description.trim()) {
       showError(t('common.error'), t('tasks.pleaseAddDescription') || 'Please add a description');
       return;
@@ -526,6 +535,7 @@ const { showError } = useError();
     const input = fileInputRefs.current[taskId];
     if (input && input.files && input.files.length > 0) {
       const file = input.files[0];
+      setUploadingFileId(taskId);
       try {
         await uploadFile(team.id, taskId, file);
         const files = await api.getTaskFiles(taskId);
@@ -536,8 +546,10 @@ const { showError } = useError();
       } catch (err: any) {
         setFileErrorMessage(err.message || 'Failed to upload file');
         setShowFileError(true);
+      } finally {
+        setUploadingFileId(null);
+        input.value = '';
       }
-      input.value = '';
     }
   };
 
@@ -699,17 +711,17 @@ const { showError } = useError();
   };
 
   return (
-    <div className="team-detail-page">
-      <div className="team-header">
-        <div className="team-header-content">
-          <h1 className="team-title">
+    <div className="team-detail-page w-full px-4">
+      <div className="team-header relative mb-6 flex items-center justify-between gap-8 overflow-hidden rounded-2xl p-7">
+        <div className="team-header-content flex-1 min-w-0">
+          <h1 className="team-title mb-2 font-semibold">
             <span className="title-gradient">{team.name}</span>
           </h1>
           <p className="team-objective">{team.objective}</p>
         </div>
-        <div className="team-header-meta">
+        <div className="team-header-meta flex shrink-0 items-center gap-3">
           <select
-            className={`team-status-select ${team.status}`}
+            className={`team-status-select ${team.status} cursor-pointer rounded-lg px-3 py-2 text-xs font-medium`}
             value={team.status}
             onChange={(e) => handleStatusChangeClick(e.target.value)}
             disabled={!canChangeStatus}
@@ -718,16 +730,16 @@ const { showError } = useError();
             <option value="finished">{t('teams.finished') || 'Finished'}</option>
             {isLeader && <option value="__delete__">{t('teams.deleteTeam')}</option>}
           </select>
-          <span className="team-members-count">
+          <span className="team-members-count rounded-lg px-3 py-2 font-semibold">
             {team.members.length}/{team.maxUsers || '∞'}
           </span>
         </div>
       </div>
 
-      <div className="team-section">
-        <div className="section-header">
-          <h2 className="team-section-title">{t('teams.members')} ({team.members.length})</h2>
-          <div className="team-section-actions">
+      <div className="team-section mb-6 rounded-2xl p-5">
+        <div className="section-header mb-3 flex items-center justify-between">
+          <h2 className="team-section-title mb-0 text-base font-semibold">{t('teams.members')} ({team.members.length})</h2>
+          <div className="team-section-actions flex items-center gap-3">
             {isLeader && (
               <button className="btn btn-primary btn-small" onClick={() => {
                 setEditTeamName(team.name);
@@ -753,15 +765,15 @@ const { showError } = useError();
             )}
           </div>
         </div>
-        <div className="members-list">
+        <div className="members-list flex flex-wrap gap-3">
           {team.members.map((member) => (
-            <div key={member.id} className="member-card">
-              <div style={{ position: 'relative', display: 'inline-block' }}>
-                <img src={member.avatar} alt={member.username} className="member-avatar" />
-                <span className={`status-indicator ${(onlineFriendIds.has(member.id) || memberOnlineStatus[member.id] || member.id === user?.id) ? 'online' : 'offline'}`} style={{ position: 'absolute', bottom: 0, right: 0 }} />
+            <div key={member.id} className="member-card relative flex items-center rounded-xl">
+              <div className="relative inline-block">
+                <img src={member.avatar} alt={member.username} className="member-avatar rounded-full object-cover" />
+                <span className={`status-indicator ${(onlineFriendIds.has(member.id) || memberOnlineStatus[member.id] || member.id === user?.id) ? 'online' : 'offline'} absolute bottom-0 right-0`} />
               </div>
-              <Link to={`/profile/${member.id}`} className="member-name">{member.username}</Link>
-              <span className={`member-role ${member.role.toLowerCase()}`}>{member.role}</span>
+              <Link to={`/profile/${member.id}`} className="member-name font-medium">{member.username}</Link>
+              <span className={`member-role ${member.role.toLowerCase()} rounded-full text-xs`}>{member.role}</span>
               {isLeader && member.id !== user.id && (
                 <button className="btn-remove-member" onClick={() => handleRemoveMember(member)} title={t('teams.removeMember') || 'Remove member'}>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -782,20 +794,20 @@ const { showError } = useError();
       </div>
 
       {isLeader && joinRequests.length > 0 && (
-        <div className="team-section">
-          <div className="section-header">
-            <h2 className="team-section-title">{t('teams.joinRequests')} ({joinRequests.length})</h2>
+        <div className="team-section mb-6 rounded-2xl p-5">
+          <div className="section-header mb-3 flex items-center justify-between">
+            <h2 className="team-section-title mb-0 text-base font-semibold">{t('teams.joinRequests')} ({joinRequests.length})</h2>
           </div>
-          <div className="members-list">
+          <div className="members-list flex flex-wrap gap-3">
             {joinRequests.map((request) => (
-              <div key={request.request_id} className="member-card">
+              <div key={request.request_id} className="member-card relative flex items-center rounded-xl">
                 <img
                   src={getAvatarUrl(request.avatar_url)}
                   alt={request.username}
-                  className="member-avatar"
+                  className="member-avatar rounded-full object-cover"
                 />
-                <Link to={`/profile/${request.user_id}`} className="member-name">{request.username}</Link>
-                <div className="member-actions">
+                <Link to={`/profile/${request.user_id}`} className="member-name font-medium">{request.username}</Link>
+                <div className="member-actions flex gap-2">
                   <button
                     className="btn btn-primary btn-small"
                     onClick={() => handleAcceptJoinRequest(request.request_id)}
@@ -815,14 +827,14 @@ const { showError } = useError();
         </div>
       )}
 
-      <div className="team-section">
-        <div className="section-header">
-          <div className="task-counts">
-            <span className="task-counts-label">{t('tasks.title')}:</span>
-            <span className="task-count total">{t('tasks.total')}: {taskCounts.total}</span>
-            <span className="task-count open">{t('tasks.open')}: {taskCounts.open}</span>
-            <span className="task-count in_progress">{t('tasks.inProgress')}: {taskCounts.in_progress}</span>
-            <span className="task-count closed">{t('tasks.done')}: {taskCounts.closed}</span>
+      <div className="team-section mb-6 rounded-2xl p-5">
+        <div className="section-header mb-3 flex items-center justify-between">
+          <div className="task-counts flex items-center gap-3 text-sm">
+            <span className="task-counts-label font-semibold">{t('tasks.title')}:</span>
+            <span className="task-count total inline-flex items-center justify-center rounded-full text-xs font-bold">{t('tasks.total')}: {taskCounts.total}</span>
+            <span className="task-count open inline-flex items-center justify-center rounded-full text-xs font-bold">{t('tasks.open')}: {taskCounts.open}</span>
+            <span className="task-count in_progress inline-flex items-center justify-center rounded-full text-xs font-bold">{t('tasks.inProgress')}: {taskCounts.in_progress}</span>
+            <span className="task-count closed inline-flex items-center justify-center rounded-full text-xs font-bold">{t('tasks.done')}: {taskCounts.closed}</span>
           </div>
           {canEdit && (
             <button className="btn btn-accent btn-small" onClick={() => setShowTaskForm(!showTaskForm)}>
@@ -832,7 +844,7 @@ const { showError } = useError();
         </div>
 
         {showTaskForm && (
-          <form onSubmit={handleAddTask} className="task-form">
+          <form onSubmit={handleAddTask} className="task-form mb-4 flex flex-col gap-3 rounded-xl p-4">
             <input
               type="text"
               placeholder={t('teams.taskTitle')}
@@ -847,23 +859,23 @@ const { showError } = useError();
               onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
               rows={2}
             />
-            <div className="task-form-row">
-              <div className="assignee-dropdown-wrapper" ref={formAssigneeRef}>
+            <div className="task-form-row flex items-center gap-2">
+              <div className="assignee-dropdown-wrapper relative inline-block" ref={formAssigneeRef}>
                 <button
                   type="button"
-                  className="input assignee-dropdown-trigger"
+                  className="input assignee-dropdown-trigger cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-left"
                   onClick={() => setShowFormAssigneeDropdown(!showFormAssigneeDropdown)}
                 >
-                  <span className="dropdown-arrow">&#9660;</span>
+                  <span className="dropdown-arrow float-right">&#9660;</span>
                   {newTask.assignedTo.length > 0
                     ? newTask.assignedTo.join(', ')
                     : t('teams.assignTo')
                   }
                 </button>
                 {showFormAssigneeDropdown && (
-                  <div className="assignee-dropdown-panel" id="form-assignee-panel">
+                  <div className="assignee-dropdown-panel absolute left-0 top-full z-50 max-h-48 overflow-y-auto rounded-md p-2" id="form-assignee-panel">
                     {team.members.map((member) => (
-                      <label key={member.id} className="assignee-dropdown-option">
+                      <label key={member.id} className="assignee-dropdown-option flex items-center gap-2 whitespace-nowrap rounded px-3 py-2 text-xs">
                         <input
                           type="checkbox"
                           checked={newTask.assignedTo.includes(member.username)}
@@ -895,7 +907,7 @@ const { showError } = useError();
           </form>
         )}
 
-        <div className="task-filters">
+        <div className="task-filters mb-4 flex gap-3">
           <select
             className="input filter-select"
             value={statusFilter}
@@ -918,8 +930,8 @@ const { showError } = useError();
           </select>
         </div>
 
-        <div className="tasks-table">
-          <div className="tasks-header">
+        <div className="tasks-table overflow-x-auto rounded-2xl">
+          <div className="tasks-header grid gap-2 text-xs font-medium">
             <span>{t('teams.title_col')}</span>
             <span>{t('teams.description')}</span>
             <span>{t('teams.status_col')}</span>
@@ -927,9 +939,9 @@ const { showError } = useError();
             <span>{t('teams.files_col')}</span>
           </div>
           {filteredTasks.map((task) => (
-            <div key={task.id} className="task-row">
-              <span className="task-title">{task.title}</span>
-              <span className="task-description">{task.description}</span>
+            <div key={task.id} className="task-row grid items-center gap-4 p-4 text-sm">
+              <span className="task-title font-medium">{task.title}</span>
+              <span className="task-description mb-0 text-xs">{task.description}</span>
               {canEdit ? (
                 <select
                   className="task-status-select"
@@ -946,10 +958,10 @@ const { showError } = useError();
                 </span>
               )}
               {canEdit ? (
-                <div className="assignee-dropdown-wrapper">
+                <div className="assignee-dropdown-wrapper relative inline-block">
                   <button
                     type="button"
-                    className="assigned-select assignee-dropdown-trigger"
+                    className="assigned-select assignee-dropdown-trigger cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap text-left text-xs"
                     id={`assignee-trigger-${task.id}`}
                     onClick={() => setOpenAssigneeTask(openAssigneeTask === task.id ? null : task.id)}
                   >
@@ -960,13 +972,13 @@ const { showError } = useError();
                   </button>
                   {openAssigneeTask === task.id && (
                     <div
-                      className="assignee-dropdown-panel"
+                      className="assignee-dropdown-panel absolute left-0 top-full z-50 max-h-48 overflow-y-auto rounded-md p-2"
                       id={`assignee-panel-${task.id}`}
                     >
                       {team.members.map((member) => {
                         const isAssigned = task.assignedTo?.some((a: { id: number }) => a.id === member.id) ?? false;
                         return (
-                          <label key={member.id} className="assignee-dropdown-option">
+                          <label key={member.id} className="assignee-dropdown-option flex items-center gap-2 whitespace-nowrap rounded px-3 py-2 text-xs">
                             <input
                               type="checkbox"
                               checked={isAssigned}
@@ -1000,48 +1012,58 @@ const { showError } = useError();
                   }
                 </span>
               )}
-              <span className="task-files">
+              <span className="task-files flex flex-col gap-1">
                 <input
                   type="file"
                   accept={ALLOWED_TASK_EXTENSIONS}
                   ref={(el) => { if (el) fileInputRefs.current[task.id] = el; }}
                   onChange={() => handleFileUpload(task.id)}
-                  style={{ display: 'none' }}
+                  className="hidden"
                 />
                 <button
                   type="button"
-                  className="file-upload-btn"
+                  className={`file-upload-btn inline-flex items-center text-xs ${uploadingFileId === task.id ? 'uploading' : ''}`}
                   onClick={() => fileInputRefs.current[task.id]?.click()}
-                  disabled={!canEdit}
+                  disabled={!canEdit || uploadingFileId === task.id}
                   title={t('teams.uploadFile')}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                    <path
-                      fillRule="evenodd"
-                      d="M12 21.75a.75.75 0 01-.75-.75V9.31l-3.22 3.22a.75.75 0 11-1.06-1.06l4.5-4.5a.75.75 0 011.06 0l4.5 4.5a.75.75 0 11-1.06 1.06l-3.22-3.22V21a.75.75 0 01-.75.75z"
-                      clipRule="evenodd"
-                    />
-                    <path d="M11.47 7.72a.75.75 0 011.06 0l4.5 4.5a.75.75 0 01-1.06 1.06l-4.5-4.5-4.5 4.5a.75.75 0 01-1.06-1.06l4.5-4.5z" />
-                  </svg>
-                  <span>{t('teams.uploadFile')}</span>
+                  {uploadingFileId === task.id ? (
+                    <>
+                      <svg className="upload-spinner w-[16px] h-[16px] animate-spin" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
+                      </svg>
+                      <span>{t('common.uploading')}</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                          fillRule="evenodd"
+                          d="M12 21.75a.75.75 0 01-.75-.75V9.31l-3.22 3.22a.75.75 0 11-1.06-1.06l4.5-4.5a.75.75 0 011.06 0l4.5 4.5a.75.75 0 11-1.06 1.06l-3.22-3.22V21a.75.75 0 01-.75.75z"
+                          clipRule="evenodd"
+                        />
+                        <path d="M11.47 7.72a.75.75 0 011.06 0l4.5 4.5a.75.75 0 01-1.06 1.06l-4.5-4.5-4.5 4.5a.75.75 0 01-1.06-1.06l4.5-4.5z" />
+                      </svg>
+                      <span>{t('teams.uploadFile')}</span>
+                    </>
+                  )}
                 </button>
                 {task.files.length > 0 ? (
                   task.files.map((file: TaskFile) => (
-                    <span key={file.id} className="file-item"><span
-                      className="file-link"
+                    <span key={file.id} className="file-item flex items-center gap-1 text-xs"><span
+                      className="file-link cursor-pointer"
                       onClick={() => handleDownload(file)}
-                      style={{ cursor: 'pointer' }}
                     >
-                      {downloadingFileId === file.id ? t('teams.downloading') || '...' : file.file_name}
+                      {downloadingFileId === file.id ? t('teams.downloading') || '...' : truncateFileName(file.file_name)}
                     </span>
                       {canEdit && (
                         <button
                           type="button"
-                          className="file-delete-btn"
+                          className="file-delete-btn inline-flex cursor-pointer items-center p-0 leading-none"
                           onClick={() => { setFileToDelete({ taskId: task.id, fileId: file.id }); setShowDeleteFileConfirm(true); }}
                           title={t('teams.deleteFile', { defaultValue: 'Delete file' })}
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style={{ width: '0.875rem', height: '0.875rem' }}>
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
                             <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
                           </svg>
                         </button>
@@ -1052,11 +1074,11 @@ const { showError } = useError();
                 {task.creatorId === user.id && (
                   <button
                     type="button"
-                    className="file-upload-btn"
+                    className="file-upload-btn inline-flex cursor-pointer items-center text-xs"
                     onClick={() => { setTaskToDelete(task.id); setShowDeleteTaskConfirm(true); }}
                     title={t('teams.deleteTask', { defaultValue: 'Delete task' })}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style={{ width: '1rem', height: '1rem' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
                       <path fillRule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clipRule="evenodd" />
                     </svg>
                     <span>{t('teams.deleteTask', { defaultValue: 'Delete task' })}</span>
@@ -1066,13 +1088,13 @@ const { showError } = useError();
             </div>
           ))}
           {filteredTasks.length === 0 && (
-            <div className="tasks-empty">{t('teams.noTasksMatch')}</div>
+            <div className="tasks-empty rounded-xl p-8 text-center text-sm">{t('teams.noTasksMatch')}</div>
           )}
         </div>
       </div>
 
-      <div className="team-section">
-        <h2 className="team-section-title">{t('teams.chat')}</h2>
+      <div className="team-section mb-6 rounded-2xl p-5">
+        <h2 className="team-section-title mb-3 text-base font-semibold">{t('teams.chat')}</h2>
         <div className="chat-container">
           <div className="chat-messages">
             {team.chat && team.chat.length > 0 ? (
@@ -1110,20 +1132,20 @@ const { showError } = useError();
       </div>
 
       {showStatusModal && (
-        <div className="modal-overlay" onClick={() => setShowStatusModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowStatusModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.changeStatus')}</h2>
               <button className="modal-close" onClick={() => setShowStatusModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmStatus')} {newStatus === 'active' ? t('teams.active') : t('teams.finished')}?</p>
               {newStatus === 'finished' && (
-                <p className="modal-message" style={{ color: 'var(--color-error, #ef4444)', marginTop: '0.5rem', fontWeight: 600 }}>
+                <p className="modal-message text-error mt-2 font-semibold">
                   {t('teams.cannotReopenNotice') || 'This action cannot be undone.'}
                 </p>
               )}
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => setShowStatusModal(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-primary" onClick={handleConfirmStatusChange}>{t('common.confirm')}</button>
               </div>
@@ -1133,15 +1155,15 @@ const { showError } = useError();
       )}
 
       {showFinishedError && (
-        <div className="modal-overlay" onClick={() => setShowFinishedError(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowFinishedError(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('common.info')}</h2>
               <button className="modal-close" onClick={() => setShowFinishedError(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.cannotReopenFinished')}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-primary" onClick={() => setShowFinishedError(false)}>{t('common.close')}</button>
               </div>
             </div>
@@ -1150,15 +1172,15 @@ const { showError } = useError();
       )}
 
       {showLeaveConfirm && (
-        <div className="modal-overlay" onClick={() => setShowLeaveConfirm(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowLeaveConfirm(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.leaveTeam')}</h2>
               <button className="modal-close" onClick={() => setShowLeaveConfirm(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmLeave')}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => setShowLeaveConfirm(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleLeaveTeam}>{t('teams.leave')}</button>
               </div>
@@ -1168,15 +1190,15 @@ const { showError } = useError();
       )}
 
       {showDeleteConfirm && (
-        <div className="modal-overlay" onClick={() => setShowDeleteConfirm(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowDeleteConfirm(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.deleteTeam')}</h2>
               <button className="modal-close" onClick={() => setShowDeleteConfirm(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmDelete') || 'Are you sure you want to delete this team? This action cannot be undone.'}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary btn-small" onClick={() => setShowDeleteConfirm(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-danger-actions btn-small" onClick={handleDeleteTeam}>{t('common.delete')}</button>
               </div>
@@ -1186,15 +1208,15 @@ const { showError } = useError();
       )}
 
       {showFileError && (
-        <div className="modal-overlay" onClick={() => setShowFileError(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowFileError(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('common.error')}</h2>
               <button className="modal-close" onClick={() => setShowFileError(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{fileErrorMessage}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-primary" onClick={() => setShowFileError(false)}>{t('common.close')}</button>
               </div>
             </div>
@@ -1203,15 +1225,15 @@ const { showError } = useError();
       )}
 
       {showDeleteTaskConfirm && (
-        <div className="modal-overlay" onClick={() => { setShowDeleteTaskConfirm(false); setTaskToDelete(null); }}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => { setShowDeleteTaskConfirm(false); setTaskToDelete(null); }}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.deleteTask', { defaultValue: 'Delete task' })}</h2>
               <button className="modal-close" onClick={() => { setShowDeleteTaskConfirm(false); setTaskToDelete(null); }}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmDeleteTask', { defaultValue: 'Are you sure you want to delete this task? All associated files will also be deleted.' })}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => { setShowDeleteTaskConfirm(false); setTaskToDelete(null); }}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleConfirmDeleteTask}>{t('common.delete')}</button>
               </div>
@@ -1221,15 +1243,15 @@ const { showError } = useError();
       )}
 
       {showDeleteFileConfirm && (
-        <div className="modal-overlay" onClick={() => { setShowDeleteFileConfirm(false); setFileToDelete(null); }}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => { setShowDeleteFileConfirm(false); setFileToDelete(null); }}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.deleteFile', { defaultValue: 'Delete file' })}</h2>
               <button className="modal-close" onClick={() => { setShowDeleteFileConfirm(false); setFileToDelete(null); }}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmDeleteFile', { defaultValue: 'Are you sure you want to delete this file?' })}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => { setShowDeleteFileConfirm(false); setFileToDelete(null); }}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleConfirmDeleteFile}>{t('common.delete')}</button>
               </div>
@@ -1239,21 +1261,21 @@ const { showError } = useError();
       )}
 
       {showAddMemberModal && (
-        <div className="modal-overlay" onClick={() => setShowAddMemberModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowAddMemberModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.addMemberTitle')}</h2>
               <button className="modal-close" onClick={() => setShowAddMemberModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <div className="add-member-method">
                 <label className="input-label">{t('teams.selectUser')}</label>
-                <div className="add-member-row">
+                <div className="add-member-row flex items-center gap-3 mt-2">
                   {loadingUsers && allUsers.length === 0 ? (
                     <span className="loading-text">{t('common.loading')}</span>
                   ) : (
                     <>
-                      <select className="input" value={selectedFriend} onChange={(e) => setSelectedFriend(e.target.value)}>
+                      <select className="input flex-1" value={selectedFriend} onChange={(e) => setSelectedFriend(e.target.value)}>
                         <option value="">{t('teams.selectUser')}</option>
                         {availableUsers.map((u) => (<option key={u.id} value={u.username}>{u.username}</option>))}
                       </select>
@@ -1262,30 +1284,34 @@ const { showError } = useError();
                   )}
                 </div>
               </div>
-              <div className="add-member-divider">{t('teams.or')}</div>
+              <div className="add-member-divider flex items-center gap-4 my-4">
+                <span className="flex-1 h-px bg-border" />
+                <span className="text-text-secondary text-sm">{t('teams.or')}</span>
+                <span className="flex-1 h-px bg-border" />
+              </div>
               <div className="add-member-method">
                 <label className="input-label">{t('teams.addByUsername')}</label>
-                <div className="add-member-row">
-                  <input type="text" placeholder={t('teams.enterUsername')} className="input" value={manualUsername} onChange={(e) => setManualUsername(e.target.value)} />
+                <div className="add-member-row flex items-center gap-3 mt-2">
+                  <input type="text" placeholder={t('teams.enterUsername')} className="input flex-1" value={manualUsername} onChange={(e) => setManualUsername(e.target.value)} />
                   <button className="btn btn-primary" onClick={handleAddMemberManual} disabled={loadingUsers}>{loadingUsers ? '...' : t('teams.addUser')}</button>
                 </div>
               </div>
-              {errorUsers && <p className="error-text">{errorUsers}</p>}
+              {errorUsers && <p className="error-text mt-2">{errorUsers}</p>}
             </div>
           </div>
         </div>
       )}
 
       {showRemoveMemberModal && (
-        <div className="modal-overlay" onClick={() => setShowRemoveMemberModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowRemoveMemberModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.removeMember')}</h2>
               <button className="modal-close" onClick={() => setShowRemoveMemberModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.confirmRemove')} {memberToRemove?.username} {t('teams.fromTeam') || 'from the team'}?</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-secondary" onClick={() => setShowRemoveMemberModal(false)}>{t('common.cancel')}</button>
                 <button className="btn btn-danger" onClick={handleConfirmRemove}>{t('teams.remove')}</button>
               </div>
@@ -1295,15 +1321,15 @@ const { showError } = useError();
       )}
 
       {showTeamFullModal && (
-        <div className="modal-overlay" onClick={() => setShowTeamFullModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowTeamFullModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.teamFullTitle') || 'Team Full'}</h2>
               <button className="modal-close" onClick={() => setShowTeamFullModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{t('teams.teamFull') || 'Team is already full'}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-primary" onClick={() => setShowTeamFullModal(false)}>{t('common.close')}</button>
               </div>
             </div>
@@ -1311,13 +1337,13 @@ const { showError } = useError();
         </div>
       )}
       {showEditTeamModal && (
-        <div className="modal-overlay" onClick={() => setShowEditTeamModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowEditTeamModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('teams.editTeam')}</h2>
               <button className="modal-close" onClick={() => setShowEditTeamModal(false)}>&times;</button>
             </div>
-            <form onSubmit={(e) => { e.preventDefault(); handleSaveTeamSettings(); }} className="modal-body">
+            <form onSubmit={(e) => { e.preventDefault(); handleSaveTeamSettings(); }} className="p-5 flex flex-col gap-4">
               <div className="form-group">
                 <label className="input-label">{t('teams.teamName')}</label>
                 <input
@@ -1352,7 +1378,7 @@ const { showError } = useError();
                   ))}
                 </div>
               </div>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowEditTeamModal(false)}>{t('common.cancel')}</button>
                 <button type="submit" className="btn btn-primary">{t('teams.saveSettings')}</button>
               </div>
@@ -1361,15 +1387,15 @@ const { showError } = useError();
         </div>
       )}
       {showSuccessModal && (
-        <div className="modal-overlay" onClick={() => setShowSuccessModal(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+        <div className="modal-overlay fixed inset-0 flex items-center justify-center z-[1000] bg-black/50" onClick={() => setShowSuccessModal(false)}>
+          <div className="modal w-[70%] max-w-[700px] max-h-[90vh] overflow-y-auto bg-task-gradient border border-border rounded-2xl shadow-task-box-shadow backdrop-blur-[18px]" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header flex justify-between items-center gap-4 p-4 border-b border-border">
               <h2>{t('common.success')}</h2>
               <button className="modal-close" onClick={() => setShowSuccessModal(false)}>&times;</button>
             </div>
-            <div className="modal-body">
+            <div className="modal-body p-5">
               <p className="modal-message">{successMessage}</p>
-              <div className="modal-actions">
+              <div className="modal-actions flex justify-end gap-3 mt-4">
                 <button className="btn btn-primary" onClick={() => { setShowSuccessModal(false); if (successReload) window.location.reload(); }}>OK</button>
               </div>
             </div>

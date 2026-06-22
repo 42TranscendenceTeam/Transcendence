@@ -2,28 +2,18 @@
  * Login Page Component
  *
  * User authentication page with email/password login.
- * Supports both mock mode and real backend API.
- *
- * Mock Mode (VITE_USE_MOCK=true):
- * - Uses mock 2FA flow for demo
- *
- * Real Mode (VITE_USE_MOCK=false):
- * - Calls api.login() from services/api.ts
- * - Stores auth token on successful login
+ * Calls api.checkEmail(), api.login(), and api.verify2FA() from services/api.ts.
  */
 
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GoogleLogin } from '@react-oauth/google';
 import AuthLayout from '../../components/layouts/AuthLayout';
 import { api } from '../../services/api';
 
-const USE_MOCK = import.meta.env.VITE_USE_MOCK === 'true';
-
 function Login() {
   const { t } = useTranslation(undefined, { lng: 'en' });
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [show2FA, setShow2FA] = useState(false);
@@ -35,45 +25,26 @@ function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (USE_MOCK) {
-      try {
-        const data = { requires2FA: false, tempToken: 'mock-temp-token' };
-
-        if (data.requires2FA) {
-          setTempToken(data.tempToken);
-          setShow2FA(true);
-        } else {
-          window.location.href = '/';
-        }
-      } catch {
-        setError('Login failed. Please try again.');
-      } finally {
+    setLoading(true);
+    try {
+      const { exists } = await api.checkEmail(email);
+      if (!exists) {
+        setError(t('auth.login.userNotFound') || 'No account found with this email.');
         setLoading(false);
+        return;
       }
-    } else {
-      setLoading(true);
-      try {
-        const { exists } = await api.checkEmail(email);
-        if (!exists) {
-          setError(t('auth.login.userNotFound') || 'No account found with this email.');
-          setLoading(false);
-          return;
-        }
-        const result = await api.login({ email, password });
-        if (result.requires_2fa && result.temp_token) {
-          setTempToken(result.temp_token);
-          setShow2FA(true);
-        } else {
-          localStorage.setItem('authToken', result.token);
-          window.location.href = '/';
-        }
-      } catch (err: any) {
-        // Prevent default console error reporting for login failures
-        setError(err.message || 'Login failed. Please check your credentials.');
-      } finally {
-        setLoading(false);
+      const result = await api.login({ email, password });
+      if (result.requires_2fa && result.temp_token) {
+        setTempToken(result.temp_token);
+        setShow2FA(true);
+      } else {
+        localStorage.setItem('authToken', result.token);
+        window.location.href = '/';
       }
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -81,9 +52,8 @@ function Login() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
-const result = await api.verify2FA(tempToken, twoFactorCode);
+      const result = await api.verify2FA(tempToken, twoFactorCode);
       localStorage.setItem('authToken', result.token);
       window.location.href = '/';
     } catch {
@@ -102,74 +72,75 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
       </div>
 
       {error && (
-        <div style={{ color: '#ef4444', marginBottom: '1rem', textAlign: 'center' }}>
+        <div className="mb-4 text-center text-error">
           {error}
         </div>
       )}
 
       {!show2FA ? (
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label className="label" htmlFor="email">{t('auth.login.email')}</label>
-            <input
-              type="email"
-              id="email"
-              className="input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t('auth.login.emailPlaceholder')}
-              required
-            />
+        <>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-4">
+              <label className="label" htmlFor="email">{t('auth.login.email')}</label>
+              <input
+                type="email"
+                id="email"
+                className="input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t('auth.login.emailPlaceholder')}
+                required
+              />
+            </div>
+            <div className="mb-6">
+              <label className="label" htmlFor="password">{t('auth.login.password')}</label>
+              <input
+                type="password"
+                id="password"
+                className="input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t('auth.login.passwordPlaceholder')}
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-primary auth-submit-btn w-full" disabled={loading}>
+              {loading ? t('common.loading') : t('auth.login.submit')}
+            </button>
+          </form>
+          <div className="auth-bottom-section my-6 flex items-center justify-center gap-2">
+            <span className="text-text-secondary">{t('auth.login.noAccount')} </span>
+            <Link to="/register" className="text-accent">{t('auth.login.register')}</Link>
           </div>
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label className="label" htmlFor="password">{t('auth.login.password')}</label>
-            <input
-              type="password"
-              id="password"
-              className="input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t('auth.login.passwordPlaceholder')}
-              required
-            />
-          </div>
-          <button type="submit" className="btn btn-primary auth-submit-btn" disabled={loading}>
-            {loading ? t('common.loading') : t('auth.login.submit')}
-          </button>
-          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-            <span style={{ color: 'var(--text-secondary)' }}>{t('auth.login.noAccount')} </span>
-            <Link to="/register" style={{ color: 'var(--accent)' }}>{t('auth.login.register')}</Link>
-          </div>
-        </form>
+        </>
       ) : (
         <form onSubmit={handle2FASubmit}>
-          <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+          <div className="mb-4 text-center">
+            <p className="mb-2 text-text-secondary">
               {t('auth.login.twoFactorTitle') || 'Two-Factor Authentication'}
             </p>
-            <p style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+            <p className="text-text-secondary text-sm">
               {t('auth.login.twoFactorDesc') || 'Enter the 6-digit code from your authenticator app'}
             </p>
           </div>
-          <div style={{ marginBottom: '1.5rem' }}>
+          <div className="mb-6">
             <label className="label" htmlFor="twoFactorCode">{t('auth.login.verificationCode') || 'Verification Code'}</label>
             <input
               type="text"
               id="twoFactorCode"
-              className="input"
+              className="input text-center text-xl tracking-widest"
               value={twoFactorCode}
               onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
               placeholder="000000"
               maxLength={6}
               pattern="[0-9]{6}"
               required
-              style={{ textAlign: 'center', letterSpacing: '0.5rem', fontSize: '1.25rem' }}
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '1rem' }} disabled={loading || twoFactorCode.length !== 6}>
+          <button type="submit" className="btn btn-primary w-full mb-4" disabled={loading || twoFactorCode.length !== 6}>
             {loading ? t('common.loading') : t('auth.login.verify') || 'Verify'}
           </button>
-          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+          <div className="text-center mb-4">
             <button
               type="button"
               onClick={() => {
@@ -177,13 +148,7 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
                 setTwoFactorCode('');
                 setTempToken('');
               }}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--accent)',
-                cursor: 'pointer',
-                fontSize: '0.875rem',
-              }}
+              className="bg-none border-none text-sm text-accent cursor-pointer"
             >
               {t('auth.login.backToLogin') || 'Back to Login'}
             </button>
@@ -193,11 +158,11 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
 
       {!show2FA && (
         <div className="auth-social-section">
-          <div className="auth-divider">
+          <div className="auth-divider flex items-center gap-4">
             <span>or continue with</span>
           </div>
 
-          <div className="auth-social-buttons" style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className="auth-social-buttons flex justify-center">
             <GoogleLogin
               locale="en"
               onSuccess={async (credentialResponse) => {
@@ -219,7 +184,7 @@ const result = await api.verify2FA(tempToken, twoFactorCode);
               }}
             />
           </div>
-          <p className="auth-terms-note">
+          <p className="auth-terms-note mt-4 text-center">
             By signing in, you agree with our <br />
             <Link to="/terms">Terms of Service</Link>{' '}
             and{' '}

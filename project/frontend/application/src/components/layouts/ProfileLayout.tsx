@@ -37,7 +37,7 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
   };
 
   return (
-    <div className={`profile-layout ${user ? 'has-sidebar' : 'no-sidebar'}`}>
+    <div className={`profile-layout flex min-h-screen ${user ? 'has-sidebar' : 'no-sidebar'}`}>
       {user && (
         <button
           className="mobile-menu-toggle"
@@ -66,20 +66,20 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
           </Link>
         </div>
       )}
-      <main className={`profile-main ${location.pathname === '/' ? 'profile-main-feed' : ''}`}>{children}</main>
+      <main className={`profile-main flex flex-1 justify-center p-20 md:ml-[240px] ${location.pathname === '/' ? 'profile-main-feed' : ''}`}>{children}</main>
       {user && (
-        <aside className="profile-sidebar">
+        <aside className="profile-sidebar fixed top-0 left-0 bottom-0 w-[240px] flex flex-col items-center">
           <Link to="/" className="sidebar-logo-link" aria-label="Go to feed">
             <img className="sidebar-logo-img" src="/sidebar-logo.png" alt="transcendence" />
           </Link>
-          <nav className="profile-sidebar-nav">
+          <nav className="profile-sidebar-nav flex flex-col gap-2 shrink-0">
             {menuItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`profile-sidebar-nav-item ${location.pathname === item.path ? 'active' : ''}`}
+                className={`profile-sidebar-nav-item flex flex-row items-center justify-start gap-3 ${location.pathname === item.path ? 'active' : ''}`}
               >
-                <div className="nav-icon-wrapper">
+                <div className="nav-icon-wrapper relative flex">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="nav-icon">
                     <path fillRule="evenodd" d={item.icon} clipRule="evenodd" />
                   </svg>
@@ -90,7 +90,7 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
                 <span>{item.label}</span>
               </Link>
             ))}
-            <button onClick={handleLogout} className="profile-sidebar-nav-item logout-btn">
+            <button onClick={handleLogout} className="profile-sidebar-nav-item logout-btn flex flex-row items-center justify-start gap-3">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="nav-icon">
                 <path fillRule="evenodd" d="M7.5 3.75A2.75 2.75 0 005.75 6.5v11A2.75 2.75 0 008.5 20.25h7a.75.75 0 010 1.5h-7a4.25 4.25 0 01-4.25-4.25v-11A4.25 4.25 0 015.75 1h7a.75.75 0 010 1.5h-7zm9.22.22a.75.75 0 011.06 0l2.25 2.25a.75.75 0 010 1.06l-2.25 2.25a.75.75 0 11-1.06-1.06l.97-.97H8.5a.75.75 0 010-1.5h10.69l-.97-.97a.75.75 0 010-1.06z" clipRule="evenodd" />
               </svg>
@@ -101,9 +101,9 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
         </aside>
       )}
       {user && isMobileMenuOpen && (
-        <div className="mobile-menu-overlay" onClick={() => setIsMobileMenuOpen(false)}>
-          <div className="mobile-menu-panel" onClick={(e) => e.stopPropagation()}>
-            <div className="mobile-menu-header">
+        <div className="mobile-menu-overlay fixed inset-0 bg-black/50 z-50" onClick={() => setIsMobileMenuOpen(false)}>
+          <div className="mobile-menu-panel fixed top-0 right-0 h-full w-[280px] bg-card border-l border-border" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-menu-header flex justify-between items-center p-4 border-b border-border">
               <span>Menu</span>
               <button
                 className="mobile-menu-close"
@@ -113,7 +113,7 @@ function ProfileLayout({ children }: ProfileLayoutProps) {
                 ×
               </button>
             </div>
-            <nav className="mobile-menu-nav">
+            <nav className="mobile-menu-nav flex flex-col p-4 gap-2">
               {menuItems.map((item) => (
                 item.path === '#' ? (
                   <button

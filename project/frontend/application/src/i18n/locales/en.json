@@ -5,6 +5,7 @@
     "confirm": "Confirm",
     "close": "Close",
     "loading": "Loading...",
+    "uploading": "Uploading...",
     "error": "Error",
     "success": "Success",
     "info": "Info",
@@ -59,7 +60,8 @@
       "login": "Login",
       "passwordMismatch": "Passwords do not match",
       "passwordTooShort": "Password must be at least 8 characters",
-      "success": "Account created successfully."
+      "success": "Account created successfully.",
+      "usernameTooLong": "Username must be 25 characters or less"
     },
     "logout": "Logout"
   },
@@ -74,7 +76,6 @@
   },
   "profile": {
     "title": "Profile",
-    "userNotFound": "User not found",
     "collaboration": "Collaboration",
     "teamStats": "Teams Stats",
     "totalTeams": "Total",
@@ -84,7 +85,7 @@
       "language": "Language",
       "username": "Username",
       "email": "Email",
-      "emailNotEditable": " (not editable)",
+      "emailNotEditable": "not editable",
       "description": "Description",
       "descriptionPlaceholder": "Tell us about yourself...",
       "currentAvatar": "Current Avatar",
@@ -100,7 +101,9 @@
       "uploading": "Uploading...",
       "uploadTooLarge": "Image must be under 4.5MB",
       "uploadInvalidType": "Only JPG, PNG, GIF, and WebP allowed",
-      "uploadFailed": "Failed to upload avatar"
+      "uploadFailed": "Failed to upload avatar",
+      "usernameTooLong": "Username must be 25 characters or less",
+      "descriptionTooLong": "Bio must be 100 characters or less"
     },
     "security": {
       "title": "Security",
@@ -237,7 +240,8 @@
     "role": "Role",
     "status": "Status",
     "members": "Members",
-    "created": "Created"
+    "created": "Created",
+    "teamNameTooLong": "Team name must be 25 characters or less"
   },
   "tasks": {
     "title": "Tasks",
@@ -259,7 +263,8 @@
     "high": "High",
     "pleaseAddDescription": "Please add a description",
     "noTasks": "No tasks found",
-    "createFirst": "Create your first task!"
+    "createFirst": "Create your first task!",
+    "taskTitleTooLong": "Task title must be 25 characters or less"
   },
   "friends": {
     "title": "Friends",
@@ -309,6 +314,7 @@
   },
   "feed": {
     "title": "Feed",
+    "community": "Community",
     "whatsNew": "What's new?",
     "post": "Post",
     "noPosts": "No posts yet",
@@ -317,13 +323,12 @@
     "lookingFor": "Looking for",
     "collaborator": "collaborator",
     "collaborators": "collaborators",
-    "rotatingPhrase1": "Find your team. Share ideas. Build the future.",
-    "rotatingPhrase2": "Great ideas grow when people build together.",
+    "rotatingPhrase1": "Find your team. Share ideas. Build something great.",
+    "rotatingPhrase2": "Team up, collaborate, and turn ideas into reality.",
     "rotatingPhrase3": "Connect. Collaborate. Create.",
-    "rotatingPhrase4": "Every great project starts with the right people.",
-    "rotatingPhrase5": "Transform ideas into reality.",
-    "rotatingPhrase6": "Build something bigger than yourself.",
-    "globalChat": "Global Chat"
+    "rotatingPhrase4": "Great things happen when the right people build together.",
+    "rotatingPhrase5": "From ideas to impact — together.",
+    "rotatingPhrase6": "Join a team, spark ideas, and build what matters."
   },
   "notifications": {
     "title": "Notifications",
@@ -398,10 +403,5 @@
       "changesToTerms": "Changes to Terms",
       "changesToTermsText": "We reserve the right to modify these terms at any time. Your continued use of the service constitutes acceptance of any changes."
     }
-  },
-  "notFound": {
-    "title": "Page not found",
-    "text": "The page you are looking for does not exist or has been moved.",
-    "backHome": "Go back home"
   }
 }
