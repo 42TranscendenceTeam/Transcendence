@@ -203,8 +203,6 @@
     "noTeams": "Vous ne faites pas encore partie d'une équipe",
     "createFirst": "Créez votre première équipe !",
     "tasks": "Tâches",
-    "chat": "Discussion",
-    "files": "Fichiers",
     "settings": "Paramètres de l'équipe",
     "deleteTeam": "Supprimer l'équipe",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette équipe ? Cette action est irréversible.",
@@ -236,9 +234,7 @@
     "searchFriends": "Rechercher des amis......",
     "wantsToBeFriends": "Souhaite devenir votre ami",
     "requestSent": "Demande d'amitié envoyée",
-    "role": "Rôle",
     "status": "Statut",
-    "members": "Membres",
     "created": "Créé",
     "teamNameTooLong": "Le nom de l'équipe doit comporter au maximum 25 caractères",
     "teamDescriptionTooLong": "La description de l'équipe doit comporter au maximum 200 caractères"
