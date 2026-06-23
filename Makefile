@@ -6,16 +6,17 @@
 ###############################################################################
 
 # Build and start website
-all: build up
+all: up
 
-# Create database storage and build containers
+# Create and start containers and database storage
+up:
+	@mkdir -p ${HOME}/data/database
+	@docker compose -f ./project/docker-compose.yml up -d --build
+
+# Build containers
 build:
 	@mkdir -p ${HOME}/data/database
 	@docker compose -f ./project/docker-compose.yml build
-
-# Create and start containers
-up:
-	@docker compose -f ./project/docker-compose.yml up -d --build
 
 # Stop and remove containers and networks
 down:
@@ -33,7 +34,7 @@ start:
 # Stop and remove containers, networks and volumes
 clean:
 	@docker compose -f ./project/docker-compose.yml down -v
-	
+
 # Danger: Remove ALL Docker containers and images on system. Delete database
 fclean: clean
 	@echo "WARNING: This will remove ALL Docker containers and images. Even the ones not related to this project. It will also delete the database! Do you wish to continue? (yes/no)"
@@ -44,38 +45,37 @@ fclean: clean
 	else \
 		echo "Operation canceled."; \
 	fi
-		
+
 # Rebuild only the frontend container
 frontRebuild:
 	@docker compose -f ./project/docker-compose.yml build --no-cache frontend
-	@docker compose -f ./project/docker-compose.yml up 
-	
+	@docker compose -f ./project/docker-compose.yml up -d
+
 # Rebuild only the backend container
 backRebuild:
 	@docker compose -f ./project/docker-compose.yml build --no-cache backend
-	@docker compose -f ./project/docker-compose.yml up 
-	
+	@docker compose -f ./project/docker-compose.yml up -d
+
 # Rebuild only the database container
 dataRebuild:
 	@docker compose -f ./project/docker-compose.yml build --no-cache postgresql
-	@docker compose -f ./project/docker-compose.yml up 
-		
+	@docker compose -f ./project/docker-compose.yml up -d
+
 # Clean build - removes containers for fresh start
-re: clean build up
+re: clean up
 
 ###############################################################################
 ################################# DEV UTILS ###################################
 ###############################################################################
 
 # Init prisma studio server in backend container
-#vafernan - 11.05 - updated to use port 5555 for nginx proxy access at /studio
 studio:
 	@docker exec -it backend npx prisma studio --port 5555 --browser none
 
 # Migrate prisma schema to DB
 migrate:
 	@docker exec -it backend npx prisma migrate dev
-	
+
 # Seed DB
 seed:
 	@docker exec -it backend npm run seed
