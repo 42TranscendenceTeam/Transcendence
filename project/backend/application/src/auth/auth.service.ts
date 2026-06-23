@@ -18,6 +18,9 @@ export const register = async (data: RegisterDTO) => {
     throw new AppError('Missing required fields', 400);
   }
 
+  if (username.length > 25)
+	throw new AppError('username field exceeds maximum characters', 400);
+
   const existingEmail = await prisma.user.findUnique({
     where: { email },
   });
