@@ -395,7 +395,7 @@ function Feed() {
                 </p>
               </div>
             </div>
-            <div className="modal-actions flex justify-end gap-3 mb-4 mr-4">
+            <div className="modal-actions flex justify-end gap-3 mb-4 ml-4 mr-4">
               <button className="btn btn-primary" onClick={() => setShowNotification(false)}>
                 OK
               </button>
