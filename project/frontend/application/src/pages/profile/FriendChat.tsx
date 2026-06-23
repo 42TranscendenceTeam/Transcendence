@@ -19,7 +19,8 @@ function FriendChat() {
   const { id } = useParams<{ id: string }>();
   const { user, sendFriendMessage, updateUser, onlineFriendIds } = useContext(AuthContext);
 
-  const friendId = Number(id || '0');
+  const idString = id || '';
+  const friendId = /^\d+$/.test(idString) ? Number(idString) : NaN;
   const friend = user?.friends.find((f) => f.id === friendId);
   const [friendInfo, setFriendInfo] = useState<{ id: number; username: string; avatar: string } | null>(null);
   const [isLoadingFriend, setIsLoadingFriend] = useState(true);
@@ -130,6 +131,10 @@ function FriendChat() {
       messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [friend?.chat]);
+
+  if (!friendId || isNaN(friendId) || !Number.isInteger(friendId)) {
+    return <Navigate to="/profile/friends" replace />;
+  }
 
   if (isLoadingFriend) {
     return (
