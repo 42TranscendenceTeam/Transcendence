@@ -143,6 +143,10 @@ function FriendChat() {
     return <Navigate to="/404" replace />;
   }
 
+  if (user && friendId === user.id) {
+    return <Navigate to="/profile/friends" replace />;
+  }
+
   const displayFriend = friend ?? friendInfo!;
   const chat = friend?.chat || [];
 
