@@ -326,9 +326,13 @@
     "rotatingPhrase1": "Find your team. Share ideas. Build something great.",
     "rotatingPhrase2": "Team up, collaborate, and turn ideas into reality.",
     "rotatingPhrase3": "Connect. Collaborate. Create.",
-    "rotatingPhrase4": "Great things happen when the right people build together.",
-    "rotatingPhrase5": "From ideas to impact — together.",
-    "rotatingPhrase6": "Join a team, spark ideas, and build what matters."
+    "rotatingPhrase4": "Every great project starts with the right people.",
+    "rotatingPhrase5": "Transform ideas into reality.",
+    "rotatingPhrase6": "Build something bigger than yourself.",
+    "globalChat": "Global Chat",
+    "collaborationTitleStart": "Great things happen when we",
+    "collaborationTitleAccent": "build together.",
+    "collaborationDescription": "Collaborate with talented people, share ideas, and turn inspiration into real impact."
   },
   "notifications": {
     "title": "Notifications",
@@ -403,5 +407,10 @@
       "changesToTerms": "Changes to Terms",
       "changesToTermsText": "We reserve the right to modify these terms at any time. Your continued use of the service constitutes acceptance of any changes."
     }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "text": "The page you are looking for does not exist or has been moved.",
+    "backHome": "Go back home"
   }
 }

@@ -312,12 +312,16 @@
     "lookingFor": "Recherche",
     "collaborator": "collaborateur",
     "collaborators": "collaborateurs",
-    "rotatingPhrase1": "Trouvez votre équipe. Partagez vos idées. Construisez quelque chose de great.",
-    "rotatingPhrase2": "Formez une équipe, collaborez et transformez vos idées en réalité.",
-    "rotatingPhrase3": "Connectez-vous. Collaborez. Créez.",
-    "rotatingPhrase4": "De grandes choses se produisent quand les bonnes personnes construisent ensemble.",
-    "rotatingPhrase5": "Des idées à l'impact — ensemble.",
-    "rotatingPhrase6": "Rejoignez une équipe, suscitez des idées et construisez ce qui compte."
+    "rotatingPhrase1": "Trouvez votre équipe. Partagez des idées. Construisez l'avenir.",
+    "rotatingPhrase2": "Les grandes idées grandissent lorsque les gens construisent ensemble.",
+    "rotatingPhrase3": "Rencontrez. Collaborez. Créez.",
+    "rotatingPhrase4": "Chaque grand projet commence avec les bonnes personnes.",
+    "rotatingPhrase5": "Transformez les idées en réalité.",
+    "rotatingPhrase6": "Construisez quelque chose de plus grand que vous.",
+    "globalChat": "Chat Global",
+    "collaborationTitleStart": "De grandes choses arrivent quand nous",
+    "collaborationTitleAccent": "construisons ensemble.",
+    "collaborationDescription": "Collaborez avec des personnes talentueuses, partagez des idées et transformez l’inspiration en impact réel."
   },
   "notifications": {
     "title": "Notifications",
@@ -392,5 +396,10 @@
       "changesToTerms": "Modifications des Conditions",
       "changesToTermsText": "Nous nous réservons le droit de modifier ces conditions à tout moment. Votre utilisation continue du service constitue l'acceptation de tout changement."
     }
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "text": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "backHome": "Retour à l'accueil"
   }
 }
