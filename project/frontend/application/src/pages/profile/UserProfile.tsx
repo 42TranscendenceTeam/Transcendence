@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { api } from '../../services/api';
 import type { UserProfileResponse } from '../../services/api';
 import { getAvatarUrl } from '../../utils/avatar';
@@ -15,7 +15,7 @@ function UserProfile() {
   const fetchProfile = useCallback(() => {
     if (!userId) return;
     const numericId = Number(userId);
-    if (isNaN(numericId) || numericId <= 0) {
+    if (isNaN(numericId) || numericId <= 0 || !Number.isSafeInteger(numericId)) {
       setError(t('profile.userNotFound'));
       return;
     }
@@ -31,7 +31,7 @@ function UserProfile() {
   }, [fetchProfile]);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId || error) return;
     api.getUserOnline(Number(userId))
       .then((data) => setIsOnline(data.Online))
       .catch(() => { });
@@ -41,7 +41,7 @@ function UserProfile() {
         .catch(() => { });
     }, 5000);
     return () => clearInterval(poll);
-  }, [userId]);
+  }, [userId, error]);
 
   useEffect(() => {
     const handleVisibility = () => {
@@ -54,11 +54,7 @@ function UserProfile() {
   }, [fetchProfile]);
 
   if (error) {
-    return (
-      <div className="profile-page">
-        <p className="error-message">{error}</p>
-      </div>
-    );
+    return <Navigate to="/404" replace />;
   }
 
   if (!profile) {

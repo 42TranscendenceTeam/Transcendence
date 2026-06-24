@@ -5,7 +5,7 @@
  */
 
 import { useContext, useState, useRef, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../../context/AuthContext';
 import { api } from '../../services/api';
@@ -19,7 +19,8 @@ function FriendChat() {
   const { id } = useParams<{ id: string }>();
   const { user, sendFriendMessage, updateUser, onlineFriendIds } = useContext(AuthContext);
 
-  const friendId = parseInt(id || '0');
+  const idString = id || '';
+  const friendId = /^\d+$/.test(idString) ? Number(idString) : NaN;
   const friend = user?.friends.find((f) => f.id === friendId);
   const [friendInfo, setFriendInfo] = useState<{ id: number; username: string; avatar: string } | null>(null);
   const [isLoadingFriend, setIsLoadingFriend] = useState(true);
@@ -29,7 +30,7 @@ function FriendChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!user || !friendId) return;
+    if (!user || !friendId || isNaN(friendId)) return;
 
     const socket = getSocket();
     if (socket) {
@@ -54,7 +55,7 @@ function FriendChat() {
   }, [user?.id, friendId]);
 
   useEffect(() => {
-    if (!friend && !friendInfo && !friendError) {
+    if (!friend && !friendInfo && !friendError && friendId && !isNaN(friendId)) {
       api.getUserProfile(friendId)
         .then(data => {
           setFriendInfo({
@@ -131,6 +132,10 @@ function FriendChat() {
     }
   }, [friend?.chat]);
 
+  if (!friendId || isNaN(friendId) || !Number.isInteger(friendId)) {
+    return <Navigate to="/profile/friends" replace />;
+  }
+
   if (isLoadingFriend) {
     return (
       <div className="friend-chat-page">
@@ -140,13 +145,11 @@ function FriendChat() {
   }
 
   if (friendError || (!friend && !friendInfo)) {
-    return (
-      <div className="friend-chat-page">
-        <h1>{t('friends.notFound') || 'Friend not found'}</h1>
-        <p>{t('friends.notFoundDesc') || 'This friend does not exist or you are not friends.'}</p>
-        <Link to="/profile/friends" className="btn btn-secondary">{t('friends.backToFriends') || 'Back to Friends'}</Link>
-      </div>
-    );
+    return <Navigate to="/404" replace />;
+  }
+
+  if (user && friendId === user.id) {
+    return <Navigate to="/profile/friends" replace />;
   }
 
   const displayFriend = friend ?? friendInfo!;
