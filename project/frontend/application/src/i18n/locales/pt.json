@@ -293,7 +293,8 @@
     "addFriendFailed": "Falha ao enviar pedido de amizade.",
     "userNotFound": "Utilizador não encontrado.",
     "loadUsersFailed": "Falha ao carregar utilizadores.",
-    "friendNotFound": "Este utilizador já não está na sua lista de amigos."
+    "friendNotFound": "Este utilizador já não está na sua lista de amigos.",
+    "backToFriends": "Voltar aos Amigos"
   },
   "chat": {
     "title": "Chat",

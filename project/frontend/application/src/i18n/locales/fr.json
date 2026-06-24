@@ -292,7 +292,8 @@
     "alreadyFriends": "Vous êtes déjà amis.",
     "addFriendFailed": "Échec de l'envoi de la demande d'ami.",
     "userNotFound": "Utilisateur non trouvé.",
-    "loadUsersFailed": "Échec du chargement des utilisateurs."
+    "loadUsersFailed": "Échec du chargement des utilisateurs.",
+    "backToFriends": "Retour aux amis"
   },
   "chat": {
     "title": "Discussion",
