@@ -139,7 +139,7 @@ function Profile() {
         </div>
 
         <div className="teams-list flex flex-col">
-          {teams.slice(0, 4).map((team) => (
+          {teams.map((team) => (
             <Link key={team.id} to={`/teams/${team.id}`} className="team-card grid items-center">
               <div className="team-info flex min-w-0 flex-col">
                 <span className="team-name font-medium">{team.name}</span>
