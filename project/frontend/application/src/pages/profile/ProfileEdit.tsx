@@ -158,7 +158,7 @@ function ProfileEdit() {
                   onChange={() => setTwoFactorEnabled(!twoFactorEnabled)}
                 />
                 <span className="toggle-text font-medium text-text-primary ml-2">
-                  {twoFactorEnabled ? t('profile.security.enable') : t('profile.security.disable')}
+                  {twoFactorEnabled ? t('profile.security.enabled') : t('profile.security.disabled')}
                 </span>
               </label>
             </div>

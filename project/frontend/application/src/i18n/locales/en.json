@@ -112,6 +112,8 @@
       "twoFactorDesc": "Add an extra layer of security to your account",
       "enable": "Enable",
       "disable": "Disable",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
       "twoFactorEnabled": "Two-factor authentication enabled. The next time you log in, a code will be sent to your email.",
       "changePassword": "Change Password",
       "currentPassword": "Current Password",
