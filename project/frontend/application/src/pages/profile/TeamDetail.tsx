@@ -775,7 +775,7 @@ function TeamDetail() {
           <h2 className="team-section-title mb-0 text-base font-semibold">{t('teams.members')} ({team.members.length})</h2>
           <div className="team-section-actions flex items-center gap-3">
             {isLeader && (
-              <button className="btn btn-primary btn-small" onClick={() => {
+              <button className="btn btn-primary btn-small leading-tight" onClick={() => {
                 setEditTeamName(team.name);
                 setEditTeamObjective(team.objective || '');
                 setEditTeamTags(team.tags ? [...team.tags] : []);
@@ -786,7 +786,7 @@ function TeamDetail() {
             )}
             {isLeader && (
               <button
-                className="btn btn-accent btn-small"
+                className="btn btn-accent btn-small leading-tight"
                 onClick={() => {
                   setShowAddMemberModal(true);
                   setErrorUsers('');
