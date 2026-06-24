@@ -80,10 +80,17 @@ function TeamDetail() {
   const [userTeamIds, setUserTeamIds] = useState<number[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const parsedId = Number(id || '0');
   const numericId = isNaN(parsedId) || parsedId <= 0 || !Number.isSafeInteger(parsedId) ? 0 : parsedId;
   const teamIdInt = numericId;
+
+  useEffect(() => {
+    if (chatContainerRef.current && team?.chat) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [team?.chat]);
 
   const fetchTeamData = async (silent = false, teamIds: number[] = []) => {
     if (!id) return;
@@ -173,6 +180,11 @@ function TeamDetail() {
       const handleNewTeamMessage = (content: string, ack?: (ok: boolean) => void) => {
         if (ack) ack(true);
         fetchTeamData(true, userTeamIds);
+        setTimeout(() => {
+          if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+          }
+        }, 100);
       };
 
       socket.on('team message', handleNewTeamMessage);
@@ -185,12 +197,6 @@ function TeamDetail() {
       }
     }
   }, [teamIdInt, teamError, userTeamIds]);
-
-  useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [team?.chat]);
 
   useEffect(() => {
     if (!team?.members) return;
@@ -487,6 +493,10 @@ function TeamDetail() {
       showError(t('common.error'), t('tasks.taskTitleTooLong'));
       return;
     }
+    if (newTask.description.length > 200) {
+      showError(t('common.error'), t('tasks.taskDescriptionTooLong'));
+      return;
+    }
 
     if (!newTask.description.trim()) {
       showError(t('common.error'), t('tasks.pleaseAddDescription') || 'Please add a description');
@@ -765,7 +775,7 @@ function TeamDetail() {
           <h2 className="team-section-title mb-0 text-base font-semibold">{t('teams.members')} ({team.members.length})</h2>
           <div className="team-section-actions flex items-center gap-3">
             {isLeader && (
-              <button className="btn btn-primary btn-small" onClick={() => {
+              <button className="btn btn-primary btn-small leading-tight" onClick={() => {
                 setEditTeamName(team.name);
                 setEditTeamObjective(team.objective || '');
                 setEditTeamTags(team.tags ? [...team.tags] : []);
@@ -776,7 +786,7 @@ function TeamDetail() {
             )}
             {isLeader && (
               <button
-                className="btn btn-accent btn-small"
+                className="btn btn-accent btn-small leading-tight"
                 onClick={() => {
                   setShowAddMemberModal(true);
                   setErrorUsers('');
@@ -1120,7 +1130,7 @@ function TeamDetail() {
       <div className="team-section mb-6 rounded-2xl p-5">
         <h2 className="team-section-title mb-3 text-base font-semibold">{t('teams.chat')}</h2>
         <div className="chat-container">
-          <div className="chat-messages">
+          <div className="chat-messages" ref={chatContainerRef}>
             {team.chat && team.chat.length > 0 ? (
               groupConsecutiveMessages(team.chat, user.id).map((group) =>
                 group.messages.map((msg, idx) => (

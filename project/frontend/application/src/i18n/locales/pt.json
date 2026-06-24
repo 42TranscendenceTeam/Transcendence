@@ -111,6 +111,8 @@
       "twoFactorDesc": "Adicione uma camada extra de segurança à sua conta",
       "enable": "Ativar",
       "disable": "Desativar",
+      "enabled": "Ativado",
+      "disabled": "Desativado",
       "twoFactorEnabled": "Autenticação de dois fatores ativada. Da próxima vez que iniciar sessão, um código será enviado para o seu e-mail.",
       "changePassword": "Alterar Palavra-passe",
       "currentPassword": "Palavra-passe Atual",
@@ -204,8 +206,6 @@
     "noTeams": "Ainda não faz parte de nenhuma equipa",
     "createFirst": "Crie a sua primeira equipa!",
     "tasks": "Tarefas",
-    "chat": "Chat",
-    "files": "Ficheiros",
     "settings": "Definições da Equipa",
     "deleteTeam": "Eliminar Equipa",
     "confirmDelete": "Tem a certeza que deseja eliminar esta equipa? Esta ação não pode ser desfeita.",
@@ -237,11 +237,10 @@
     "searchFriends": "Encontrar amigos...",
     "wantsToBeFriends": "Quer ser teu amigo",
     "requestSent": "Pedido enviado",
-    "role": "Função",
     "status": "Estado",
-    "members": "Membros",
     "created": "Criada",
-    "teamNameTooLong": "O nome da equipa deve ter no máximo 25 caracteres"
+    "teamNameTooLong": "O nome da equipa deve ter no máximo 25 caracteres",
+    "teamDescriptionTooLong": "A descrição da equipa deve ter no máximo 200 caracteres"
   },
   "tasks": {
     "title": "Tarefas",
@@ -264,7 +263,8 @@
     "pleaseAddDescription": "Por favor, adicione uma descrição",
     "noTasks": "Nenhuma tarefa encontrada",
     "createFirst": "Crie a sua primeira tarefa!",
-    "taskTitleTooLong": "O título da tarefa deve ter no máximo 25 caracteres"
+    "taskTitleTooLong": "O título da tarefa deve ter no máximo 25 caracteres",
+    "taskDescriptionTooLong": "A descrição da tarefa deve ter no máximo 200 caracteres"
   },
   "friends": {
     "title": "Amigos",
@@ -293,7 +293,8 @@
     "addFriendFailed": "Falha ao enviar pedido de amizade.",
     "userNotFound": "Utilizador não encontrado.",
     "loadUsersFailed": "Falha ao carregar utilizadores.",
-    "friendNotFound": "Este utilizador já não está na sua lista de amigos."
+    "friendNotFound": "Este utilizador já não está na sua lista de amigos.",
+    "backToFriends": "Voltar aos Amigos"
   },
   "chat": {
     "title": "Chat",

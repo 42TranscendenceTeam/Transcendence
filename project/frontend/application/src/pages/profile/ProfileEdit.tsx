@@ -158,7 +158,7 @@ function ProfileEdit() {
                   onChange={() => setTwoFactorEnabled(!twoFactorEnabled)}
                 />
                 <span className="toggle-text font-medium text-text-primary ml-2">
-                  {twoFactorEnabled ? t('profile.security.enable') : t('profile.security.disable')}
+                  {twoFactorEnabled ? t('profile.security.enabled') : t('profile.security.disabled')}
                 </span>
               </label>
             </div>
@@ -225,9 +225,9 @@ function ProfileEdit() {
                 </p>
               </div>
             </div>
-            <div className="modal-actions flex justify-end gap-3">
+            <div className="modal-actions flex justify-end gap-3 mb-4 ml-4 mr-4">
               <button className="btn btn-primary" onClick={handleSuccessClose}>
-                {t('common.close')}
+                OK
               </button>
             </div>
           </div>

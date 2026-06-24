@@ -71,6 +71,10 @@ function Teams() {
       showError(t('common.error'), t('teams.teamNameTooLong'));
       return;
     }
+    if (newTeam.description.length > 200) {
+      showError(t('common.error'), t('teams.teamDescriptionTooLong'));
+      return;
+    }
     try {
       await createTeam({
         name: newTeam.name,

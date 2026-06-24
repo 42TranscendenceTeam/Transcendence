@@ -109,8 +109,10 @@
       "desc": "Gérez les paramètres de sécurité de votre compte",
       "twoFactor": "Authentification à deux facteurs",
       "twoFactorDesc": "Ajoutez une couche de sécurité supplémentaire à votre compte",
-      "enable": "Activé",
-      "disable": "Désactivé",
+      "enable": "Activer",
+      "disable": "Désactiver",
+      "enabled": "Activé",
+      "disabled": "Désactivé",
       "changePassword": "Changer le mot de passe",
       "currentPassword": "Mot de passe actuel",
       "newPassword": "Nouveau mot de passe",
@@ -203,8 +205,6 @@
     "noTeams": "Vous ne faites pas encore partie d'une équipe",
     "createFirst": "Créez votre première équipe !",
     "tasks": "Tâches",
-    "chat": "Discussion",
-    "files": "Fichiers",
     "settings": "Paramètres de l'équipe",
     "deleteTeam": "Supprimer l'équipe",
     "confirmDelete": "Êtes-vous sûr de vouloir supprimer cette équipe ? Cette action est irréversible.",
@@ -236,11 +236,10 @@
     "searchFriends": "Rechercher des amis......",
     "wantsToBeFriends": "Souhaite devenir votre ami",
     "requestSent": "Demande d'amitié envoyée",
-    "role": "Rôle",
     "status": "Statut",
-    "members": "Membres",
     "created": "Créé",
-    "teamNameTooLong": "Le nom de l'équipe doit comporter au maximum 25 caractères"
+    "teamNameTooLong": "Le nom de l'équipe doit comporter au maximum 25 caractères",
+    "teamDescriptionTooLong": "La description de l'équipe doit comporter au maximum 200 caractères"
   },
   "tasks": {
     "title": "Tâches",
@@ -263,7 +262,8 @@
     "pleaseAddDescription": "Veuillez ajouter une description",
     "noTasks": "Aucune tâche trouvée",
     "createFirst": "Créez votre première tâche !",
-    "taskTitleTooLong": "Le titre de la tâche doit comporter au maximum 25 caractères"
+    "taskTitleTooLong": "Le titre de la tâche doit comporter au maximum 25 caractères",
+    "taskDescriptionTooLong": "La description de la tâche doit comporter au maximum 200 caractères"
   },
   "friends": {
     "title": "Amis",
@@ -292,7 +292,8 @@
     "alreadyFriends": "Vous êtes déjà amis.",
     "addFriendFailed": "Échec de l'envoi de la demande d'ami.",
     "userNotFound": "Utilisateur non trouvé.",
-    "loadUsersFailed": "Échec du chargement des utilisateurs."
+    "loadUsersFailed": "Échec du chargement des utilisateurs.",
+    "backToFriends": "Retour aux amis"
   },
   "chat": {
     "title": "Discussion",

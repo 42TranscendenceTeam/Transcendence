@@ -112,9 +112,9 @@
       "twoFactorDesc": "Add an extra layer of security to your account",
       "enable": "Enable",
       "disable": "Disable",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
       "twoFactorEnabled": "Two-factor authentication enabled. The next time you log in, a code will be sent to your email.",
-      "enable": "Enabled",
-      "disable": "Disabled",
       "changePassword": "Change Password",
       "currentPassword": "Current Password",
       "newPassword": "New Password",
@@ -237,11 +237,10 @@
     "searchFriends": "Search friends...",
     "wantsToBeFriends": "Wants to be your friend",
     "requestSent": "Request sent",
-    "role": "Role",
     "status": "Status",
-    "members": "Members",
     "created": "Created",
-    "teamNameTooLong": "Team name must be 25 characters or less"
+    "teamNameTooLong": "Team name must be 25 characters or less",
+    "teamDescriptionTooLong": "Team description must be 200 characters or less"
   },
   "tasks": {
     "title": "Tasks",
@@ -264,7 +263,8 @@
     "pleaseAddDescription": "Please add a description",
     "noTasks": "No tasks found",
     "createFirst": "Create your first task!",
-    "taskTitleTooLong": "Task title must be 25 characters or less"
+    "taskTitleTooLong": "Task title must be 25 characters or less",
+    "taskDescriptionTooLong": "Task description must be 200 characters or less"
   },
   "friends": {
     "title": "Friends",
@@ -285,7 +285,6 @@
     "sentRequests": "Sent Requests",
     "receivedRequests": "Received Requests",
     "pendingRequests": "Pending Requests",
-    "noFriends": "No friends yet",
     "addFirst": "Add your first friend!",
     "pending": "Pending",
     "accept": "Accept",
