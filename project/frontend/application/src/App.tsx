@@ -5,7 +5,7 @@
  * Sets up authentication context and routes.
  */
 
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useContext, useEffect, ReactNode } from 'react';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { ErrorProvider } from './context/ErrorContext';
@@ -26,13 +26,22 @@ import Notifications from './pages/profile/Notifications';
 import TeamDetail from './pages/profile/TeamDetail';
 import NotFound from './pages/404';
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if (!pathname.startsWith('/teams/')) {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname]);
+
+  return null;
+}
+
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
-/*
- * ProtectedRoute method will ensure only authenticated users can access certain routes.
-*/
 function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useContext(AuthContext);
 
@@ -51,8 +60,9 @@ function App() {
   return (
     <AuthProvider> {/* Provides authentication context to the entire app. */}
       <ErrorProvider>
-      <Router> {/* Enables navigation, /login, /profile, etc. */}
-        <Routes> {/* Container for all routes. */}
+      <Router>
+        <ScrollToTop />
+        <Routes>
           <Route
             path="/"
             element={

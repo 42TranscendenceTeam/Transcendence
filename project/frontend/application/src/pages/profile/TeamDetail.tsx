@@ -85,6 +85,12 @@ function TeamDetail() {
   const numericId = isNaN(parsedId) || parsedId <= 0 ? 0 : parsedId;
   const teamIdInt = numericId;
 
+  useEffect(() => {
+    if (chatContainerRef.current && team?.chat) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [team?.chat]);
+
   const fetchTeamData = async (silent = false) => {
     if (!id) return;
     const numericId = parseInt(id);
