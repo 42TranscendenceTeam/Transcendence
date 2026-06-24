@@ -945,3 +945,15 @@
     padding-top: 4rem;
   }
 }
+
+/* ========================================
+      Desktop Only Right Sidebar
+======================================== */
+
+@media (min-width: 1024px) {
+  .images-sidebar {
+    background: color-mix(in srgb, var(--sidebar-background) 78%, transparent);
+    border: 1px solid rgba(168, 85, 247, 0.35);
+    backdrop-filter: blur(18px);
+  }
+}
