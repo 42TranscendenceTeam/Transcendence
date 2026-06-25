@@ -23,18 +23,15 @@ export function validateTaskFile(file: File): { valid: boolean; error?: string }
 
 export function truncateFileName(fileName: string, maxChars: number = 10): string {
   const lastDotIndex = fileName.lastIndexOf('.');
-  if (lastDotIndex === -1 || lastDotIndex === 0) {
+  if (lastDotIndex <= 0) {
     return fileName.length > maxChars
       ? fileName.substring(0, maxChars) + '...'
-      : fileName + '...';
+      : fileName;
   }
-
   const name = fileName.substring(0, lastDotIndex);
   const ext = fileName.substring(lastDotIndex);
-
   if (name.length <= maxChars) {
-    return name + '...' + ext;
+    return fileName;
   }
-
   return name.substring(0, maxChars) + '...' + ext;
 }
