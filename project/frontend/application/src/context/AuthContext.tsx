@@ -80,10 +80,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'authToken' && e.newValue === null && user) {
-        setUser(null);
-        disconnectSocket();
-        window.location.href = '/';
+      if (e.key === 'authToken' && user) {
+		if (e.newValue === null) {
+			// Token removed - logout in another tab
+			setUser(null);
+			disconnectSocket();
+			window.location.href = '/';
+		} else if (e.oldToken !== null && e.newValue !== e.oldValue) {
+			// Token changed - different user logged in another tab
+			setUser(null);
+			disconnectSocket();
+			window.location.href = '/';
+		}
       }
     };
 
