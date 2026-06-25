@@ -78,7 +78,7 @@ function FriendChat() {
     if (!friendId) return;
     if (!friendInfo && !friend) return;
     try {
-      const history = await api.getFriendMessages(friendId, 50);
+      const history = await api.getFriendMessages(friendId, 1000);
       const formattedMessages: Message[] = history.message_list.map((m: any) => {
         const isOwn = Number(m.sender_id) === Number(user?.id);
         const chatFriend = friendInfo ?? friend;

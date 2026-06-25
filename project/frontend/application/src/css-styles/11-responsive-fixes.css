@@ -957,3 +957,9 @@
     backdrop-filter: blur(18px);
   }
 }
+
+@media (max-width: 1450px) {
+  .profile-top-actions {
+    display: none;
+  }
+}
