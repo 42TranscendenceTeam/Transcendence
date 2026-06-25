@@ -13,6 +13,7 @@ import { api } from '../services/api';
 import { getAvatarUrl } from '../utils/avatar';
 import { validateTaskFile } from '../utils/fileValidation';
 import { connectSocket, disconnectSocket, getSocket } from '../services/socket';
+import i18n from 'i18next';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const token = localStorage.getItem('authToken');
+        const token = sessionStorage.getItem('authToken');
         if (token) {
           const userData = await api.getCurrentUser();
           const userId = Number(userData.id);
@@ -52,6 +53,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             friends: [],
             teams: [],
           });
+          const savedLang = localStorage.getItem(`language_${userId}`);
+          if (savedLang) {
+            i18n.changeLanguage(savedLang);
+          }
           fetchNotifications();
           fetchTeamInvites();
           api.getTeams().then((teams) => {
@@ -61,7 +66,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }).catch(() => {});
         }
       } catch {
-        localStorage.removeItem('authToken');
+        sessionStorage.removeItem('authToken');
       } finally {
         setLoading(false);
       }
@@ -71,7 +76,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     const handleFocus = () => {
-      const token = localStorage.getItem('authToken');
+      const token = sessionStorage.getItem('authToken');
       if (token) fetchNotifications();
     };
     window.addEventListener('focus', handleFocus);
@@ -83,7 +88,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     if (user) {
-      const token = localStorage.getItem('authToken');
+      const token = sessionStorage.getItem('authToken');
       if (token) {
         connectSocket(token);
         const sock = getSocket();
@@ -169,7 +174,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
   }, [!!user]);
 
   const logout = () => {
-    localStorage.removeItem('authToken');
+    sessionStorage.removeItem('authToken');
     setUser(null);
     disconnectSocket();
   };

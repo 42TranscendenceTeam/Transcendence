@@ -92,6 +92,9 @@ function ProfileEdit() {
     if (language !== i18n.language) {
       i18n.changeLanguage(language);
     }
+    if (user?.id) {
+      localStorage.setItem(`language_${user.id}`, language);
+    }
     if (user && twoFactorEnabled !== user.twoFactorEnabled) {
       await toggle2FA();
       updateUser({ twoFactorEnabled });

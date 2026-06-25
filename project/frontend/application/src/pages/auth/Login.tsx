@@ -38,7 +38,7 @@ function Login() {
         setTempToken(result.temp_token);
         setShow2FA(true);
       } else {
-        localStorage.setItem('authToken', result.token);
+        sessionStorage.setItem('authToken', result.token);
         window.location.href = '/';
       }
     } catch (err: any) {
@@ -54,7 +54,7 @@ function Login() {
     setLoading(true);
     try {
       const result = await api.verify2FA(tempToken, twoFactorCode);
-      localStorage.setItem('authToken', result.token);
+      sessionStorage.setItem('authToken', result.token);
       window.location.href = '/';
     } catch {
       setError('Invalid verification code. Please try again.');
@@ -172,7 +172,7 @@ function Login() {
                     setTempToken(result.temp_token);
                     setShow2FA(true);
                   } else {
-                    localStorage.setItem('authToken', result.token);
+                    sessionStorage.setItem('authToken', result.token);
                     window.location.href = '/';
                   }
                 } catch (err: any) {

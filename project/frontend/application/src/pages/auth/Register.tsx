@@ -64,7 +64,7 @@ function Register() {
       if (result.requires_verification && result.temp_token) {
         navigate(`/verify-email?token=${result.temp_token}&email=${encodeURIComponent(email)}`);
       } else if (result.token) {
-        localStorage.setItem('authToken', result.token);
+        sessionStorage.setItem('authToken', result.token);
         setShowSuccessModal(true);
       }
     } catch (err: any) {

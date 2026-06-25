@@ -41,7 +41,7 @@ function VerifyEmail() {
 
     try {
       const result = await api.verifyEmail(token, code);
-      localStorage.setItem('authToken', result.token);
+      sessionStorage.setItem('authToken', result.token);
       setSuccess(true);
     } catch (err: any) {
       setError(err.message || 'Invalid verification code. Please try again.');
