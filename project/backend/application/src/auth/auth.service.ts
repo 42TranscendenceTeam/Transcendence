@@ -111,7 +111,7 @@ export const verifyEmail = async (tempToken: string, code: string) => {
 
   pendingRegistrations.delete(payload.email);
 
-  const token = jwt.sign({id: user.id, type: "auth" }, JWT_SECRET, { expiresIn: "24h" });
+  const token = jwt.sign({id: user.id, type: "auth" }, JWT_SECRET);
 
   return {
     user: {
@@ -160,7 +160,7 @@ export const login = async (data: LoginDTO) => {
     return await handle2FA(user);
   }
 
-  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET, { expiresIn: "24h" });
+  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET);
 
   return {
     user: { id: user.id, email: user.email, username: user.username },
@@ -205,7 +205,7 @@ export const verify2FA = async (tempToken: string, code: string) => {
 
   pending2FA.delete(payload.userId);
 
-  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET, { expiresIn: "24h" });
+  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET);
 
   return {
     user: {
@@ -265,7 +265,7 @@ export const googleLogin = async (credential: string) => {
     return await handle2FA(user);
   }
 
-  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET, { expiresIn: "24h" });
+  const token = jwt.sign({ id: user.id, type: "auth" }, JWT_SECRET);
 
   return {
     user: {
