@@ -78,19 +78,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'authToken' && e.newValue === null && user) {
-        setUser(null);
-        disconnectSocket();
-        window.location.href = '/';
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [user]);
-
   const userRef = useRef(user);
   userRef.current = user;
 
