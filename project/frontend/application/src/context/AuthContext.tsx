@@ -1,9 +1,9 @@
 /**
  * Authentication Context Provider
- * 
+ *
  * Manages user authentication state and provides authentication functions
  * throughout the application.
- * 
+ *
  * Uses real backend API for authentication and user data.
  */
 
@@ -67,6 +67,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     };
     loadUser();
+  }, []);
+
+  useEffect(() => {
+    const handleAuthStorageChange = (event: StorageEvent) => {
+      if (event.key === 'authToken' && event.oldValue !== event.newValue) {
+        window.location.reload();
+      }
+    };
+
+    window.addEventListener('storage', handleAuthStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleAuthStorageChange);
+    };
   }, []);
 
   useEffect(() => {
