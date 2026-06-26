@@ -112,7 +112,7 @@ function TeamDetail() {
     try {
       if (!silent) setLoadingTeam(true);
       const teamData = await api.getTeam(numericId);
-      const messagesData = await api.getTeamMessages(numericId, 50);
+      const messagesData = await api.getTeamMessages(numericId, 1000);
       
       const formattedMessages: Message[] = messagesData.message_list.map((m: any) => {
         const sender = teamData.members.find((member: any) => member.id === m.sender_id) ||
