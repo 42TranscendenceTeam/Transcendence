@@ -240,7 +240,9 @@
     "status": "Status",
     "created": "Created",
     "teamNameTooLong": "Team name must be 25 characters or less",
-    "teamDescriptionTooLong": "Team description must be 200 characters or less"
+    "teamDescriptionTooLong": "Team description must be 200 characters or less",
+    "noTeamsAvailable": "No teams available to join right now.",
+    "checkBackLater": "Check back later!"
   },
   "tasks": {
     "title": "Tasks",

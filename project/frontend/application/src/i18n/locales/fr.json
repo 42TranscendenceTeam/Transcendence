@@ -239,7 +239,9 @@
     "status": "Statut",
     "created": "Créé",
     "teamNameTooLong": "Le nom de l'équipe doit comporter au maximum 25 caractères",
-    "teamDescriptionTooLong": "La description de l'équipe doit comporter au maximum 200 caractères"
+    "teamDescriptionTooLong": "La description de l'équipe doit comporter au maximum 200 caractères",
+    "noTeamsAvailable": "Aucune équipe n'est disponible pour le moment.",
+    "checkBackLater": "Reviens plus tard !"
   },
   "tasks": {
     "title": "Tâches",

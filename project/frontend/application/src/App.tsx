@@ -56,6 +56,20 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   return children;
 }
 
+function PublicOnlyRoute({ children }: ProtectedRouteProps) {
+  const { user, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+}
+
 function App() {
   return (
     <AuthProvider> {/* Provides authentication context to the entire app. */}
@@ -71,8 +85,8 @@ function App() {
               </ProfileLayout>
             }
           />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={ <PublicOnlyRoute> <Login /> </PublicOnlyRoute> } />
+          <Route path="/register" element={ <PublicOnlyRoute> <Register /> </PublicOnlyRoute> } />
           <Route path="/verify-email" element={<VerifyEmail />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />

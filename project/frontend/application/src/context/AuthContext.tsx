@@ -1,9 +1,9 @@
 /**
  * Authentication Context Provider
- * 
+ *
  * Manages user authentication state and provides authentication functions
  * throughout the application.
- * 
+ *
  * Uses real backend API for authentication and user data.
  */
 
@@ -13,6 +13,7 @@ import { api } from '../services/api';
 import { getAvatarUrl } from '../utils/avatar';
 import { validateTaskFile } from '../utils/fileValidation';
 import { connectSocket, disconnectSocket, getSocket } from '../services/socket';
+import i18n from 'i18next';
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -52,6 +53,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             friends: [],
             teams: [],
           });
+          const savedLang = localStorage.getItem(`language_${userId}`);
+          if (savedLang) {
+            i18n.changeLanguage(savedLang);
+          }
           fetchNotifications();
           fetchTeamInvites();
           api.getTeams().then((teams) => {
@@ -67,6 +72,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     };
     loadUser();
+  }, []);
+
+  useEffect(() => {
+    const handleAuthStorageChange = (event: StorageEvent) => {
+      if (event.key === 'authToken' && event.oldValue !== event.newValue) {
+        window.location.reload();
+      }
+    };
+
+    window.addEventListener('storage', handleAuthStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleAuthStorageChange);
+    };
   }, []);
 
   useEffect(() => {

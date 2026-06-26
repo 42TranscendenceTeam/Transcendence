@@ -98,6 +98,8 @@ const MOCK_AVAILABLE_TEAMS: Team[] = [
 
 function Feed() {
   const { user, teamInvites } = useContext(AuthContext)!;
+  const userId = user?.id;
+  const key = userId ? `joinRequestStatuses_${userId}` : null;
   const { t } = useTranslation(undefined, user ? undefined : { lng: 'en' });
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,18 +108,22 @@ function Feed() {
   const [showNotification, setShowNotification] = useState(false);
   const [notificationType, setNotificationType] = useState<'success' | 'error' | 'info'>('success');
   const [notificationMessage, setNotificationMessage] = useState('');
-  const [requestStatuses, setRequestStatuses] = useState<Record<number, 'pending' | 'rejected'>>(() => {
-    try {
-      const saved = localStorage.getItem('joinRequestStatuses');
-      return saved ? JSON.parse(saved) : {};
-    } catch {
-      return {};
-    }
-  });
+  const [requestStatuses, setRequestStatuses] = useState<Record<number, 'pending' | 'rejected'>>({});
 
   useEffect(() => {
-    localStorage.setItem('joinRequestStatuses', JSON.stringify(requestStatuses));
-  }, [requestStatuses]);
+    if (!key) return;
+
+    const saved = localStorage.getItem(key);
+    if (saved) {
+      setRequestStatuses(JSON.parse(saved));
+    }
+  }, [key]);
+
+  useEffect(() => {
+    if (!key) return;
+
+    localStorage.setItem(key, JSON.stringify(requestStatuses));
+  }, [requestStatuses, key]);
 
   useEffect(() => {
     const fetchTeams = async () => {
@@ -337,8 +343,8 @@ function Feed() {
         )}
         {!loading && !error && availableTeams.length === 0 && (
           <div className="empty-state">
-            <p>No teams available to join right now.</p>
-            <p className="empty-hint">Check back later!</p>
+            <p>{t('teams.noTeamsAvailable')}</p>
+            <p className="empty-hint">{t('teams.checkBackLater')}</p>
           </div>
         )}
         {!loading && !error && availableTeams.map((team) => (
