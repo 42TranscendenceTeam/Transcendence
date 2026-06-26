@@ -343,8 +343,8 @@ function Feed() {
         )}
         {!loading && !error && availableTeams.length === 0 && (
           <div className="empty-state">
-            <p>No teams available to join right now.</p>
-            <p className="empty-hint">Check back later!</p>
+            <p>{t('teams.noTeamsAvailable')}</p>
+            <p className="empty-hint">{t('teams.checkBackLater')}</p>
           </div>
         )}
         {!loading && !error && availableTeams.map((team) => (

@@ -240,7 +240,9 @@
     "status": "Estado",
     "created": "Criada",
     "teamNameTooLong": "O nome da equipa deve ter no máximo 25 caracteres",
-    "teamDescriptionTooLong": "A descrição da equipa deve ter no máximo 200 caracteres"
+    "teamDescriptionTooLong": "A descrição da equipa deve ter no máximo 200 caracteres",
+    "noTeamsAvailable": "Não há equipas disponíveis para aderir neste momento.",
+    "checkBackLater": "Volta mais tarde!"
   },
   "tasks": {
     "title": "Tarefas",
