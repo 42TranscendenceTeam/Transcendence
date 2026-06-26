@@ -381,7 +381,7 @@ export const api = {
 
   // ========== TEAMS ==========
   getTeams(): Promise<Team[]> {
-    const token = sessionStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken');
     const headers: HeadersInit = { 'Content-Type': 'application/json' };
     if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -394,7 +394,7 @@ export const api = {
       }
       return response.json();
     }).then(async (teams: any[]) => {
-      const token = sessionStorage.getItem('authToken');
+      const token = localStorage.getItem('authToken');
       let currentUserId: number | null = null;
       if (token) {
         try {
@@ -428,7 +428,7 @@ export const api = {
   },
 
   getMyTeams(): Promise<Team[]> {
-    const token = sessionStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken');
     if (!token) return Promise.resolve([]);
 
     return fetch(`${API_URL}/teams`, {
@@ -1299,7 +1299,7 @@ export const api = {
 
   // ========== UTILITIES ==========
   getAuthHeaders(): HeadersInit {
-    const token = sessionStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken');
     return token ? { Authorization: `Bearer ${token}` } : {};
   },
 };

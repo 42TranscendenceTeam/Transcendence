@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const token = sessionStorage.getItem('authToken');
+        const token = localStorage.getItem('authToken');
         if (token) {
           const userData = await api.getCurrentUser();
           const userId = Number(userData.id);
@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           }).catch(() => {});
         }
       } catch {
-        sessionStorage.removeItem('authToken');
+        localStorage.removeItem('authToken');
       } finally {
         setLoading(false);
       }
@@ -90,7 +90,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     const handleFocus = () => {
-      const token = sessionStorage.getItem('authToken');
+      const token = localStorage.getItem('authToken');
       if (token) fetchNotifications();
     };
     window.addEventListener('focus', handleFocus);
@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     if (user) {
-      const token = sessionStorage.getItem('authToken');
+      const token = localStorage.getItem('authToken');
       if (token) {
         connectSocket(token);
         const sock = getSocket();
@@ -188,7 +188,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
   }, [!!user]);
 
   const logout = () => {
-    sessionStorage.removeItem('authToken');
+    localStorage.removeItem('authToken');
     setUser(null);
     disconnectSocket();
   };

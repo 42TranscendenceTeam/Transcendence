@@ -714,7 +714,7 @@ function TeamDetail() {
   const handleDownload = async (file: TaskFile) => {
     setDownloadingFileId(file.id);
     try {
-      const token = sessionStorage.getItem('authToken');
+      const token = localStorage.getItem('authToken');
       const res = await fetch(`/api/tasks/files/${file.id}/download`, {
         headers: { Authorization: `Bearer ${token}` },
       });
