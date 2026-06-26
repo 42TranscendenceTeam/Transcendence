@@ -327,7 +327,7 @@ function Feed() {
 
   return (
     <FeedLayout header={headerContent}>
-      <div className="feed-list flex flex-col gap-8">
+      <div className="feed-list flex flex-col w-full min-w-0 gap-8">
         {loading && <div className="loading">Loading teams...</div>}
         {error && !isUsingMockData && <div className="error-text">{error}</div>}
         {isUsingMockData && !user && (
@@ -342,7 +342,7 @@ function Feed() {
           </div>
         )}
         {!loading && !error && availableTeams.map((team) => (
-          <div key={team.id} className="task-card">
+          <div key={team.id} className="task-card w-full">
             <div className="task-header flex items-center gap-3 mb-4">
               <img
                 src={getAvatarUrl(team.owner.avatar)}
