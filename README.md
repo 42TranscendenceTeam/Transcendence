@@ -391,12 +391,7 @@ The team followed a lightweight collaborative workflow:
    make all
    ```
 
-4. **Run database migrations:**
-   ```bash
-   make migrate
-   ```
-
-5. **Access the application:**
+4. **Access the application:**
 
    ```txt
    https://localhost
