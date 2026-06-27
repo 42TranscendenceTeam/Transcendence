@@ -235,7 +235,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
         return { ...prev, teams: updatedTeams };
       });
     } catch (err) {
-      console.error('Failed to send team message:', err);
+      //console.error('Failed to send team message:', err);
     }
   };
 
@@ -253,7 +253,7 @@ const chatMessageHandler = (content: string, ack?: (ok: boolean) => void) => {
         return { ...prev, friends: updatedFriends };
       });
     } catch (err) {
-      console.error('Failed to send friend message:', err);
+      //console.error('Failed to send friend message:', err);
     }
   };
 
